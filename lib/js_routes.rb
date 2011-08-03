@@ -2,6 +2,43 @@
 module JsRoutes
   class << self
 
+
+    def generate(options = {})
+      js = File.read(File.dirname(__FILE__) + "/routes.js")
+      js.gsub!("IDENTITY", js_routes(options))
+    end
+
+    def generate!(options = {})
+      file = options[:file] || default_file
+      File.open(file, 'w') do |f|
+        f.write generate(options)
+      end
+    end
+
+    #
+    # Implementation
+    #
+
+    protected
+    def js_routes(options = {})
+
+      options[:default_format] ||= ""
+
+      Rails.application.routes.named_routes.routes.map do |name, route|
+        <<-JS
+  // #{route.name} => #{route.path}
+  #{name.to_s}_path: function(#{build_params route}) {
+    var options = Routes.extract_options(arguments);
+    var format = options.format || '#{options[:default_format]}';
+    delete options.format;
+  #{build_default_params route};
+    return Routes.check_path('#{build_path route}' + format) + Routes.serialize(options);
+  },
+JS
+      end.join("\n")
+    end
+
+
     def build_params route
       route.conditions[:path_info].captures.map do |cap|
         if cap.is_a?(Rack::Mount::GeneratableRegexp::DynamicSegment)
@@ -40,31 +77,9 @@ module JsRoutes
       s
 
     end
-
-    def generate(options = {})
-      options[:default_format] ||= ""
-      js = File.read(File.dirname(__FILE__) + "/routes.js")
-
-      js_routes = Rails.application.routes.named_routes.routes.map do |name, route|
-        <<-JS
-  // #{route.name} => #{route.path}
-  #{name.to_s}_path: function(#{build_params route}) {
-    var options = Routes.extract_options(arguments);
-    var format = options.format || '#{options[:default_format]}';
-    delete options.format;
-    #{build_default_params route};
-    return Routes.less_check_path('#{build_path route}' + format) + Routes.serialize(options);
-  },
-JS
-      end.join("\n")
-
-      js.gsub!("IDENTITY", js_routes)
-    end
-
-    def generate!(options = {})
-      File.open("#{Rails.root}/app/assets/javascripts/less_routes.js", 'w') do |f|
-        f.write generate(options)
-      end
+    def default_file
+      #TODO: better defaults
+      "#{Rails.root}/app/assets/javascripts/less_routes.js"
     end
 
   end
