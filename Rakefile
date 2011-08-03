@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "jsroutes"
   gem.homepage = "http://github.com/bogdan/jsroutes"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Brings Rails named routes to javascript}
+  gem.description = %Q{Generates javascript file that defines all Rails named routes as javascript helpers}
   gem.email = "agresso@gmail.com"
   gem.authors = ["Bogdan Gusiev"]
   # dependencies defined in Gemfile
