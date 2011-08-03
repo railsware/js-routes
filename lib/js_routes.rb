@@ -1,4 +1,3 @@
-
 module JsRoutes
   class << self
 
@@ -52,14 +51,12 @@ JS
     end
 
     def build_default_params route
-      s = []
-      route.conditions[:path_info].captures.each do |cap|
+      route.conditions[:path_info].captures.map do |cap|
         if cap.is_a?(Rack::Mount::GeneratableRegexp::DynamicSegment)
           segg = cap.name.to_s.gsub(':', '')
-          s << "#{segg} = Routes.check_parameter(#{segg});"
+          "#{segg} = Routes.check_parameter(#{segg});"
         end
-      end
-      s
+      end.join("\n")
     end
 
     def build_path route
