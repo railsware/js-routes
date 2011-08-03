@@ -25,6 +25,10 @@ describe JsRoutes do
     evaljs("Routes.inbox_path(1, {format: 'json'})").should == "/inboxes/1.json"
   end
 
+  it "should support get parameters" do
+    evaljs("Routes.inbox_path(1, {format: 'json', q: 'hello', lang: 'ua'})").should == "/inboxes/1.json?q=hello&lang=ua"
+  end
+
 
   context "when default_format is specified" do
     let(:_options) { {:default_format => "json"} }

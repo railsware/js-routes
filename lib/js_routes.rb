@@ -27,11 +27,11 @@ module JsRoutes
         <<-JS
   // #{route.name} => #{route.path}
   #{name.to_s}_path: function(#{build_params route}) {
-    var options = Routes.extract_options(arguments);
-    var format = options.format || '#{options[:default_format]}';
-    delete options.format;
+    var opts = options || {};
+    var format = opts.format || '#{options[:default_format]}';
+    delete opts.format;
   #{build_default_params route};
-    return Routes.check_path('#{build_path route}' + format) + Routes.serialize(options);
+    return Routes.check_path('#{build_path route}' + format) + Routes.serialize(opts);
   },
 JS
       end.join("\n")
@@ -47,7 +47,7 @@ JS
             cap.name.to_s.gsub(':', '')
           end
         end
-      end.compact.join(', ')
+      end.compact.<<("options").join(', ')
     end
 
     def build_default_params route
@@ -76,7 +76,7 @@ JS
     end
     def default_file
       #TODO: better defaults
-      "#{Rails.root}/app/assets/javascripts/less_routes.js"
+      "#{Rails.root}/app/assets/javascripts/routes.js"
     end
 
   end
