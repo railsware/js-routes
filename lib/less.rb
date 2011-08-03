@@ -1,0 +1,2 @@
+module Less
+end
