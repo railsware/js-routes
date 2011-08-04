@@ -29,7 +29,7 @@ Available options:
 * `:exclude` - Array of regexps to exclude form js routes. Default: []
   * Note that regexp applied to **named route** not to *URL*
 * `:namespace` - global object used to access routes. Default: `Routes`
-  * Possible variants: `MyProject.routes`, `window` (to make global).
+  * Possible variants: `MyProject.routes`, `MyProjectRoutes`
 
 In order to generate routes to string and manipulate them yourself:
 
