@@ -19,6 +19,12 @@ JsRoutes.generate!(
 )
 ```
 
+In order to generate routes to string and manipulate them yourself:
+
+``` ruby
+JsRoutes.generate(options)
+```
+
 ### Usage
 
 This will create a nice javascript file with `Routes` object that has all the rails routes available:
