@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "Readme.md",
     "VERSION",
+    "jsroutes.gemspec",
     "lib/js_routes.rb",
     "lib/jsroutes.rb",
     "lib/routes.js",
