@@ -15,7 +15,7 @@ Your application initializer, like `config/initializers/jsroutes.rb`:
 ``` ruby
 JsRoutes.generate!(
     :file => "#{Rails.root}app/assets/javascripts/routes.js",
-    :default_format => "json"                
+    :default_format => "json",
     :exclude => [/^admin_/, /paypal/, /^api_/]
 )
 ```
@@ -27,6 +27,13 @@ Available options:
   * `#{Rails.root}/public/javascripts/routes.js` for Rails < 3.1
 * `:default_format` - Format to append to urls. Default: blank
 * `:exclude` - Array of regexps to exclude form js routes. Default: []
+  * Note that regexp applied to **named route** not to *URL*
+
+In order to generate routes to string and manipulate them yourself:
+
+``` ruby
+JsRoutes.generate(options)
+```
 
 ### Usage
 
