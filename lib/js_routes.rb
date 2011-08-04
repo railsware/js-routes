@@ -44,7 +44,7 @@ module JsRoutes
     var format = opts.format || '#{options[:default_format]}';
     delete opts.format;
   #{build_default_params route};
-    return Routes.check_path('#{build_path route}' + format) + Routes.serialize(opts);
+    return Utils.check_path('#{build_path route}' + format) + Utils.serialize(opts);
   },
 JS
     end
@@ -66,7 +66,7 @@ JS
       route.conditions[:path_info].captures.map do |cap|
         if cap.is_a?(Rack::Mount::GeneratableRegexp::DynamicSegment)
           segg = cap.name.to_s.gsub(':', '')
-          "#{segg} = Routes.check_parameter(#{segg});"
+          "#{segg} = Utils.check_parameter(#{segg});"
         end
       end.join("\n")
     end
