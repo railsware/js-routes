@@ -74,9 +74,13 @@ JS
       s
 
     end
+
     def default_file
-      #TODO: better defaults
-      "#{Rails.root}/app/assets/javascripts/routes.js"
+      if Rails.version >= "3.1"
+        "#{Rails.root}/app/assets/javascripts/routes.js"
+      else
+        "#{Rails.root}/public/javascripts/routes.js"
+      end
     end
 
   end

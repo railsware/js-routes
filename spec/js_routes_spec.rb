@@ -1,4 +1,5 @@
 require 'spec_helper'
+require "fileutils"
 
 
 
@@ -43,5 +44,16 @@ describe JsRoutes do
 
   end
 
+  describe ".generate!" do
+    let(:name) {  "#{File.dirname(__FILE__)}/../routes.js" }
+    it "should generate routes file" do
+      FileUtils.rm_f(name)
+      JsRoutes.generate!({:file => name})
+      File.exists?(name).should be_true 
+    end
+    after(:all) do
+      FileUtils.rm_f(name)
+    end
+  end
 
 end
