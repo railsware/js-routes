@@ -14,8 +14,8 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "jsroutes"
-  gem.homepage = "http://github.com/bogdan/jsroutes"
+  gem.name = "js-routes"
+  gem.homepage = "http://github.com/railsware/js-routes"
   gem.license = "MIT"
   gem.summary = %Q{Brings Rails named routes to javascript}
   gem.description = %Q{Generates javascript file that defines all Rails named routes as javascript helpers}
@@ -43,7 +43,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "jsroutes #{version}"
+  rdoc.title = "js-routes #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
