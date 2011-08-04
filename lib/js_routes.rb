@@ -4,7 +4,9 @@ module JsRoutes
 
     def generate(options = {})
       js = File.read(File.dirname(__FILE__) + "/routes.js")
-      js.gsub!("IDENTITY", js_routes(options))
+      options[:namespace] ||= "Routes"
+      js.gsub!("NAMESPACE", options[:namespace])
+      js.gsub!("ROUTES", js_routes(options))
     end
 
     def generate!(options = {})
