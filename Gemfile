@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem "rails"
+gem "rails", ">= 3.0"
 
 group :development do
   gem "therubyracer"

@@ -23,6 +23,7 @@ module JsRoutes
 
       options[:default_format] ||= ""
 
+      Rails.application.reload_routes!
       Rails.application.routes.named_routes.routes.map do |name, route|
         <<-JS
   // #{route.name} => #{route.path}
