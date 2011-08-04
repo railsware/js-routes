@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{js-routes}
-  s.version = "0.2.0"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bogdan Gusiev"]
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "Readme.md",
     "VERSION",
-    "jsroutes.gemspec",
+    "js-routes.gemspec",
     "lib/js_routes.rb",
     "lib/jsroutes.rb",
     "lib/routes.js",
