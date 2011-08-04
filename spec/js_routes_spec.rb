@@ -5,6 +5,7 @@ require "fileutils"
 
 describe JsRoutes do
   before(:each) do
+    Rails.application.stub!(:reload_routes!).and_return(true)
     evaljs(JsRoutes.generate(_options))
   end
 
@@ -30,6 +31,14 @@ describe JsRoutes do
     evaljs("Routes.inbox_path(1, {format: 'json', q: 'hello', lang: 'ua'})").should == "/inboxes/1.json?q=hello&lang=ua"
   end
 
+  context "when exclude is specified" do
+    
+    let(:_options) { {:exclude => /^admin_/} }
+
+    it "should exclude specified routes from file" do
+      evaljs("Routes.admin_users_path").should be_nil
+    end
+  end
 
   context "when default_format is specified" do
     let(:_options) { {:default_format => "json"} }

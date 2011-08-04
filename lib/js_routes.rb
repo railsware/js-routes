@@ -22,10 +22,20 @@ module JsRoutes
     def js_routes(options = {})
 
       options[:default_format] ||= ""
+      exclude = Array(options[:exclude])
 
       Rails.application.reload_routes!
       Rails.application.routes.named_routes.routes.map do |name, route|
-        <<-JS
+        if exclude.find {|e| name.to_s =~ e}
+          ""
+        else
+          build_js(name, route, options)
+        end
+      end.join("\n")
+    end
+
+    def build_js(name, route, options)
+      _ = <<-JS
   // #{route.name} => #{route.path}
   #{name.to_s}_path: function(#{build_params route}) {
     var opts = options || {};
@@ -35,7 +45,6 @@ module JsRoutes
     return Routes.check_path('#{build_path route}' + format) + Routes.serialize(opts);
   },
 JS
-      end.join("\n")
     end
 
 

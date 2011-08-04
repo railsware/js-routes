@@ -11,14 +11,18 @@ def evaljs(string)
   @context.eval(string)
 end
 
+
 class App < Rails::Application
   self.routes.draw do 
     resources :inboxes do
       resources :messages
     end
+
+    namespace :admin do
+      resources :users
+    end
   end
 end
-
 
 
 # Requires supporting files with custom matchers and macros, etc,
