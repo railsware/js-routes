@@ -6,6 +6,7 @@ module JsRoutes
       js = File.read(File.dirname(__FILE__) + "/routes.js")
       options[:namespace] ||= "Routes"
       js.gsub!("NAMESPACE", options[:namespace])
+      js.gsub!("DEFAULT_FORMAT", options[:default_format].to_s)
       js.gsub!("ROUTES", js_routes(options))
     end
 
@@ -41,8 +42,7 @@ module JsRoutes
   // #{route.name} => #{route.path}
   #{name.to_s}_path: function(#{build_params route}) {
     var opts = options || {};
-    var format = opts.format || '#{options[:default_format]}';
-    delete opts.format;
+    var format = Utils.extract_format(opts);
   #{build_default_params route};
     return Utils.check_path('#{build_path route}' + format) + Utils.serialize(opts);
   }

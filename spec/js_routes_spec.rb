@@ -2,7 +2,6 @@ require 'spec_helper'
 require "fileutils"
 
 
-
 describe JsRoutes do
   before(:each) do
     Rails.application.stub!(:reload_routes!).and_return(true)
@@ -54,8 +53,12 @@ describe JsRoutes do
       evaljs("Routes.inbox_path(1)").should == "/inboxes/1.json"
     end
 
-    it "should override default_format implicitly" do
+    it "should override default_format wehn spefified implicitly" do
       evaljs("Routes.inbox_path(1, {format: 'xml'})").should == "/inboxes/1.xml"
+    end
+
+    it "should override nullify implicitly when specified implicitly" do
+      evaljs("Routes.inbox_path(1, {format: null})").should == "/inboxes/1"
     end
 
   end
