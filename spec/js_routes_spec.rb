@@ -7,9 +7,11 @@ describe JsRoutes do
   before(:each) do
     Rails.application.stub!(:reload_routes!).and_return(true)
     evaljs("var window = this;")
+    evaljs(_presetup)
     evaljs(JsRoutes.generate(_options))
   end
 
+  let(:_presetup) { "this;" }
   let(:_options) { {} }
 
   it "should generate collection routing" do
@@ -63,6 +65,14 @@ describe JsRoutes do
     it "should use this name space for routing" do
       evaljs("window.Routes").should be_nil
       evaljs("PHM.inbox_path").should_not be_nil
+    end
+    
+  end
+  context "when nested namspace option is specified" do
+    let(:_presetup) { "window.PHM = {}" }
+    let(:_options) { {:namespace => "PHM.Routes"} }
+    it "should use this name space for routing" do
+      evaljs("PHM.Routes.inbox_path").should_not be_nil
     end
     
   end
