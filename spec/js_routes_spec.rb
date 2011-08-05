@@ -39,6 +39,10 @@ describe JsRoutes do
     it "should exclude specified routes from file" do
       evaljs("window.Routes.admin_users_path").should be_nil
     end
+
+    it "should not exclude routes not under specified pattern" do
+      evaljs("window.Routes.inboxes_path()").should_not be_nil
+    end
   end
 
   context "when default_format is specified" do
