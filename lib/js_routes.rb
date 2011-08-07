@@ -28,19 +28,19 @@ module JsRoutes
       exclude = Array(options[:exclude])
 
       Rails.application.reload_routes!
-      Rails.application.routes.named_routes.routes.map do |name, route|
-        if exclude.find {|e| name.to_s =~ e}
+      Rails.application.routes.named_routes.routes.map do |_, route|
+        if exclude.find {|e| route.name =~ e}
           nil
         else
-          build_js(name, route, options)
+          build_js(route, options)
         end
       end.compact.join(",\n")
     end
 
-    def build_js(name, route, options)
+    def build_js(route, options)
       _ = <<-JS.strip!
   // #{route.name} => #{route.path}
-  #{name.to_s}_path: function(#{build_params route}) {
+  #{route.name}_path: function(#{build_params route}) {
     var opts = options || {};
     var format = Utils.extract_format(opts);
   #{build_default_params route};
@@ -52,12 +52,8 @@ JS
 
     def build_params route
       route.conditions[:path_info].captures.map do |cap|
-        if cap.is_a?(Rack::Mount::GeneratableRegexp::DynamicSegment)
-          if cap.name.to_s == "format"
-            nil
-          else
-            cap.name.to_s.gsub(':', '')
-          end
+        if cap.is_a?(Rack::Mount::GeneratableRegexp::DynamicSegment) && !(cap.name.to_s == "format")
+          cap.name.to_s.gsub(':', '')
         end
       end.compact.<<("options").join(', ')
     end
