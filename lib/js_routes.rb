@@ -28,23 +28,22 @@ module JsRoutes
       exclude = Array(options[:exclude])
 
       Rails.application.reload_routes!
-      Rails.application.routes.named_routes.routes.map do |_, route|
+      js_routes = Rails.application.routes.named_routes.routes.map do |_, route|
         if exclude.find {|e| route.name =~ e}
           nil
         else
           build_js(route, options)
         end
-      end.compact.join(",\n")
+      end.compact
+      
+      "{\n" + js_routes.join(",\n") + "}\n"
     end
 
     def build_js(route, options)
       _ = <<-JS.strip!
   // #{route.name} => #{route.path}
   #{route.name}_path: function(#{build_params route}) {
-    var opts = options || {};
-    var format = Utils.extract_format(opts);
-  #{build_default_params route};
-    return Utils.check_path('#{build_path route}' + format) + Utils.serialize(opts);
+  return Utils.build_path(#{path_parts(route).inspect}, arguments)
   }
 JS
     end
@@ -53,35 +52,16 @@ JS
     def build_params route
       route.conditions[:path_info].captures.map do |cap|
         if cap.is_a?(Rack::Mount::GeneratableRegexp::DynamicSegment) && !(cap.name.to_s == "format")
-          cap.name.to_s.gsub(':', '')
+          cap.name.to_s.gsub(/^:/, '')
         end
       end.compact.<<("options").join(', ')
     end
 
-    def build_default_params route
-      route.conditions[:path_info].captures.map do |cap|
-        if cap.is_a?(Rack::Mount::GeneratableRegexp::DynamicSegment)
-          segg = cap.name.to_s.gsub(':', '')
-          "#{segg} = Utils.check_parameter(#{segg});"
-        end
-      end.join("\n")
+
+    def path_parts route
+      route.path.gsub(/\(\.:format\)$/, "").split(/:[a-z\-_]+/)
     end
 
-    def build_path route
-      s = route.path.gsub(/\(\.:format\)$/, ".")
-
-      route.conditions[:path_info].captures.each do |cap|
-        unless cap.name.to_s == "format"
-          if route.conditions[:path_info].required_params.include?(cap.name)
-            s.gsub!(/:#{cap.name.to_s}/){ "' + #{cap.name.to_s.gsub(':','')} + '" }
-          else
-            s.gsub!(/\((\.)?:#{cap.name.to_s}\)/){ "#{$1}' + #{cap.name.to_s.gsub(':','')} + '" }
-          end
-        end
-      end
-      s
-
-    end
 
     def default_file
       if Rails.version >= "3.1"

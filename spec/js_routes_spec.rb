@@ -21,6 +21,10 @@ describe JsRoutes do
     evaljs("Routes.inbox_path(1)").should == "/inboxes/1"
   end
 
+  it "should generate nested routing with one parameter" do
+    evaljs("Routes.inbox_message_path(1)").should == "/inboxes/1/messages"
+  end
+
   it "should generate nested routing" do
     evaljs("Routes.inbox_message_path(1,2)").should == "/inboxes/1/messages/2"
   end
