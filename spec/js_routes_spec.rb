@@ -55,6 +55,18 @@ describe JsRoutes do
       evaljs("Routes.inboxes_path()").should_not be_nil
     end
   end
+  context "when include is specified" do
+    
+    let(:_options) { {:include => /^admin_/} }
+
+    it "should exclude specified routes from file" do
+      evaljs("Routes.admin_users_path()").should_not be_nil
+    end
+
+    it "should not exclude routes not under specified pattern" do
+      evaljs("Routes.inboxes_path").should be_nil
+    end
+  end
 
   context "when default_format is specified" do
     let(:_options) { {:default_format => "json"} }

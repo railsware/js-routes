@@ -25,11 +25,12 @@ module JsRoutes
     def js_routes(options = {})
 
       options[:default_format] ||= ""
-      exclude = Array(options[:exclude])
+      excludes = options[:exclude] || []
+      includes = options[:include] || //
 
       Rails.application.reload_routes!
       js_routes = Rails.application.routes.named_routes.routes.map do |_, route|
-        if exclude.find {|e| route.name =~ e}
+        if any_match?(route, excludes) || !any_match?(route, includes)
           nil
         else
           build_js(route, options)
@@ -37,6 +38,11 @@ module JsRoutes
       end.compact
       
       "{\n" + js_routes.join(",\n") + "}\n"
+    end
+
+    def any_match?(route, matchers)
+      matchers = Array(matchers)
+      matchers.any? {|regex| route.name =~ regex}
     end
 
     def build_js(route, options)

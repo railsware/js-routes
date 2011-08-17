@@ -26,12 +26,22 @@ Available options:
   * `#{Rails.root}/app/assets/javascripts/routes.js` for Rails >= 3.1
   * `#{Rails.root}/public/javascripts/routes.js` for Rails < 3.1
 * `:default_format` - Format to append to urls. Default: blank
-* `:exclude` - Array of regexps to exclude form js routes. Default: []
+* `:exclude` - Array of regexps to exclude from js routes. Default: []
+  * Note that regexp applied to **named route** not to *URL*
+* `:include` - Array of regexps to include in js routes. Default: []
   * Note that regexp applied to **named route** not to *URL*
 * `:namespace` - global object used to access routes. Default: `Routes`
   * Possible variants: `MyProject.routes`, `MyProjectRoutes`
 
-In order to generate routes to string and manipulate them yourself:
+Example options usage:
+
+``` ruby
+JsRoutes.generate!(:file => "#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => /^admin_/, :default_format => "json")
+JsRoutes.generate!(:file => "#{path}/adm_routes.js", :namespace => "AdmRoutes", :include => /^admin_/, :default_format => "json")
+```
+
+In order to generate routes to string and manipulate them yourself use `JsRoutes.generate`:
+Like:
 
 ``` ruby
 JsRoutes.generate(options)
