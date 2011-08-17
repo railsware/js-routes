@@ -21,6 +21,8 @@ class App < Rails::Application
     namespace :admin do
       resources :users
     end
+
+    resources :returns
   end
 end
 

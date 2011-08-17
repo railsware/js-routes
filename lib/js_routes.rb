@@ -51,8 +51,9 @@ JS
 
     def build_params route
       route.conditions[:path_info].named_captures.map do |cap|
-        if cap.is_a?(Rack::Mount::GeneratableRegexp::DynamicSegment) && !(cap.name.to_s == "format")
-          cap.name.to_s.gsub(/^:/, '')
+        name = cap.first
+        if !(name.to_s == "format")
+          "_" + name.to_s.gsub(/^:/, '')
         end
       end.compact.<<("options").join(', ')
     end
