@@ -90,6 +90,13 @@ describe JsRoutes do
     
   end
 
+  describe "generated js" do
+    subject { JsRoutes.generate }
+    it "should have correct function signature" do
+      subject.should include("inbox_message_path: function(_inbox_id, _id, options)")
+    end
+  end
+
   describe ".generate!" do
     let(:name) {  "#{File.dirname(__FILE__)}/../routes.js" }
     it "should generate routes file" do
