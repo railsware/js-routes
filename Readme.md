@@ -53,8 +53,11 @@ This will create a nice javascript file with `Routes` object that has all the ra
 
 ``` js
 Routes.users_path() // => "/users"
+Routes.user_path(1) // => "/users/1"
 Routes.user_path(1, {format: 'json'}) // => "/users/1.json"
+Routes.new_user_project_path(1, {format: 'json'}) // => "/users/1/projects/new.json"
 Routes.user_project_path(1,2, {q: 'hello', custom: true}) // => "/users/1/projects/2?q=hello&custom=true"
+
 ```
 
 In order to make routes helpers available globally:
