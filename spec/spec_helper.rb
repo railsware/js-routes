@@ -15,7 +15,9 @@ end
 class App < Rails::Application
   self.routes.draw do 
     resources :inboxes do
-      resources :messages
+      resources :messages do
+        resources :attachments
+      end
     end
 
     namespace :admin do
