@@ -59,6 +59,8 @@ JS
       route.conditions[:path_info].named_captures.map do |cap|
         name = cap.first
         if !(name.to_s == "format")
+          # prepending each parameter name with underscore
+          # to prevent conflict with JS reserved words
           "_" + name.to_s.gsub(/^:/, '')
         end
       end.compact.<<("options").join(', ')
