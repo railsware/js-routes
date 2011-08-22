@@ -57,9 +57,14 @@ JS
 
 
     def build_params route
-      route.conditions[:path_info].named_captures.map do |cap|
+      route.conditions[:path_info].named_captures.to_a.sort do |cap1, cap2|
+        # Hash is not ordered in Ruby 1.8.7
+        cap1.last.first <=> cap2.last.first
+      end.map do |cap|
         name = cap.first
         if !(name.to_s == "format")
+          # prepending each parameter name with underscore
+          # to prevent conflict with JS reserved words
           "_" + name.to_s.gsub(/^:/, '')
         end
       end.compact

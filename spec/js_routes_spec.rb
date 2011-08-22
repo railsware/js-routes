@@ -38,7 +38,8 @@ describe JsRoutes do
   end
 
   it "should support routes with reserved javascript words as parameters" do
-    #TODO: this doesn't actually test what it should test because the parameter name is return_id
+    #TODO: this doesn't actually test what it should test 
+    #because the parameter name is return_id
     #need to find the real way to test
     evaljs("Routes.return_path(1)").should == "/returns/1"
   end
@@ -120,6 +121,9 @@ describe JsRoutes do
     subject { JsRoutes.generate }
     it "should have correct function signature" do
       subject.should include("inbox_message_path: function(_inbox_id, _id, options)")
+    end
+    it "should have correct function signature with Ruby 1.8.7 and unordered hash" do
+      subject.should include("inbox_message_attachment_path: function(_inbox_id, _message_id, _id, options)")
     end
   end
 
