@@ -102,6 +102,20 @@ describe JsRoutes do
     
   end
 
+  context "when arguments are objects" do
+    it "should use id property of the object" do
+      evaljs("Routes.inbox_path({id: 1})").should == "/inboxes/1"
+    end
+
+    it "should use prefer to_param property over id property" do
+      evaljs("Routes.inbox_path({id: 1, to_param: 'my'})").should == "/inboxes/my"
+    end
+
+    it "should support still support options argument" do
+      evaljs("Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true})").should == "/inboxes/my/messages/2?custom=true"
+    end
+  end
+
   describe "generated js" do
     subject { JsRoutes.generate }
     it "should have correct function signature" do

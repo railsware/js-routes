@@ -46,10 +46,11 @@ module JsRoutes
     end
 
     def build_js(route, options)
+      params = build_params route
       _ = <<-JS.strip!
   // #{route.name} => #{route.path}
-  #{route.name}_path: function(#{build_params route}) {
-  return Utils.build_path(#{path_parts(route).inspect}, arguments)
+  #{route.name}_path: function(#{params.<<("options").join(", ")}) {
+  return Utils.build_path(#{params.size}, #{path_parts(route).inspect}, arguments)
   }
 JS
     end
@@ -61,7 +62,7 @@ JS
         if !(name.to_s == "format")
           "_" + name.to_s.gsub(/^:/, '')
         end
-      end.compact.<<("options").join(', ')
+      end.compact
     end
 
 
