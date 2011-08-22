@@ -113,13 +113,16 @@ describe JsRoutes do
     end
 
     it "should support still support options argument" do
-      evaljs("Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true})").should == "/inboxes/my/messages/2?custom=true"
+      evaljs("Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true, format: 'json'})").should == "/inboxes/my/messages/2.json?custom=true"
     end
   end
 
   describe "generated js" do
     subject { JsRoutes.generate }
-    it "should have correct function signature" do
+    it "should have correct function without arguments signature" do
+      subject.should include("inboxes_path: function(options)")
+    end
+    it "should have correct function with arguments signature" do
       subject.should include("inbox_message_path: function(_inbox_id, _id, options)")
     end
     it "should have correct function signature with Ruby 1.8.7 and unordered hash" do
