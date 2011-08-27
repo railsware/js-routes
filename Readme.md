@@ -72,9 +72,10 @@ In order to make routes helpers available globally:
 jQuery.extend(window, Routes)
 ```
 
-### Alternative
+### Advantages over alternatives
 
-There are some alternatives available. Advantages of this one are:
+There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept. 
+Advantages of this one are:
 
 * Rails3 support
 * Rich options set
