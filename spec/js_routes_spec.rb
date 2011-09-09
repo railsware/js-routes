@@ -100,7 +100,6 @@ describe JsRoutes do
     it "should use this name space for routing" do
       evaljs("PHM.Routes.inbox_path").should_not be_nil
     end
-    
   end
 
   context "when arguments are objects" do
@@ -114,6 +113,22 @@ describe JsRoutes do
 
     it "should support still support options argument" do
       evaljs("Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true, format: 'json'})").should == "/inboxes/my/messages/2.json?custom=true"
+    end
+  end
+
+  context "using optional path fragments but not including them" do
+    it "should not include the optional parts" do
+      evaljs("Routes.things_path()").should == "/things"
+    end
+
+    it "should still with with the non-optional parts" do
+      evaljs("Routes.thing_path(undefined, 5)").should == "/things/5"
+    end
+  end
+
+  context "using optional path fragments and including them" do
+    it "should include the optional parts" do
+      evaljs("Routes.things_path(5)").should == "/optional/5/things"
     end
   end
 
