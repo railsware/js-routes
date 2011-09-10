@@ -122,6 +122,10 @@ describe JsRoutes do
       it "should treat undefined as non-given optional part" do
         evaljs("Routes.thing_path(undefined, 5)").should == "/things/5"
       end
+
+      it "should treat null as non-given optional part" do
+        evaljs("Routes.thing_path(null, 5)").should == "/things/5"
+      end
     end
 
     context "and including them" do
