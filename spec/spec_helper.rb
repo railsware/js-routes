@@ -25,6 +25,10 @@ class App < Rails::Application
     end
 
     resources :returns
+
+    scope "(/optional/:optional_id)" do
+      resources :things
+    end
   end
 end
 
