@@ -38,10 +38,7 @@ describe JsRoutes do
   end
 
   it "should support routes with reserved javascript words as parameters" do
-    #TODO: this doesn't actually test what it should test 
-    #because the parameter name is return_id
-    #need to find the real way to test
-    evaljs("Routes.return_path(1)").should == "/returns/1"
+    evaljs("Routes.object_path(1, 2)").should == "/returns/1/objects/2"
   end
 
   context "when exclude is specified" do
@@ -103,32 +100,34 @@ describe JsRoutes do
   end
 
   context "when arguments are objects" do
-    it "should use id property of the object" do
+    it "should use id property of the object in path" do
       evaljs("Routes.inbox_path({id: 1})").should == "/inboxes/1"
     end
 
-    it "should use prefer to_param property over id property" do
+    it "should prefer to_param property over id property" do
       evaljs("Routes.inbox_path({id: 1, to_param: 'my'})").should == "/inboxes/my"
     end
 
-    it "should support still support options argument" do
+    it "should support options argument" do
       evaljs("Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true, format: 'json'})").should == "/inboxes/my/messages/2.json?custom=true"
     end
   end
 
-  context "using optional path fragments but not including them" do
-    it "should not include the optional parts" do
-      evaljs("Routes.things_path()").should == "/things"
+  context "using optional path fragments" do
+    context "but not including them" do
+      it "should not include the optional parts" do
+        evaljs("Routes.things_path()").should == "/things"
+      end
+
+      it "should treat undefined as non-given optional part" do
+        evaljs("Routes.thing_path(undefined, 5)").should == "/things/5"
+      end
     end
 
-    it "should still with with the non-optional parts" do
-      evaljs("Routes.thing_path(undefined, 5)").should == "/things/5"
-    end
-  end
-
-  context "using optional path fragments and including them" do
-    it "should include the optional parts" do
-      evaljs("Routes.things_path(5)").should == "/optional/5/things"
+    context "and including them" do
+      it "should include the optional parts" do
+        evaljs("Routes.things_path(5)").should == "/optional/5/things"
+      end
     end
   end
 

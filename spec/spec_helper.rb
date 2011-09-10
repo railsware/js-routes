@@ -24,6 +24,9 @@ class App < Rails::Application
       resources :users
     end
 
+    scope "/returns/:return" do
+      resources :objects
+    end
     resources :returns
 
     scope "(/optional/:optional_id)" do
