@@ -1,7 +1,5 @@
 module JsRoutes
   class << self
-
-
     def generate(options = {})
       js = File.read(File.dirname(__FILE__) + "/routes.js")
       options[:namespace] ||= "Routes"
@@ -33,7 +31,7 @@ module JsRoutes
         if any_match?(route, excludes) || !any_match?(route, includes)
           nil
         else
-          build_js(route, options)
+          build_js(route)
         end
       end.compact
       
@@ -45,24 +43,30 @@ module JsRoutes
       matchers.any? {|regex| route.name =~ regex}
     end
 
-    def build_js(route, options)
-      params = build_params route
+    def build_js(route)
+      params = build_params(route)
       _ = <<-JS.strip!
   // #{route.name} => #{route.path}
   #{route.name}_path: function(#{params.<<("options").join(", ")}) {
-  return Utils.build_path(#{params.size}, #{path_parts(route).inspect}, arguments)
+  return Utils.build_path(#{params.size - 1}, #{path_parts(route).inspect}, #{optional_params(route).inspect}, arguments)
   }
 JS
     end
 
+    def optional_params(route)
+      optional_named_captures_regexp = /\?\:.+?\(\?\<(.+?)\>/
+      path_info = route.conditions[:path_info]
+      path_info.source.scan(optional_named_captures_regexp).flatten
+    end
 
-    def build_params route
+    def build_params(route)
+      optional_named_captures = optional_params(route)
       route.conditions[:path_info].named_captures.to_a.sort do |cap1, cap2|
         # Hash is not ordered in Ruby 1.8.7
         cap1.last.first <=> cap2.last.first
       end.map do |cap|
         name = cap.first
-        if !(name.to_s == "format")
+        if !(optional_named_captures.include?(name.to_s))
           # prepending each parameter name with underscore
           # to prevent conflict with JS reserved words
           "_" + name.to_s.gsub(/^:/, '')
@@ -70,11 +74,9 @@ JS
       end.compact
     end
 
-
-    def path_parts route
+    def path_parts(route)
       route.path.gsub(/\(\.:format\)$/, "").split(/:[a-z\-_]+/)
     end
-
 
     def default_file
       if Rails.version >= "3.1"
@@ -83,6 +85,5 @@ JS
         "#{Rails.root}/public/javascripts/routes.js"
       end
     end
-
   end
 end
