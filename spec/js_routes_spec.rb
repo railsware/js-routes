@@ -66,6 +66,16 @@ describe JsRoutes do
     end
   end
 
+  context "when prefix is specified" do
+    
+    let(:_options) { {:prefix => "/myprefix" } }
+
+    it "should render routing with prefix" do
+        evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
+    end
+
+  end
+
   context "when default_format is specified" do
     let(:_options) { {:default_format => "json"} }
     
@@ -73,7 +83,7 @@ describe JsRoutes do
       evaljs("Routes.inbox_path(1)").should == "/inboxes/1.json"
     end
 
-    it "should override default_format wehn spefified implicitly" do
+    it "should override default_format when spefified implicitly" do
       evaljs("Routes.inbox_path(1, {format: 'xml'})").should == "/inboxes/1.xml"
     end
 
