@@ -1,14 +1,28 @@
 module JsRoutes
+  class Options < Struct.new(:file, :namespace, :default_format, :exclude, :include); end
+
   class << self
-    def generate(options = {})
+    def setup
+      options.tap { |opts| yield(opts) if block_given? }
+    end
+
+    def options
+      @options ||= Options.new
+    end
+
+    def generate(options = nil)
+      options ||= self.options
+      namespace = options[:namespace] || "Routes"
+      default_format = options[:default_format] || ''
+
       js = File.read(File.dirname(__FILE__) + "/routes.js")
-      options[:namespace] ||= "Routes"
-      js.gsub!("NAMESPACE", options[:namespace])
-      js.gsub!("DEFAULT_FORMAT", options[:default_format].to_s)
+      js.gsub!("NAMESPACE", namespace)
+      js.gsub!("DEFAULT_FORMAT", default_format)
       js.gsub!("ROUTES", js_routes(options))
     end
 
-    def generate!(options = {})
+    def generate!(options = nil)
+      options ||= self.options
       file = options[:file] || default_file
       File.open(file, 'w') do |f|
         f.write generate(options)
@@ -21,8 +35,6 @@ module JsRoutes
 
     protected
     def js_routes(options = {})
-
-      options[:default_format] ||= ""
       excludes = options[:exclude] || []
       includes = options[:include] || //
 
