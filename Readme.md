@@ -33,12 +33,11 @@ Available options:
 * `:prefix` - String representing a url path to prepend to all paths
   * `Should be specified via :prefix => "/myprefix"`
 
-Example options usage:
+This is how you can generate separated routes files for different parts of application:
 
 ``` ruby
 JsRoutes.generate!(:file => "#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => /^admin_/, :default_format => "json")
 JsRoutes.generate!(:file => "#{path}/adm_routes.js", :namespace => "AdmRoutes", :include => /^admin_/, :default_format => "json")
-JsRoutes.generate!(:file => "#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => /^admin_/, :default_format => "json", :prefix => ENV['RAILS_RELATIVE_URL_ROOT'])
 ```
 
 In order to generate routes to string and manipulate them yourself use:
