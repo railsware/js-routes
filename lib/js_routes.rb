@@ -28,8 +28,13 @@ class JsRoutes
   end
 
   def generate!
-    File.open(@options[:file], 'w') do |f|
-      f.write generate
+    # Some libraries like devise do yet load their routes so we will wait
+    # until initialization process finish
+    # https://github.com/railsware/js-routes/issues/7
+    Rails.configuration.after_initialize do
+      File.open(@options[:file], 'w') do |f|
+        f.write generate
+      end
     end
   end
 

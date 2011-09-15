@@ -149,12 +149,30 @@ describe JsRoutes do
   end
 
   describe ".generate!" do
+
     let(:name) {  "#{File.dirname(__FILE__)}/../routes.js" }
-    it "should generate routes file" do
+
+    before(:each) do
+      # prevent warning
+      Rails.configuration.active_support.deprecation = :log
+
       FileUtils.rm_f(name)
       JsRoutes.generate!({:file => name})
-      File.exists?(name).should be_true 
     end
+
+    it "should not generate file at once" do
+      File.exists?(name).should be_false
+    end
+
+    context "after Rails initialization" do
+      before(:each) do
+        Rails.application.initialize!
+      end
+      it "should generate routes file only after rails initialization" do
+        File.exists?(name).should be_true 
+      end
+    end
+
     after(:all) do
       FileUtils.rm_f(name)
     end
