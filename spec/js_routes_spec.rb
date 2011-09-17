@@ -75,7 +75,7 @@ describe JsRoutes do
     end
 
     it "should render routing with prefix set in JavaScript" do
-      evaljs("Routes.set_prefix('/newprefix/')")
+      evaljs("Routes.options.prefix = '/newprefix/'")
       evaljs("Routes.inbox_path(1)").should == "/newprefix/inboxes/1"
     end
 
@@ -90,7 +90,7 @@ describe JsRoutes do
     end
     
     it "should render routing with prefix set in JavaScript" do
-      evaljs("Routes.set_prefix('/newprefix')")
+      evaljs("Routes.options.prefix = '/newprefix'")
       evaljs("Routes.inbox_path(1)").should == "/newprefix/inboxes/1"
     end
 

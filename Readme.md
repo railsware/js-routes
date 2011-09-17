@@ -71,7 +71,7 @@ Routes.company_path(google) // => "/companies/google"
 Setting the prefix in JavaScript
 
 ``` js
-Routes.set_prefix('/myprefix');
+Routes.options.prefix = '/myprefix';
 ```
 
 In order to make routes helpers available globally:
