@@ -74,6 +74,11 @@ describe JsRoutes do
         evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
     end
 
+    it "should render routing with prefix set in JavaScript" do
+      evaljs("Routes.options.prefix = '/newprefix/'")
+      evaljs("Routes.inbox_path(1)").should == "/newprefix/inboxes/1"
+    end
+
   end
   
   context "when prefix without trailing slash is specified" do
@@ -82,6 +87,11 @@ describe JsRoutes do
 
     it "should render routing with prefix" do
         evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
+    end
+    
+    it "should render routing with prefix set in JavaScript" do
+      evaljs("Routes.options.prefix = '/newprefix'")
+      evaljs("Routes.inbox_path(1)").should == "/newprefix/inboxes/1"
     end
 
   end
