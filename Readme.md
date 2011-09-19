@@ -68,12 +68,6 @@ var google = {id: 1, name: "Google", to_param: "google"};
 Routes.company_path(google) // => "/companies/google"
 ```
 
-Setting the prefix in JavaScript
-
-``` js
-Routes.options.prefix = '/myprefix';
-```
-
 In order to make routes helpers available globally:
 
 ``` js
