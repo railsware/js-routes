@@ -1,5 +1,11 @@
 module JsRoutes
-  class Options < Struct.new(:file, :namespace, :default_format, :exclude, :include); end
+  class Options < Struct.new(:file, 
+                             :namespace, 
+                             :default_format,
+                             :prefix,
+                             :exclude,
+                             :include)
+  end
 
   class << self
     def setup
@@ -72,10 +78,23 @@ module JsRoutes
   JS
     end
 
+    # TODO: might be possible to simplify this to use route.path
+    # instead of all this path_info.source madness
     def optional_params(route)
-      optional_named_captures_regexp = /\?\:.+?\(\?\<(.+?)\>/
-      path_info = route.conditions[:path_info]
-      path_info.source.scan(optional_named_captures_regexp).flatten
+      if RUBY_VERSION >= '1.9.2'
+        optional_named_captures_regexp = /\?\:.+?\(\?\<(.+?)\>/
+        path_info = route.conditions[:path_info]
+        path_info.source.scan(optional_named_captures_regexp).flatten
+      else
+        re = Regexp.escape("([^/.?]+)")
+        optional_named_captures_regexp = /#{re}|\(\?\:.+?\)\?/
+        path_info = route.conditions[:path_info]
+        captures = path_info.source.scan(optional_named_captures_regexp).flatten
+        named_captures = path_info.named_captures.to_a.sort {|a,b|a.last.first<=>b.last.first} 
+        captures.zip(named_captures).map do |type, (name, pos)|
+          name unless type == '([^/.?]+)'
+        end.compact
+      end
     end
 
     def build_params(route)
