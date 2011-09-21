@@ -21,10 +21,6 @@ describe JsRoutes do
     evaljs("Routes.inbox_path(1)").should == "/inboxes/1"
   end
 
-  it "should generate nested routing with one parameter" do
-    evaljs("Routes.inbox_message_path(1)").should == "/inboxes/1/messages"
-  end
-
   it "should generate nested routing" do
     evaljs("Routes.inbox_message_path(1,2)").should == "/inboxes/1/messages/2"
   end
@@ -149,18 +145,22 @@ describe JsRoutes do
         evaljs("Routes.things_path()").should == "/things"
       end
 
+      it "should not require the optional parts as arguments" do
+        evaljs("Routes.thing_path(5)").should == "/things/5"
+      end
+
       it "should treat undefined as non-given optional part" do
-        evaljs("Routes.thing_path(undefined, 5)").should == "/things/5"
+        evaljs("Routes.thing_path(5,{optional_id:undefined})").should == "/things/5"
       end
 
       it "should treat null as non-given optional part" do
-        evaljs("Routes.thing_path(null, 5)").should == "/things/5"
+        evaljs("Routes.thing_path(5,{optional_id:null})").should == "/things/5"
       end
     end
 
     context "and including them" do
       it "should include the optional parts" do
-        evaljs("Routes.things_path(5)").should == "/optional/5/things"
+        evaljs("Routes.things_path({optional_id:5})").should == "/optional/5/things"
       end
     end
   end
