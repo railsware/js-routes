@@ -30,8 +30,10 @@ Available options:
   * Note that regexp applied to **named route** not to *URL*
 * `:namespace` - global object used to access routes. Default: `Routes`
   * Supports nested namespace like `MyProject.routes`
+* `:prefix` - String representing a url path to prepend to all paths
+  * `Should be specified via :prefix => "/myprefix"`
 
-Example options usage:
+This is how you can generate separated routes files for different parts of application:
 
 ``` ruby
 JsRoutes.generate!(:file => "#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => /^admin_/, :default_format => "json")

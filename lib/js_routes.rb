@@ -14,18 +14,25 @@ module JsRoutes
       options ||= self.options
       namespace = options[:namespace] || "Routes"
       default_format = options[:default_format] || ''
+      prefix = options[:prefix] || ''
 
       js = File.read(File.dirname(__FILE__) + "/routes.js")
       js.gsub!("NAMESPACE", namespace)
       js.gsub!("DEFAULT_FORMAT", default_format)
+      js.gsub!("PREFIX", prefix)
       js.gsub!("ROUTES", js_routes(options))
     end
 
     def generate!(options = nil)
-      options ||= self.options
-      file = options[:file] || default_file
-      File.open(file, 'w') do |f|
-        f.write generate(options)
+      # Some libraries like devise do yet load their routes so we will wait
+      # until initialization process finish
+      # https://github.com/railsware/js-routes/issues/7
+      Rails.configuration.after_initialize do
+        options ||= self.options
+        file = options[:file] || default_file
+        File.open(file, 'w') do |f|
+          f.write generate(options)
+        end
       end
     end
 
@@ -62,7 +69,7 @@ module JsRoutes
   #{route.name}_path: function(#{params.<<("options").join(", ")}) {
   return Utils.build_path(#{params.size - 1}, #{path_parts(route).inspect}, #{optional_params(route).inspect}, arguments)
   }
-JS
+  JS
     end
 
     def optional_params(route)

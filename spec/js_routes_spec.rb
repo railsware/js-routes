@@ -66,6 +66,36 @@ describe JsRoutes do
     end
   end
 
+  context "when prefix with trailing slash is specified" do
+    
+    let(:_options) { {:prefix => "/myprefix/" } }
+
+    it "should render routing with prefix" do
+        evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
+    end
+
+    it "should render routing with prefix set in JavaScript" do
+      evaljs("Routes.options.prefix = '/newprefix/'")
+      evaljs("Routes.inbox_path(1)").should == "/newprefix/inboxes/1"
+    end
+
+  end
+  
+  context "when prefix without trailing slash is specified" do
+    
+    let(:_options) { {:prefix => "/myprefix" } }
+
+    it "should render routing with prefix" do
+      evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
+    end
+    
+    it "should render routing with prefix set in JavaScript" do
+      evaljs("Routes.options.prefix = '/newprefix'")
+      evaljs("Routes.inbox_path(1)").should == "/newprefix/inboxes/1"
+    end
+
+  end
+
   context "when default_format is specified" do
     let(:_options) { {:default_format => "json"} }
     
@@ -73,7 +103,7 @@ describe JsRoutes do
       evaljs("Routes.inbox_path(1)").should == "/inboxes/1.json"
     end
 
-    it "should override default_format wehn spefified implicitly" do
+    it "should override default_format when spefified implicitly" do
       evaljs("Routes.inbox_path(1, {format: 'xml'})").should == "/inboxes/1.xml"
     end
 
@@ -138,23 +168,41 @@ describe JsRoutes do
   describe "generated js" do
     subject { JsRoutes.generate }
     it "should have correct function without arguments signature" do
-      subject.should include("inboxes_path: function(options)")
+      should include("inboxes_path: function(options)")
     end
     it "should have correct function with arguments signature" do
-      subject.should include("inbox_message_path: function(_inbox_id, _id, options)")
+      should include("inbox_message_path: function(_inbox_id, _id, options)")
     end
     it "should have correct function signature with Ruby 1.8.7 and unordered hash" do
-      subject.should include("inbox_message_attachment_path: function(_inbox_id, _message_id, _id, options)")
+      should include("inbox_message_attachment_path: function(_inbox_id, _message_id, _id, options)")
     end
   end
 
   describe ".generate!" do
+
     let(:name) {  "#{File.dirname(__FILE__)}/../routes.js" }
-    it "should generate routes file" do
+
+    before(:each) do
+      # prevent warning
+      Rails.configuration.active_support.deprecation = :log
+
       FileUtils.rm_f(name)
       JsRoutes.generate!({:file => name})
-      File.exists?(name).should be_true 
     end
+
+    it "should not generate file at once" do
+      File.exists?(name).should be_false
+    end
+
+    context "after Rails initialization" do
+      before(:each) do
+        Rails.application.initialize!
+      end
+      it "should generate routes file only after rails initialization" do
+        File.exists?(name).should be_true 
+      end
+    end
+
     after(:all) do
       FileUtils.rm_f(name)
     end
