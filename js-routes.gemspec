@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bogdan Gusiev"]
-  s.date = %q{2011-09-12}
+  s.date = %q{2011-09-21}
   s.description = %q{Generates javascript file that defines all Rails named routes as javascript helpers}
   s.email = %q{agresso@gmail.com}
   s.extra_rdoc_files = [
@@ -24,9 +24,10 @@ Gem::Specification.new do |s|
     "Rakefile",
     "Readme.md",
     "VERSION",
+    "app/assets/javascripts/js-routes.js.erb",
     "js-routes.gemspec",
+    "lib/js-routes.rb",
     "lib/js_routes.rb",
-    "lib/jsroutes.rb",
     "lib/routes.js",
     "lib/tasks/js_routes.rake",
     "spec/js_routes_spec.rb",
