@@ -2,7 +2,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 require 'js-routes'
-require 'rails'
+require 'rails/all'
 require "v8"
 require "active_support/core_ext/hash/slice"
 
