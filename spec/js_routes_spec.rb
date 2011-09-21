@@ -86,7 +86,7 @@ describe JsRoutes do
     let(:_options) { {:prefix => "/myprefix" } }
 
     it "should render routing with prefix" do
-        evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
+      evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
     end
     
     it "should render routing with prefix set in JavaScript" do
@@ -168,13 +168,13 @@ describe JsRoutes do
   describe "generated js" do
     subject { JsRoutes.generate }
     it "should have correct function without arguments signature" do
-      subject.should include("inboxes_path: function(options)")
+      should include("inboxes_path: function(options)")
     end
     it "should have correct function with arguments signature" do
-      subject.should include("inbox_message_path: function(_inbox_id, _id, options)")
+      should include("inbox_message_path: function(_inbox_id, _id, options)")
     end
     it "should have correct function signature with Ruby 1.8.7 and unordered hash" do
-      subject.should include("inbox_message_attachment_path: function(_inbox_id, _message_id, _id, options)")
+      should include("inbox_message_attachment_path: function(_inbox_id, _message_id, _id, options)")
     end
   end
 
