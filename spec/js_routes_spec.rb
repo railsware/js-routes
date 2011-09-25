@@ -195,11 +195,52 @@ describe JsRoutes do
     end
 
     context "after Rails initialization" do
-      before(:each) do
+      before(:all) do
         Rails.application.initialize!
       end
       it "should generate routes file only after rails initialization" do
         File.exists?(name).should be_true 
+      end
+
+      if Rails.version >= "3.1"
+        before(:all) do
+          @test_asset_path = Rails.root.join('app','assets','javascripts','test.js')
+          File.open(@test_asset_path,'w') do |f|
+            f.puts "function() {}"
+          end
+        end
+        after(:all) do
+          FileUtils.rm_f(@test_asset_path)
+        end
+
+        it "should have registered a preprocessor" do
+          pps = Rails.application.assets.preprocessors
+          js_pps = pps['application/javascript']
+          js_pps.map{|pp| pp.name }.include?('Sprockets::Processor (routes_dependent)').should be_true
+        end
+
+        context "the preprocessor" do
+          context "when dealing with js-routes.js" do
+            it "should depend on routes.rb" do
+              ctx = Sprockets::Context.new(Rails.application.assets,
+                                           'js-routes.js',
+                                           Pathname.new('js-routes.js'))
+              ctx.should_receive(:depend_on).with(Rails.root.join('config','routes.rb'))
+              ctx.evaluate('js-routes.js')
+            end
+          end
+
+          context "when not dealing with js-routes.js" do
+            it "should not depend on routes.rb" do
+              ctx = Sprockets::Context.new(Rails.application.assets,
+                                           'test.js',
+                                           @test_asset_path)
+              ctx.should_not_receive(:depend_on)
+              ctx.evaluate('test.js')
+            end
+          end
+
+        end
       end
     end
 
