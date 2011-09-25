@@ -1,5 +1,5 @@
 require "js_routes"
-module JsRoutes
+class JsRoutes
   if defined?(Rails) && Rails.version >= "3.1"
     class Engine < Rails::Engine
 
