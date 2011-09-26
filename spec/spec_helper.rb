@@ -1,8 +1,8 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
-require 'js-routes'
 require 'rails/all'
+require 'js-routes'
 require "v8"
 require "active_support/core_ext/hash/slice"
 
@@ -13,6 +13,11 @@ end
 
 
 class App < Rails::Application
+  if Rails.version >= '3.1'
+    # Enable the asset pipeline
+    config.assets.enabled = true
+  end
+
   self.routes.draw do 
     resources :inboxes do
       resources :messages do

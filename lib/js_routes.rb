@@ -1,15 +1,52 @@
 class JsRoutes
 
   #
+  # OPTIONS
+  #
+
+  DEFAULT_PATH = if Rails.version >= "3.1"
+                   File.join('app','assets','javascripts','routes.js')
+                 else
+                   File.join('public','javascripts','routes.js')
+                 end
+
+  DEFAULTS = {
+    :namespace => "Routes",
+    :default_format => "",
+    :exclude => [],
+    :include => //,
+    :file => DEFAULT_PATH,
+    :prefix => ""
+  }
+
+  class Options < Struct.new(*DEFAULTS.keys)
+    def to_hash
+      Hash[*members.zip(values).flatten(1)].symbolize_keys
+    end
+  end
+
+  #
   # API
   #
 
-  def self.generate(options = {})
-    self.new(options).generate
-  end
+  class << self
+    def setup
+      options.tap { |opts| yield(opts) if block_given? }
+    end
 
-  def self.generate!(options = {})
-    self.new(options).generate!
+    def options
+      @options ||= Options.new.tap do |opts|
+        DEFAULTS.each_pair {|k,v| opts[k] = v}
+      end
+    end
+
+    def generate(opts = {})
+      new(opts).generate
+    end
+
+    def generate!(opts = {})
+      new(opts).generate!
+    end
   end
 
   #
@@ -17,7 +54,7 @@ class JsRoutes
   #
 
   def initialize(options = {})
-    @options = default_options.merge(options)
+    @options = self.class.options.to_hash.merge(options)
   end
 
   def generate
@@ -33,7 +70,7 @@ class JsRoutes
     # until initialization process finish
     # https://github.com/railsware/js-routes/issues/7
     Rails.configuration.after_initialize do
-      File.open(@options[:file], 'w') do |f|
+      File.open(Rails.root.join(@options[:file]), 'w') do |f|
         f.write generate
       end
     end
@@ -88,24 +125,4 @@ class JsRoutes
   def path_parts route
     route.path.gsub(/\(\.:format\)$/, "").split(/:[a-z\-_]+/)
   end
-
-  def default_options 
-    {
-      :namespace => "Routes",
-      :default_format => "",
-      :exclude => [],
-      :include => //,
-      :file => default_file,
-      :prefix => ""
-    }
-  end
-
-  def default_file
-    if Rails.version >= "3.1"
-      "#{Rails.root}/app/assets/javascripts/routes.js"
-    else
-      "#{Rails.root}/public/javascripts/routes.js"
-    end
-  end
-
 end
