@@ -40,6 +40,8 @@ class App < Rails::Application
   end
 end
 
+# prevent warning
+Rails.configuration.active_support.deprecation = :log
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.

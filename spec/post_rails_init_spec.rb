@@ -5,8 +5,6 @@ describe "after Rails initialization" do
   let(:name) {  "#{File.dirname(__FILE__)}/../routes.js" }
 
   before(:all) do
-    # prevent warning
-    Rails.configuration.active_support.deprecation = :log
 
     FileUtils.rm_f(name)
     JsRoutes.generate!({:file => name})
