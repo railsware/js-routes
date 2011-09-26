@@ -30,8 +30,8 @@ class JsRoutes
   #
 
   class << self
-    def setup
-      options.tap { |opts| yield(opts) if block_given? }
+    def setup(&block)
+      options.tap(&block) if block
     end
 
     def options
@@ -66,7 +66,7 @@ class JsRoutes
   end
 
   def generate!
-    # Some libraries like devise do yet load their routes so we will wait
+    # Some libraries like Devise do not yet loaded their routes so we will wait
     # until initialization process finish
     # https://github.com/railsware/js-routes/issues/7
     Rails.configuration.after_initialize do
