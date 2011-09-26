@@ -25,14 +25,17 @@ describe "after Rails initialization" do
   if Rails.version >= "3.1"
     context "JsRoutes::Engine" do
 
+      let(:test_asset_path) {
+        Rails.root.join('app','assets','javascripts','test.js')
+      }
+
       before(:all) do
-        @test_asset_path = Rails.root.join('app','assets','javascripts','test.js')
-        File.open(@test_asset_path,'w') do |f|
+        File.open(test_asset_path,'w') do |f|
           f.puts "function() {}"
         end
       end
       after(:all) do
-        FileUtils.rm_f(@test_asset_path)
+        FileUtils.rm_f(test_asset_path)
       end
 
       it "should have registered a preprocessor" do
@@ -56,7 +59,7 @@ describe "after Rails initialization" do
           it "should not depend on routes.rb" do
             ctx = Sprockets::Context.new(Rails.application.assets,
                                          'test.js',
-                                         @test_asset_path)
+                                         test_asset_path)
             ctx.should_not_receive(:depend_on)
             ctx.evaluate('test.js')
           end
