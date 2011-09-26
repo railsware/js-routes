@@ -41,6 +41,20 @@ describe JsRoutes do
     evaljs("Routes.object_path(1, 2)").should == "/returns/1/objects/2"
   end
 
+  context "when wrong parameters given" do
+    
+    it "should throw Exception if not enough parameters" do
+      lambda {
+        evaljs("Routes.inbox_path()")
+      }.should raise_error(V8::JSError)
+    end
+    it "should throw Exception if required parameter is not defined" do
+      lambda {
+        evaljs("Routes.inbox_path(null)")
+      }.should raise_error(V8::JSError)
+    end
+  end
+
   context "when exclude is specified" do
     
     let(:_options) { {:exclude => /^admin_/} }
