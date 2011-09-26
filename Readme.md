@@ -7,7 +7,7 @@ Generates javascript file that defines all Rails named routes as javascript help
 Your Rails Gemfile:
 
 ``` ruby
-gem "js-routes", :require => 'js_routes'
+gem "js-routes"
 ```
 
 Your application initializer, like `config/initializers/jsroutes.rb`:
