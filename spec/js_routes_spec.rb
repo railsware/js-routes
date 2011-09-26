@@ -190,22 +190,12 @@ describe JsRoutes do
       JsRoutes.generate!({:file => name})
     end
 
-    it "should not generate file at once" do
+    it "should not generate file before initialization" do
       File.exists?(name).should be_false
-    end
-
-    context "after Rails initialization" do
-      before(:each) do
-        Rails.application.initialize!
-      end
-      it "should generate routes file only after rails initialization" do
-        File.exists?(name).should be_true 
-      end
     end
 
     after(:all) do
       FileUtils.rm_f(name)
     end
   end
-
 end
