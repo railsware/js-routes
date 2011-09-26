@@ -21,7 +21,7 @@ class JsRoutes
 
   class Options < Struct.new(*DEFAULTS.keys)
     def to_hash
-      Hash[*members.zip(values).flatten(1)]
+      Hash[*members.zip(values).flatten(1)].symbolize_keys
     end
   end
 
