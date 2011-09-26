@@ -91,4 +91,6 @@ Advantages of this one are:
 * Support Rails `#to_param` convention for seo optimized paths
 * Well tested
 
+#### Thanks to [Contributors](https://github.com/railsware/js-routes/contributors)
+
 #### Have fun 
