@@ -100,8 +100,8 @@ class JsRoutes
     params = build_params route
     _ = <<-JS.strip!
   // #{route.name} => #{route.path}
-  #{route.name}_path: function(#{params.<<("options").join(", ")}) {
-  return Utils.build_path(#{params.size - 1}, #{path_parts(route).inspect}, #{optional_params(route).inspect}, arguments)
+  #{route.name}_path: function(#{(params + ["options"]).join(", ")}) {
+  return Utils.build_path(#{params.size}, #{path_parts(route).inspect}, #{optional_params(route).inspect}, arguments)
   }
   JS
   end
