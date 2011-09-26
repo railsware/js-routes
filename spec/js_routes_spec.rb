@@ -53,6 +53,12 @@ describe JsRoutes do
         evaljs("Routes.inbox_path(null)")
       }.should raise_error(V8::JSError)
     end
+
+    it "should throw Exceptions if when there is too many parameters" do
+      lambda {
+        evaljs("Routes.inbox_path(1,2)")
+      }.should raise_error(V8::JSError)
+    end
   end
 
   context "when exclude is specified" do
