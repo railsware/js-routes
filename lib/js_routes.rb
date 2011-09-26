@@ -64,19 +64,38 @@ class JsRoutes
     _ = <<-JS.strip!
   // #{route.name} => #{route.path}
   #{route.name}_path: function(#{params.<<("options").join(", ")}) {
-  return Utils.build_path(#{params.size}, #{path_parts(route).inspect}, arguments)
+  return Utils.build_path(#{params.size - 1}, #{path_parts(route).inspect}, #{optional_params(route).inspect}, arguments)
   }
   JS
   end
 
+  # TODO: might be possible to simplify this to use route.path
+  # instead of all this path_info.source madness
+  def optional_params(route)
+    if RUBY_VERSION >= '1.9.2'
+      optional_named_captures_regexp = /\?\:.+?\(\?\<(.+?)\>/
+      path_info = route.conditions[:path_info]
+      path_info.source.scan(optional_named_captures_regexp).flatten
+    else
+      re = Regexp.escape("([^/.?]+)")
+      optional_named_captures_regexp = /#{re}|\(\?\:.+?\)\?/
+      path_info = route.conditions[:path_info]
+      captures = path_info.source.scan(optional_named_captures_regexp).flatten
+      named_captures = path_info.named_captures.to_a.sort {|a,b|a.last.first<=>b.last.first} 
+      captures.zip(named_captures).map do |type, (name, pos)|
+        name unless type == '([^/.?]+)'
+      end.compact
+    end
+  end
 
   def build_params route
+    optional_named_captures = optional_params(route)
     route.conditions[:path_info].named_captures.to_a.sort do |cap1, cap2|
       # Hash is not ordered in Ruby 1.8.7
       cap1.last.first <=> cap2.last.first
     end.map do |cap|
       name = cap.first
-      if !(name.to_s == "format")
+        if !(optional_named_captures.include?(name.to_s))
         # prepending each parameter name with underscore
         # to prevent conflict with JS reserved words
         "_" + name.to_s.gsub(/^:/, '')
