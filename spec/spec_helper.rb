@@ -4,12 +4,19 @@ require 'rspec'
 require 'rails/all'
 require 'js-routes'
 require "v8"
+require "cgi"
 require "active_support/core_ext/hash/slice"
 
-def evaljs(string)
+def jscontext
   @context ||= V8::Context.new
-  @context.eval(string)
 end
+
+def evaljs(string)
+  jscontext.eval(string)
+end
+
+
+
 
 
 class App < Rails::Application
@@ -38,6 +45,7 @@ class App < Rails::Application
       resources :things
     end
   end
+
 end
 
 # prevent warning
@@ -49,4 +57,9 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
   
+  config.before(:each) do
+    evaljs("var window = this;")
+    jscontext[:cgi] = CGI
+    evaljs("function encodeURIComponent(string) {return cgi.escape(string);}")
+  end
 end

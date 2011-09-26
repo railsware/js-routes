@@ -5,7 +5,6 @@ require "fileutils"
 describe JsRoutes do
   before(:each) do
     Rails.application.stub!(:reload_routes!).and_return(true)
-    evaljs("var window = this;")
     evaljs(_presetup)
     evaljs(JsRoutes.generate(_options))
   end
@@ -35,6 +34,10 @@ describe JsRoutes do
 
   it "should support get parameters" do
     evaljs("Routes.inbox_path(1, {format: 'json', q: 'hello', lang: 'ua'})").should == "/inboxes/1.json?q=hello&lang=ua"
+  end
+
+  it "should escape get parameters" do
+    evaljs("Routes.inboxes_path({uri: 'http://example.com'})").should == "/inboxes?uri=http%3A%2F%2Fexample.com"
   end
 
   it "should support routes with reserved javascript words as parameters" do
