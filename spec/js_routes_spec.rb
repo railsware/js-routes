@@ -12,36 +12,41 @@ describe JsRoutes do
   let(:_presetup) { "this;" }
   let(:_options) { {} }
 
-  it "should generate collection routing" do
-    evaljs("Routes.inboxes_path()").should == "/inboxes"
-  end
+  let(:routes) { App.routes.url_helpers }
 
-  it "should generate member routing" do
-    evaljs("Routes.inbox_path(1)").should == "/inboxes/1"
-  end
+  describe "compatibility with Rails routes" do
 
-  it "should generate nested routing with one parameter" do
-    evaljs("Routes.inbox_messages_path(1)").should == "/inboxes/1/messages"
-  end
+    it "should generate collection routing" do
+      evaljs("Routes.inboxes_path()").should == routes.inboxes_path()
+    end
 
-  it "should generate nested routing" do
-    evaljs("Routes.inbox_message_path(1,2)").should == "/inboxes/1/messages/2"
-  end
+    it "should generate member routing" do
+      evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
+    end
 
-  it "should generate routing with format" do
-    evaljs("Routes.inbox_path(1, {format: 'json'})").should == "/inboxes/1.json"
-  end
+    it "should generate nested routing with one parameter" do
+      evaljs("Routes.inbox_messages_path(1)").should == routes.inbox_messages_path(1)
+    end
 
-  it "should support get parameters" do
-    evaljs("Routes.inbox_path(1, {format: 'json', q: 'hello', lang: 'ua'})").should == "/inboxes/1.json?q=hello&lang=ua"
-  end
+    it "should generate nested routing" do
+      evaljs("Routes.inbox_message_path(1,2)").should == routes.inbox_message_path(1, 2)
+    end
 
-  it "should escape get parameters" do
-    evaljs("Routes.inboxes_path({uri: 'http://example.com'})").should == "/inboxes?uri=http%3A%2F%2Fexample.com"
-  end
+    it "should generate routing with format" do
+      evaljs("Routes.inbox_path(1, {format: 'json'})").should == routes.inbox_path(1, :format => "json")
+    end
 
-  it "should support routes with reserved javascript words as parameters" do
-    evaljs("Routes.object_path(1, 2)").should == "/returns/1/objects/2"
+    it "should support get parameters" do
+      evaljs("Routes.inbox_path(1, {format: 'json', lang: 'ua', q: 'hello'})").should == routes.inbox_path(1, :lang => "ua", :q => "hello", :format => "json")
+    end
+
+    it "should escape get parameters" do
+      evaljs("Routes.inboxes_path({uri: 'http://example.com'})").should == routes.inboxes_path(:uri => 'http://example.com')
+    end
+
+    it "should support routes with reserved javascript words as parameters" do
+      evaljs("Routes.object_path(1, 2)").should == routes.object_path(1,2)
+    end
   end
 
   context "when wrong parameters given" do
@@ -94,12 +99,12 @@ describe JsRoutes do
     let(:_options) { {:prefix => "/myprefix/" } }
 
     it "should render routing with prefix" do
-        evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
+        evaljs("Routes.inbox_path(1)").should == "/myprefix#{routes.inbox_path(1)}"
     end
 
     it "should render routing with prefix set in JavaScript" do
       evaljs("Routes.options.prefix = '/newprefix/'")
-      evaljs("Routes.inbox_path(1)").should == "/newprefix/inboxes/1"
+      evaljs("Routes.inbox_path(1)").should == "/newprefix#{routes.inbox_path(1)}"
     end
 
   end
@@ -109,12 +114,12 @@ describe JsRoutes do
     let(:_options) { {:prefix => "/myprefix" } }
 
     it "should render routing with prefix" do
-      evaljs("Routes.inbox_path(1)").should == "/myprefix/inboxes/1"
+      evaljs("Routes.inbox_path(1)").should == "/myprefix#{routes.inbox_path(1)}"
     end
     
     it "should render routing with prefix set in JavaScript" do
       evaljs("Routes.options.prefix = '/newprefix'")
-      evaljs("Routes.inbox_path(1)").should == "/newprefix/inboxes/1"
+      evaljs("Routes.inbox_path(1)").should == "/newprefix#{routes.inbox_path(1)}"
     end
 
   end
@@ -123,15 +128,15 @@ describe JsRoutes do
     let(:_options) { {:default_format => "json"} }
     
     it "should render routing with default_format" do
-      evaljs("Routes.inbox_path(1)").should == "/inboxes/1.json"
+      evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1, :format => "json")
     end
 
     it "should override default_format when spefified implicitly" do
-      evaljs("Routes.inbox_path(1, {format: 'xml'})").should == "/inboxes/1.xml"
+      evaljs("Routes.inbox_path(1, {format: 'xml'})").should == routes.inbox_path(1, :format => "xml")
     end
 
     it "should override nullify implicitly when specified implicitly" do
-      evaljs("Routes.inbox_path(1, {format: null})").should == "/inboxes/1"
+      evaljs("Routes.inbox_path(1, {format: null})").should == routes.inbox_path(1)
     end
 
   end
@@ -153,41 +158,46 @@ describe JsRoutes do
   end
 
   context "when arguments are objects" do
+
+    let(:inbox) {Struct.new(:id, :to_param).new(1,"my")}
+
     it "should use id property of the object in path" do
-      evaljs("Routes.inbox_path({id: 1})").should == "/inboxes/1"
+      evaljs("Routes.inbox_path({id: 1})").should == routes.inbox_path(1)
     end
 
     it "should prefer to_param property over id property" do
-      evaljs("Routes.inbox_path({id: 1, to_param: 'my'})").should == "/inboxes/my"
+      evaljs("Routes.inbox_path({id: 1, to_param: 'my'})").should == routes.inbox_path(inbox)
     end
 
     it "should support options argument" do
-      evaljs("Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true, format: 'json'})").should == "/inboxes/my/messages/2.json?custom=true"
+      evaljs(
+        "Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true, format: 'json'})"
+      ).should == routes.inbox_message_path(inbox, 2, :custom => true, :format => "json")
     end
   end
 
   context "using optional path fragments" do
     context "but not including them" do
       it "should not include the optional parts" do
-        evaljs("Routes.things_path()").should == "/things"
+        evaljs("Routes.things_path()").should == routes.things_path
       end
 
       it "should not require the optional parts as arguments" do
-        evaljs("Routes.thing_path(5)").should == "/things/5"
+        evaljs("Routes.thing_path(5)").should == routes.thing_path(nil, 5)
       end
 
       it "should treat undefined as non-given optional part" do
-        evaljs("Routes.thing_path(5, {optional_id: undefined})").should == "/things/5"
+        evaljs("Routes.thing_path(5, {optional_id: undefined})").should == routes.thing_path(5, :optional_id => nil)
       end
 
       it "should treat null as non-given optional part" do
-        evaljs("Routes.thing_path(5, {optional_id: null})").should == "/things/5"
+        evaljs("Routes.thing_path(5, {optional_id: null})").should == routes.thing_path(5, :optional_id => nil)
       end
     end
 
     context "and including them" do
       it "should include the optional parts" do
-        evaljs("Routes.things_path({optional_id: 5})").should == "/optional/5/things"
+        evaljs("Routes.things_path({optional_id: 5})").should == routes.things_path(:optional_id => 5)
       end
     end
   end
