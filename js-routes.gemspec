@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{js-routes}
-  s.version = "0.6.2"
+  s.version = "0.7.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = [%q{Bogdan Gusiev}]
-  s.date = %q{2011-09-25}
+  s.authors = ["Bogdan Gusiev"]
+  s.date = %q{2011-09-29}
   s.description = %q{Generates javascript file that defines all Rails named routes as javascript helpers}
   s.email = %q{agresso@gmail.com}
   s.extra_rdoc_files = [
@@ -28,15 +28,17 @@ Gem::Specification.new do |s|
     "js-routes.gemspec",
     "lib/js-routes.rb",
     "lib/js_routes.rb",
+    "lib/js_routes/engine.rb",
     "lib/routes.js",
     "lib/tasks/js_routes.rake",
     "spec/js_routes_spec.rb",
+    "spec/post_rails_init_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/railsware/js-routes}
-  s.licenses = [%q{MIT}]
-  s.require_paths = [%q{lib}]
-  s.rubygems_version = %q{1.8.6}
+  s.licenses = ["MIT"]
+  s.require_paths = ["lib"]
+  s.rubygems_version = %q{1.6.2}
   s.summary = %q{Brings Rails named routes to javascript}
 
   if s.respond_to? :specification_version then
