@@ -10,12 +10,6 @@ if defined?(Rails) && Rails.version >= "3.1"
           data
         end
       end
-
-      initializer 'js-routes.setup', :group => :all do |app|
-        # load up the js-routes configuration file (should one exist)
-        config_file = Rails.root.join('config','js-routes.rb')
-        JsRoutes.instance_eval(IO.read(config_file)) if File.exist?(config_file)
-      end
     end
   end
 end
