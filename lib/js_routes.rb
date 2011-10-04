@@ -81,7 +81,7 @@ class JsRoutes
   def js_routes
     Rails.application.reload_routes!
     js_routes = Rails.application.routes.named_routes.routes.map do |_, route|
-      if any_match?(route, @options[:exclude]) || !any_match?(route, @options[:include])
+      if any_match?(route, @options[:exclude]) ^ any_match?(route, @options[:include])
         nil
       else
         build_js(route)
