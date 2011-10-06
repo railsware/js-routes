@@ -41,7 +41,7 @@ describe "after Rails initialization" do
       it "should have registered a preprocessor" do
         pps = Rails.application.assets.preprocessors
         js_pps = pps['application/javascript']
-        js_pps.map(&:name).should include('Sprockets::Processor (routes_dependent)')
+        js_pps.map(&:name).should include('Sprockets::Processor (js-routes_dependent_on_routes)')
       end
 
       context "the preprocessor" do
