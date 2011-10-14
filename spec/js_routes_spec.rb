@@ -47,6 +47,10 @@ describe JsRoutes do
     it "should support routes with reserved javascript words as parameters" do
       evaljs("Routes.object_path(1, 2)").should == routes.object_path(1,2)
     end
+
+    it "should support url anchor given as parameter" do
+      evaljs("Routes.inbox_path(1, {anchor: 'hello'})").should == routes.inbox_path(1, :anchor => "hello")
+    end
   end
 
   context "when wrong parameters given" do
