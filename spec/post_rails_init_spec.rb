@@ -53,6 +53,40 @@ describe "after Rails initialization" do
             ctx.should_receive(:depend_on).with(Rails.root.join('config','routes.rb'))
             ctx.evaluate('js-routes.js')
           end
+
+          context 'with Rails 3.1.0' do
+            it "should render some javascript" do
+              Rails.stub!("version").and_return "3.1.0"
+              Rails.application.config.assets.initialize_on_precompile = false
+
+              ctx = Sprockets::Context.new(Rails.application.assets,
+                                           'js-routes.js',
+                                           Pathname.new('js-routes.js'))
+              ctx.evaluate('js-routes.js').should =~ /window\.Routes/
+            end
+          end
+
+          context "with Rails 3.1.1" do
+            it "should render some javascript when initialize_on_precompile is true" do
+              Rails.stub!("version").and_return "3.1.1"
+              Rails.application.config.assets.initialize_on_precompile = true
+
+              ctx = Sprockets::Context.new(Rails.application.assets,
+                                           'js-routes.js',
+                                           Pathname.new('js-routes.js'))
+              ctx.evaluate('js-routes.js').should =~ /window\.Routes/
+            end
+
+            it "should raise an exception when initialize_on_precompile is false" do
+              Rails.stub!("version").and_return "3.1.1"
+              Rails.application.config.assets.initialize_on_precompile = false
+
+              ctx = Sprockets::Context.new(Rails.application.assets,
+                                           'js-routes.js',
+                                           Pathname.new('js-routes.js'))
+              lambda { ctx.evaluate('js-routes.js') }.should raise_error(/Cannot precompile/)
+            end
+          end
         end
 
         context "when not dealing with js-routes.js" do

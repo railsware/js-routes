@@ -52,9 +52,10 @@ class JsRoutes
     # full environment will be available during asset compilation.
     # This is required to ensure routes are loaded.
     def assert_usable_configuration!
-      unless @usable_configuration ||= Rails.version <= "3.1.0" || Rails.application.config.assets.initialize_on_precompile
+      if Rails.version > "3.1.0" && !Rails.application.config.assets.initialize_on_precompile 
         raise("Cannot precompile js-routes unless environment is initialized. Please set config.assets.initialize_on_precompile to true.")
       end
+      true
     end
   end
 
