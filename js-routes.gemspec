@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bogdan Gusiev"]
-  s.date = %q{2011-10-06}
+  s.date = %q{2011-11-05}
   s.description = %q{Generates javascript file that defines all Rails named routes as javascript helpers}
   s.email = %q{agresso@gmail.com}
   s.extra_rdoc_files = [
