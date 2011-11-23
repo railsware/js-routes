@@ -3,9 +3,6 @@ namespace :js do
   task :routes => :environment do
     require "js-routes"
 
-    # Hack for actually load the routes (taken from railties console/app.rb)
-    ActionDispatch::Callbacks.new(lambda {}, false)
-
     JsRoutes.generate!
   end
 end
