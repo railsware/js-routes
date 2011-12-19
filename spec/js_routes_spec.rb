@@ -40,6 +40,10 @@ describe JsRoutes do
       evaljs("Routes.inbox_path(1, {format: 'json', lang: 'ua', q: 'hello'})").should == routes.inbox_path(1, :lang => "ua", :q => "hello", :format => "json")
     end
 
+    it "should support null and undefined parameters" do
+      evaljs("Routes.inboxes_path({uri: null, key: undefined})").should == routes.inboxes_path(:uri => nil, :key => nil)
+    end
+
     it "should escape get parameters" do
       evaljs("Routes.inboxes_path({uri: 'http://example.com'})").should == routes.inboxes_path(:uri => 'http://example.com')
     end
