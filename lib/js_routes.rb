@@ -128,7 +128,7 @@ class JsRoutes
       optional_named_captures_regexp = /#{re}|\(\?\:.+?\)\?/
       path_info = route.conditions[:path_info]
       captures = path_info.source.scan(optional_named_captures_regexp).flatten
-      named_captures = path_info.named_captures.to_a.sort {|a,b|a.last.first<=>b.last.first} 
+      named_captures = path_info.named_captures.to_a.sort_by {|cap|cap.last.first} 
       captures.zip(named_captures).map do |type, (name, pos)|
         name unless type == '([^/.?]+)'
       end.compact
@@ -137,9 +137,9 @@ class JsRoutes
 
   def build_params route
     optional_named_captures = optional_params(route)
-    route.conditions[:path_info].named_captures.to_a.sort do |cap1, cap2|
+    route.conditions[:path_info].named_captures.to_a.sort_by do |cap1|
       # Hash is not ordered in Ruby 1.8.7
-      cap1.last.first <=> cap2.last.first
+      cap1.last.first
     end.map do |cap|
       name = cap.first
         if !(optional_named_captures.include?(name.to_s))
