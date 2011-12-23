@@ -145,7 +145,7 @@ class JsRoutes
         if !(optional_named_captures.include?(name.to_s))
         # prepending each parameter name with underscore
         # to prevent conflict with JS reserved words
-        "_" + name.to_s.gsub(/^:/, '')
+        "_" + name.to_s
       end
     end.compact
   end
