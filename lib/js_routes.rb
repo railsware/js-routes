@@ -119,15 +119,15 @@ class JsRoutes
   # TODO: might be possible to simplify this to use route.path
   # instead of all this path_info.source madness
   def optional_params(route)
+    path_info = route.conditions[:path_info]
+    path_info_source = path_info.source
     if RUBY_VERSION >= '1.9.2'
       optional_named_captures_regexp = /\?\:.+?\(\?\<(.+?)\>/
-      path_info = route.conditions[:path_info]
-      path_info.source.scan(optional_named_captures_regexp).flatten
+      path_info_source.scan(optional_named_captures_regexp).flatten
     else
       re = Regexp.escape("([^/.?]+)")
       optional_named_captures_regexp = /#{re}|\(\?\:.+?\)\?/
-      path_info = route.conditions[:path_info]
-      captures = path_info.source.scan(optional_named_captures_regexp).flatten
+      captures = path_info_source.scan(optional_named_captures_regexp).flatten
       named_captures = path_info.named_captures.to_a.sort_by {|cap|cap.last.first} 
       captures.zip(named_captures).map do |type, (name, pos)|
         name unless type == '([^/.?]+)'
