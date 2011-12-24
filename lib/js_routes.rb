@@ -136,22 +136,25 @@ class JsRoutes
   end
 
   def build_params route
-    optional_named_captures = optional_params(route)
-    route.conditions[:path_info].named_captures.to_a.sort_by do |cap1|
-      # Hash is not ordered in Ruby 1.8.7
-      cap1.last.first
-    end.map do |cap|
-      name = cap.first
-        if !(optional_named_captures.include?(name.to_s))
-        # prepending each parameter name with underscore
-        # to prevent conflict with JS reserved words
-        "_" + name.to_s
-      end
-    end.compact
+    required_params(route).map do |name|
+      # prepending each parameter name with underscore
+      # to prevent conflict with JS reserved words
+      "_" + name.to_s
+    end
   end
 
 
   def path_parts route
     route.path.gsub(/\(\.:format\)$/, "").split(/:[a-z\-_]+/)
+  end
+
+  def required_params(route)
+    optional_named_captures = optional_params(route)
+    route.conditions[:path_info].named_captures.to_a.sort_by do |cap1|
+      # Hash is not ordered in Ruby 1.8.7
+      cap1.last.first
+    end.map(&:first).reject do |name|
+      optional_named_captures.include?(name.to_s)
+    end
   end
 end
