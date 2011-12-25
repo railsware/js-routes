@@ -109,7 +109,7 @@ class JsRoutes
   def build_js(route)
     params = build_params route
     _ = <<-JS.strip!
-  // #{route.name} => #{route.path}
+  // #{route.name} => #{route_spec(route)}
   #{route.name}_path: function(#{(params + ["options"]).join(", ")}) {
   return Utils.build_path(#{params.size}, #{path_parts(route).inspect}, #{optional_params(route).inspect}, arguments)
   }
@@ -119,6 +119,9 @@ class JsRoutes
   # TODO: might be possible to simplify this to use route.path
   # instead of all this path_info.source madness
   def optional_params(route)
+    if Rails.version >= "3.2.0"
+      return route.optional_parts.map(&:to_s)
+    end
     path_info = route.conditions[:path_info]
     path_info_source = path_info.source
     if RUBY_VERSION >= '1.9.2'
@@ -145,10 +148,21 @@ class JsRoutes
 
 
   def path_parts route
-    route.path.gsub(/\(\.:format\)$/, "").split(/:[a-z\-_]+/)
+    route_spec(route).gsub(/\(\.:format\)$/, "").split(/:[a-z\-_]+/)
+  end
+
+  def route_spec route
+    if Rails.version >= "3.2.0"
+      route.path.spec
+    else
+      route.path
+    end.to_s
   end
 
   def required_params(route)
+    if Rails.version >= "3.2.0"
+      return route.required_parts.map(&:to_s)
+    end # if
     optional_named_captures = optional_params(route)
     route.conditions[:path_info].named_captures.to_a.sort_by do |cap1|
       # Hash is not ordered in Ruby 1.8.7
