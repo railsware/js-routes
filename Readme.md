@@ -57,6 +57,7 @@ Routes.user_path(1) // => "/users/1"
 Routes.user_path(1, {format: 'json'}) // => "/users/1.json"
 Routes.new_user_project_path(1, {format: 'json'}) // => "/users/1/projects/new.json"
 Routes.user_project_path(1,2, {q: 'hello', custom: true}) // => "/users/1/projects/2?q=hello&custom=true"
+Routes.user_project_path(1,2, {hello: ['world', 'mars']}) // => "/users/1/projects/2?hello%5B%5D=world&hello%5B%5D=mars"
 ```
 
 Using serialized object as route function arguments:
