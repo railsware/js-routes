@@ -181,6 +181,10 @@ describe JsRoutes do
       evaljs("Routes.inbox_path({id: 1, to_param: 'my'})").should == routes.inbox_path(inbox)
     end
 
+    it "should call to_param if it is a function" do
+      evaljs("Routes.inbox_path({id: 1, to_param: function(){ return 'my';}})").should == routes.inbox_path(inbox)
+    end
+
     it "should support options argument" do
       evaljs(
         "Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true, format: 'json'})"
