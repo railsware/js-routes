@@ -1,8 +1,8 @@
-## JsRoutes
+# JsRoutes
 
 Generates javascript file that defines all Rails named routes as javascript helpers
 
-### Intallation
+## Intallation
 
 Your Rails Gemfile:
 
@@ -10,30 +10,43 @@ Your Rails Gemfile:
 gem "js-routes"
 ```
 
-Your application initializer, like `config/initializers/jsroutes.rb`:
+### Basic Usage (Asset Pipeline)
+
+Require js routes file in `application.js` or other bundle
+
+``` js
+/*
+= require js-routes
+*/
+```
+
+If you need to customize routes file create initializer, like `config/initializers/jsroutes.rb`:
 
 ``` ruby
-JsRoutes.generate!({
- #options
+JsRoutes.setup do |config|
+  config.option = value
 })
 ```
 
 Available options:
 
-* `:file` - the file to generate the routes. Default: 
-  * `#{Rails.root}/app/assets/javascripts/routes.js` for Rails >= 3.1
-  * `#{Rails.root}/public/javascripts/routes.js` for Rails < 3.1
-* `:default_format` - Format to append to urls. Default: blank
-* `:exclude` - Array of regexps to exclude from js routes. Default: []
+* `file` - the file to generate the routes. Default: 
+  * `#{Rails.root}/app/assets/javascripts/routes.js` for Rails &gt;= 3.1
+  * `#{Rails.root}/public/javascripts/routes.js` for Rails &lt; 3.1
+* `default_format` - Format to append to urls. Default: blank
+* `exclude` - Array of regexps to exclude from js routes. Default: []
   * Note that regexp applied to **named route** not to *URL*
-* `:include` - Array of regexps to include in js routes. Default: []
+* `include` - Array of regexps to include in js routes. Default: []
   * Note that regexp applied to **named route** not to *URL*
-* `:namespace` - global object used to access routes. Default: `Routes`
+* `namespace` - global object used to access routes. Default: `Routes`
   * Supports nested namespace like `MyProject.routes`
-* `:prefix` - String representing a url path to prepend to all paths
-  * `Should be specified via :prefix => "/myprefix"`
+* `prefix` - String representing a url path to prepend to all paths
 
 This is how you can generate separated routes files for different parts of application:
+
+## Advanced Usage
+
+You can generate routes files on the application side like this:
 
 ``` ruby
 JsRoutes.generate!(:file => "#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => /^admin_/, :default_format => "json")
