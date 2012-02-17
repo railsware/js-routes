@@ -7,7 +7,8 @@ describe "after Rails initialization" do
   before(:all) do
 
     FileUtils.rm_f(name)
-    JsRoutes.generate!({:file => name})
+    JsRoutes.generate!(name)
+
 
     Rails.application.initialize!
   end
@@ -16,10 +17,8 @@ describe "after Rails initialization" do
     FileUtils.rm_f(name)
   end
 
-  context '.generate!' do
-    it "should generate routes file" do
-      File.exists?(name).should be_true
-    end
+  it "should generate routes file" do
+    File.exists?(name).should be_true
   end
 
   if Rails.version >= "3.1"

@@ -44,8 +44,12 @@ class JsRoutes
       new(opts).generate
     end
 
-    def generate!(opts = {})
-      new(opts).generate!
+    def generate!(file_name, opts = {})
+      if file_name.is_a?(Hash)
+        opts = file_name
+        file_name = opts[:file]
+      end
+      new(opts).generate!(file_name)
     end
 
     # Under rails 3.1.1 and higher, perform a check to ensure that the
@@ -75,12 +79,12 @@ class JsRoutes
     js.gsub!("ROUTES", js_routes)
   end
 
-  def generate!
+  def generate!(file_name)
     # Some libraries like Devise do not yet loaded their routes so we will wait
     # until initialization process finish
     # https://github.com/railsware/js-routes/issues/7
     Rails.configuration.after_initialize do
-      File.open(Rails.root.join(@options[:file]), 'w') do |f|
+      File.open(Rails.root.join(file_name || DEFAULT_PATH), 'w') do |f|
         f.write generate
       end
     end
