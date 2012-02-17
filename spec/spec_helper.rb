@@ -20,10 +20,8 @@ end
 
 
 class App < Rails::Application
-  if Rails.version >= '3.1'
-    # Enable the asset pipeline
-    config.assets.enabled = true
-  end
+  # Enable the asset pipeline
+  config.assets.enabled = true
 
   self.routes.draw do 
     resources :inboxes do

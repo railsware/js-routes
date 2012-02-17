@@ -1,4 +1,4 @@
-if defined?(Rails) && Rails.version >= "3.1"
+if defined?(Rails)
   class JsRoutes
     class Engine < Rails::Engine
       JS_ROUTES_ASSET = 'js-routes'
