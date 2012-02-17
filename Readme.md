@@ -10,7 +10,7 @@ Your Rails Gemfile:
 gem "js-routes"
 ```
 
-### Basic Usage (Asset Pipeline)
+### Basic Setup (Asset Pipeline)
 
 Require js routes file in `application.js` or other bundle
 
@@ -20,7 +20,7 @@ Require js routes file in `application.js` or other bundle
 */
 ```
 
-If you need to customize routes file create initializer, like `config/initializers/jsroutes.rb`:
+**Optional**: If you need to customize routes file create initializer, like `config/initializers/jsroutes.rb`:
 
 ``` ruby
 JsRoutes.setup do |config|
@@ -37,10 +37,10 @@ Available options:
   * Note that regexp applied to **named route** not to *URL*
 * `namespace` - global object used to access routes. Default: `Routes`
   * Supports nested namespace like `MyProject.routes`
-* `prefix` - String representing a url path to prepend to all paths
+* `prefix` - String representing a url path to prepend to all paths. Default: blank
 
 
-## Advanced Usage
+### Advanced Setup
 
 You can generate routes files on the application side like this:
 
@@ -56,7 +56,7 @@ Like:
 routes_js = JsRoutes.generate(options)
 ```
 
-### Usage
+## Usage
 
 Configuration above will create a nice javascript file with `Routes` object that has all the rails routes available:
 
@@ -84,13 +84,13 @@ In order to make routes helpers available globally:
 jQuery.extend(window, Routes)
 ```
 
-### What about security?
+## What about security?
 
 js-routes itself do not have security holes. It makes URLs 
 without access protection more reachable by potential attacker.
 In order to prevent this use `:exclude` option for sensitive urls like `/admin_/`
 
-### Spork
+## Spork
 
 When using Spork and `Spork.trap_method(Rails::Application::RoutesReloader, :reload!)` you should also do:
 
@@ -98,7 +98,7 @@ When using Spork and `Spork.trap_method(Rails::Application::RoutesReloader, :rel
 Spork.trap_method(JsRoutes, :generate!)
 ```
 
-### Advantages over alternatives
+## Advantages over alternatives
 
 There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept. 
 Advantages of this one are:
