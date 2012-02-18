@@ -42,6 +42,8 @@ class App < Rails::Application
     scope "(/optional/:optional_id)" do
       resources :things
     end
+    
+    match "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
   end
 
 end
