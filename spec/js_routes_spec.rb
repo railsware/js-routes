@@ -195,7 +195,7 @@ describe JsRoutes do
   context "using optional path fragments" do
   	context "including not optional parts" do
   		it "should include everything that is not optional" do
-      	evaljs("Routes.foo_path()").should == "/other_optional"
+      	evaljs("Routes.foo_path()").should == routes.foo_path
   		end
   	end
 
