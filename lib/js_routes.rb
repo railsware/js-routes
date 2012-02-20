@@ -115,9 +115,13 @@ class JsRoutes
     _ = <<-JS.strip!
   // #{route.name} => #{route_spec(route)}
   #{route.name}_path: function(#{(params + ["options"]).join(", ")}) {
-  return Utils.build_path(#{params.size}, #{path_parts(route).inspect}, #{optional_params(route).inspect}, arguments)
+  return Utils.build_path(#{json(required_params(route))}, #{json(serialize(route.path.spec))}, arguments)
   }
   JS
+  end
+
+  def json(string)
+    ActiveSupport::JSON.encode(string)
   end
 
   # TODO: might be possible to simplify this to use route.path
@@ -174,5 +178,15 @@ class JsRoutes
     end.map(&:first).reject do |name|
       optional_named_captures.include?(name.to_s)
     end
+  end
+
+  def serialize(spec)
+    return nil unless spec
+    return spec.tr(':', '') if spec.is_a?(String)
+    [      
+      spec.type.to_s,
+      serialize(spec.left),
+      spec.respond_to?(:right) && serialize(spec.right)
+    ]
   end
 end
