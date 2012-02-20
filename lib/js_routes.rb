@@ -4,11 +4,7 @@ class JsRoutes
   # OPTIONS
   #
 
-  DEFAULT_PATH = if Rails.version >= "3.1"
-                   File.join('app','assets','javascripts','routes.js')
-                 else
-                   File.join('public','javascripts','routes.js')
-                 end
+  DEFAULT_PATH = File.join('app','assets','javascripts','routes.js')
 
   DEFAULTS = {
     :namespace => "Routes",
@@ -113,9 +109,9 @@ class JsRoutes
   def build_js(route)
     params = build_params route
     _ = <<-JS.strip!
-  // #{route.name} => #{route_spec(route)}
+  // #{route.name} => #{route.path.spec}
   #{route.name}_path: function(#{(params + ["options"]).join(", ")}) {
-  return Utils.build_path(#{json(required_params(route))}, #{json(serialize(route.path.spec))}, arguments)
+  return Utils.build_path(#{json(route.required_parts.map(&:to_s))}, #{json(serialize(route.path.spec))}, arguments)
   }
   JS
   end
@@ -124,59 +120,11 @@ class JsRoutes
     ActiveSupport::JSON.encode(string)
   end
 
-  # TODO: might be possible to simplify this to use route.path
-  # instead of all this path_info.source madness
-  def optional_params(route)
-    if Rails.version >= "3.2.0"
-      return route.optional_parts.map(&:to_s)
-    end
-    path_info = route.conditions[:path_info]
-    path_info_source = path_info.source
-    if RUBY_VERSION >= '1.9.2'
-      optional_named_captures_regexp = /\?\:.+?\(\?\<(.+?)\>/
-      path_info_source.scan(optional_named_captures_regexp).flatten
-    else
-      re = Regexp.escape("([^/.?]+)")
-      optional_named_captures_regexp = /#{re}|\(\?\:.+?\)\?/
-      captures = path_info_source.scan(optional_named_captures_regexp).flatten
-      named_captures = path_info.named_captures.to_a.sort_by {|cap|cap.last.first} 
-      captures.zip(named_captures).map do |type, (name, pos)|
-        name unless type == '([^/.?]+)'
-      end.compact
-    end
-  end
-
   def build_params route
-    required_params(route).map do |name|
+    route.required_parts.map do |name|
       # prepending each parameter name with underscore
       # to prevent conflict with JS reserved words
       "_" + name.to_s
-    end
-  end
-
-
-  def path_parts route
-    route_spec(route).gsub(/\(\.:format\)$/, "").split(/:[a-z\-_]+/)
-  end
-
-  def route_spec route
-    if Rails.version >= "3.2.0"
-      route.path.spec
-    else
-      route.path
-    end.to_s
-  end
-
-  def required_params(route)
-    if Rails.version >= "3.2.0"
-      return route.required_parts.map(&:to_s)
-    end # if
-    optional_named_captures = optional_params(route)
-    route.conditions[:path_info].named_captures.to_a.sort_by do |cap1|
-      # Hash is not ordered in Ruby 1.8.7
-      cap1.last.first
-    end.map(&:first).reject do |name|
-      optional_named_captures.include?(name.to_s)
     end
   end
 
