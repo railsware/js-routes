@@ -107,10 +107,9 @@ class JsRoutes
   end
 
   def build_js(route)
-    params = build_params route
     _ = <<-JS.strip!
   // #{route.name} => #{route.path.spec}
-  #{route.name}_path: function(#{(params + ["options"]).join(", ")}) {
+  #{route.name}_path: function(#{build_params(route)}) {
   return Utils.build_path(#{json(route.required_parts.map(&:to_s))}, #{json(serialize(route.path.spec))}, arguments)
   }
   JS
@@ -121,11 +120,12 @@ class JsRoutes
   end
 
   def build_params route
-    route.required_parts.map do |name|
+    params = route.required_parts.map do |name|
       # prepending each parameter name with underscore
       # to prevent conflict with JS reserved words
       "_" + name.to_s
-    end
+    end << "options"
+    params.join(", ")
   end
 
   def serialize(spec)
