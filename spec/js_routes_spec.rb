@@ -6,6 +6,7 @@ describe JsRoutes do
   before(:each) do
     Rails.application.stub!(:reload_routes!).and_return(true)
     evaljs(_presetup)
+    puts JsRoutes.generate(_options)
     evaljs(JsRoutes.generate(_options))
   end
 
