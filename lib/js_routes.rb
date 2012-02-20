@@ -110,7 +110,7 @@ class JsRoutes
     _ = <<-JS.strip!
   // #{route.name} => #{route.path.spec}
   #{route.name}_path: function(#{build_params(route)}) {
-  return Utils.build_path(#{json(route.required_parts.map(&:to_s))}, #{json(serialize(route.path.spec))}, arguments)
+  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec))}, arguments)
   }
   JS
   end
@@ -128,6 +128,10 @@ class JsRoutes
     params.join(", ")
   end
 
+  # This function serializes Journey route into JSON structure
+  # We do not use Hash for human readable serialization
+  # And preffer Array serialization because it is shorter.
+  # Routes.js file will be smaller.
   def serialize(spec)
     return nil unless spec
     return spec.tr(':', '') if spec.is_a?(String)
