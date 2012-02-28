@@ -15,6 +15,18 @@ class JsRoutes
     :prefix => ""
   }
 
+  # We encode node symbols as integer to reduce the routes.js file size
+  NODE_TYPES = {
+    :GROUP => 1,
+    :CAT => 2,
+    :SYMBOL => 3,
+    :OR => 4,
+    :STAR => 5,
+    :LITERAL => 6,
+    :SLASH => 7,
+    :DOT => 8
+  }
+
   class Options < Struct.new(*DEFAULTS.keys)
     def to_hash
       Hash[*members.zip(values).flatten(1)].symbolize_keys
@@ -57,6 +69,10 @@ class JsRoutes
       end
       true
     end
+
+    def json(string)
+      ActiveSupport::JSON.encode(string)
+    end
   end
 
   #
@@ -72,6 +88,7 @@ class JsRoutes
     js.gsub!("NAMESPACE", @options[:namespace])
     js.gsub!("DEFAULT_FORMAT", @options[:default_format].to_s)
     js.gsub!("PREFIX", @options[:prefix])
+    js.gsub!("NODE_TYPES", json(NODE_TYPES))
     js.gsub!("ROUTES", js_routes)
   end
 
@@ -116,7 +133,7 @@ class JsRoutes
   end
 
   def json(string)
-    ActiveSupport::JSON.encode(string)
+    self.class.json(string)
   end
 
   def build_params route
@@ -136,7 +153,7 @@ class JsRoutes
     return nil unless spec
     return spec.tr(':', '') if spec.is_a?(String)
     [      
-      spec.type.to_s,
+      NODE_TYPES[spec.type],
       serialize(spec.left),
       spec.respond_to?(:right) && serialize(spec.right)
     ]
