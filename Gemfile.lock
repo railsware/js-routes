@@ -102,7 +102,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.0.0)
   jeweler (~> 1.6.2)
-  rails (>= 3.1.1)
+  rails (>= 3.2)
   rcov
   rspec (~> 2.7.0)
   therubyracer
