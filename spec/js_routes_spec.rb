@@ -13,6 +13,7 @@ describe JsRoutes do
   let(:_options) { {} }
 
   let(:routes) { App.routes.url_helpers }
+  let(:blog_routes) { BlogEngine::Engine.routes.url_helpers }
 
   describe "compatibility with Rails routes" do
 
@@ -58,6 +59,14 @@ describe JsRoutes do
 
     it "should support url anchor given as parameter" do
       evaljs("Routes.inbox_path(1, {anchor: 'hello'})").should == routes.inbox_path(1, :anchor => "hello")
+    end
+    
+    it "should support engine routes" do
+      evaljs("Routes.blog_app_posts_path()").should == blog_routes.posts_path()
+    end
+    
+    it "should support engine routes with parameter" do
+      evaljs("Routes.blog_app_post_path(1)").should == blog_routes.post_path(1)
     end
   end
 
