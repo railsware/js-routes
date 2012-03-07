@@ -64,7 +64,7 @@ class JsRoutes
     # full environment will be available during asset compilation.
     # This is required to ensure routes are loaded.
     def assert_usable_configuration!
-      unless Rails.application.config.assets.initialize_on_precompile 
+      unless Rails.application.config.assets.initialize_on_precompile
         raise("Cannot precompile js-routes unless environment is initialized. Please set config.assets.initialize_on_precompile to true.")
       end
       true
@@ -127,7 +127,7 @@ class JsRoutes
     _ = <<-JS.strip!
   // #{route.name} => #{route.path.spec}
   #{route.name}_path: function(#{build_params(route)}) {
-  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec))}, arguments)
+  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec))}, arguments);
   }
   JS
   end
@@ -152,7 +152,7 @@ class JsRoutes
   def serialize(spec)
     return nil unless spec
     return spec.tr(':', '') if spec.is_a?(String)
-    [      
+    [
       NODE_TYPES[spec.type],
       serialize(spec.left),
       spec.respond_to?(:right) && serialize(spec.right)
