@@ -44,6 +44,8 @@ class App < Rails::Application
     end
     
     match "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
+
+    match 'books/*section/:title' => 'books#show', :as => :book
   end
 
 end
