@@ -107,7 +107,8 @@ class JsRoutes
 
   def js_routes
     Rails.application.reload_routes!
-    js_routes = Rails.application.routes.named_routes.routes.map do |_, route|
+    engine_routes = Rails::Engine::Railties.engines.map {|e| e.routes.named_routes.routes}.inject({}) {|acc, h| acc.merge(h)}
+    js_routes = Rails.application.routes.named_routes.routes.merge(engine_routes).map do |_, route|
       if any_match?(route, @options[:exclude]) || !any_match?(route, @options[:include])
         nil
       else
