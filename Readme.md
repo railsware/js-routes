@@ -25,7 +25,7 @@ Require js routes file in `application.js` or other bundle
 ``` ruby
 JsRoutes.setup do |config|
   config.option = value
-})
+end
 ```
 
 Available options:
