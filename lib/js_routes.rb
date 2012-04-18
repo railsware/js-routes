@@ -92,7 +92,7 @@ class JsRoutes
     js.gsub!("ROUTES", js_routes)
   end
 
-  def generate!(file_name)
+  def generate!(file_name = nil)
     # Some libraries like Devise do not yet loaded their routes so we will wait
     # until initialization process finish
     # https://github.com/railsware/js-routes/issues/7
