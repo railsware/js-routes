@@ -107,10 +107,19 @@ class JsRoutes
 
   def js_routes
     Rails.application.reload_routes!
-    engine_routes = Rails::Engine::Railties.engines.map {|e| e.routes.named_routes.routes}.inject({}) {|acc, h| acc.merge(h)}
-    js_routes = Rails.application.routes.named_routes.routes.merge(engine_routes).map do |_, route|
+    #engine_routes = Rails::Engine::Railties.engines.map {|e| e.routes.named_routes.routes}.inject({}) {|acc, h| acc.merge(h)}
+    js_routes = Rails.application.routes.named_routes.routes.map do |_, route|
       if any_match?(route, @options[:exclude]) || !any_match?(route, @options[:include])
         nil
+      elsif route.app.respond_to? :routes
+        # route is an engine, lets open it
+        route.app.routes.named_routes.routes.map do |_, engine_route|
+          if any_match?(engine_route, @options[:exclude]) || !any_match?(engine_route, @options[:include])
+            nil
+          else
+            build_js(engine_route, "#{route.name}_", route.path.spec)
+          end
+        end
       else
         build_js(route)
       end
@@ -124,11 +133,11 @@ class JsRoutes
     matchers.any? {|regex| route.name =~ regex}
   end
 
-  def build_js(route)
+  def build_js(route, name_prefix='', path_prefix='')
     _ = <<-JS.strip!
-  // #{route.name} => #{route.path.spec}
-  #{route.name}_path: function(#{build_params(route)}) {
-  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec))}, arguments);
+  // #{name_prefix}#{route.name} => #{path_prefix}#{route.path.spec}
+  #{name_prefix}#{route.name}_path: function(#{build_params(route)}) {
+  return "#{path_prefix}" + Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec))}, arguments);
   }
   JS
   end
