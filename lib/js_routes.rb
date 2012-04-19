@@ -52,7 +52,7 @@ class JsRoutes
       new(opts).generate
     end
 
-    def generate!(file_name, opts = {})
+    def generate!(file_name=nil, opts = {})
       if file_name.is_a?(Hash)
         opts = file_name
         file_name = opts[:file]
@@ -97,6 +97,7 @@ class JsRoutes
     # until initialization process finish
     # https://github.com/railsware/js-routes/issues/7
     Rails.configuration.after_initialize do
+      file_name ||= self.class.options['file']
       File.open(Rails.root.join(file_name || DEFAULT_PATH), 'w') do |f|
         f.write generate
       end
