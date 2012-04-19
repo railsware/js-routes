@@ -52,7 +52,8 @@ class JsRoutes
       new(opts).generate
     end
 
-    def generate!(file_name, opts = {})
+    def generate!(file_name=nil, opts = {})
+      file_name ||= Rails.root + DEFAULT_PATH
       if file_name.is_a?(Hash)
         opts = file_name
         file_name = opts[:file]
