@@ -52,7 +52,7 @@ class JsRoutes
       new(opts).generate
     end
 
-    def generate!(file_name, opts = {})
+    def generate!(file_name=nil, opts = {})
       if file_name.is_a?(Hash)
         opts = file_name
         file_name = opts[:file]
@@ -64,7 +64,7 @@ class JsRoutes
     # full environment will be available during asset compilation.
     # This is required to ensure routes are loaded.
     def assert_usable_configuration!
-      unless Rails.application.config.assets.initialize_on_precompile 
+      unless Rails.application.config.assets.initialize_on_precompile
         raise("Cannot precompile js-routes unless environment is initialized. Please set config.assets.initialize_on_precompile to true.")
       end
       true
@@ -92,11 +92,12 @@ class JsRoutes
     js.gsub!("ROUTES", js_routes)
   end
 
-  def generate!(file_name)
+  def generate!(file_name = nil)
     # Some libraries like Devise do not yet loaded their routes so we will wait
     # until initialization process finish
     # https://github.com/railsware/js-routes/issues/7
     Rails.configuration.after_initialize do
+      file_name ||= self.class.options['file']
       File.open(Rails.root.join(file_name || DEFAULT_PATH), 'w') do |f|
         f.write generate
       end
@@ -139,7 +140,7 @@ class JsRoutes
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{name.join('_')}_path: function(#{build_params(route)}) {
-  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments)
+  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
   }
   JS
   end
