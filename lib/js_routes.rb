@@ -109,26 +109,38 @@ class JsRoutes
   def js_routes
     Rails.application.reload_routes!
     js_routes = Rails.application.routes.named_routes.routes.map do |_, route|
-      if any_match?(route, @options[:exclude]) || !any_match?(route, @options[:include])
-        nil
+      if route.app.respond_to?(:superclass) && route.app.superclass == Rails::Engine
+        route.app.routes.named_routes.map do |_, engine_route|
+          build_route_if_match(engine_route, route)
+        end
       else
-        build_js(route)
+        build_route_if_match(route)
       end
-    end.compact
+    end.flatten.compact
 
     "{\n" + js_routes.join(",\n") + "}\n"
   end
 
-  def any_match?(route, matchers)
-    matchers = Array(matchers)
-    matchers.any? {|regex| route.name =~ regex}
+  def build_route_if_match(route, parent_route=nil)
+    if any_match?(route, parent_route, @options[:exclude]) || !any_match?(route, parent_route, @options[:include])
+       nil
+     else
+       build_js(route, parent_route)
+     end
   end
 
-  def build_js(route)
+  def any_match?(route, parent_route, matchers)
+    matchers = Array(matchers)
+    matchers.any? {|regex| [parent_route.try(:name), route.name].compact.join('') =~ regex}
+  end
+
+  def build_js(route, parent_route)
+    name = [parent_route.try(:name), route.name].compact
+    parent_spec = parent_route.try(:path).try(:spec)
     _ = <<-JS.strip!
-  // #{route.name} => #{route.path.spec}
-  #{route.name}_path: function(#{build_params(route)}) {
-  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec))}, arguments);
+  // #{name.join('.')} => #{parent_spec}#{route.path.spec}
+  #{name.join('_')}_path: function(#{build_params(route)}) {
+  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
   }
   JS
   end
@@ -150,12 +162,24 @@ class JsRoutes
   # We do not use Hash for human readable serialization
   # And preffer Array serialization because it is shorter.
   # Routes.js file will be smaller.
-  def serialize(spec)
+  def serialize(spec, parent_spec=nil)
     return nil unless spec
     return spec.tr(':', '') if spec.is_a?(String)
+    result = serialize_spec(spec, parent_spec)
+    if parent_spec && result[1].is_a?(String)
+      result = [
+        NODE_TYPES[:CAT],
+        serialize_spec(parent_spec),
+        result
+      ]
+    end
+    result
+  end
+
+  def serialize_spec(spec, parent_spec=nil)
     [
       NODE_TYPES[spec.type],
-      serialize(spec.left),
+      serialize(spec.left, parent_spec),
       spec.respond_to?(:right) && serialize(spec.right)
     ]
   end
