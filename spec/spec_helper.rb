@@ -16,7 +16,15 @@ def evaljs(string)
 end
 
 
+module BlogEngine
+  class Engine < Rails::Engine
+    isolate_namespace BlogEngine
+  end
 
+  Engine.routes.draw do
+    resources :posts
+  end
+end
 
 
 class App < Rails::Application
@@ -46,6 +54,8 @@ class App < Rails::Application
     match "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
 
     match 'books/*section/:title' => 'books#show', :as => :book
+
+    mount BlogEngine::Engine => "/blog", :as => :blog_app
   end
 
 end
