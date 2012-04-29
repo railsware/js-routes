@@ -209,19 +209,37 @@ describe JsRoutes do
 
   end
 
-  context "when namspace option is specified" do
+  describe "when namespace option is specified" do
     let(:_options) { {:namespace => "PHM"} }
-    it "should use this name space for routing" do
+    it "should use this namespace for routing" do
       evaljs("window.Routes").should be_nil
       evaljs("PHM.inbox_path").should_not be_nil
     end
-    
   end
-  context "when nested namspace option is specified" do
-    let(:_presetup) { "window.PHM = {}" }
-    let(:_options) { {:namespace => "PHM.Routes"} }
-    it "should use this name space for routing" do
-      evaljs("PHM.Routes.inbox_path").should_not be_nil
+
+  describe "when nested namespace option is specified" do 
+    context "and defined on client" do
+      let(:_presetup) { "window.PHM = {}" }
+      let(:_options) { {:namespace => "PHM.Routes"} }
+      it "should use this namespace for routing" do
+        evaljs("PHM.Routes.inbox_path").should_not be_nil
+      end
+    end
+
+    context "but undefined on client" do
+      let(:_options) { {:namespace => "PHM.Routes"} }
+      it "should initialize namespace" do
+        evaljs("window.PHM.Routes.inbox_path").should_not be_nil
+      end 
+    end
+
+    context "and some parts are defined" do
+      let(:_presetup) { "window.PHM = { Utils: {} };" }
+      let(:_options) { {:namespace => "PHM.Routes"} }
+      it "should not overwrite existing parts" do
+        evaljs("window.PHM.Utils").should_not be_nil
+        evaljs("window.PHM.Routes.inbox_path").should_not be_nil
+      end
     end
   end
 
