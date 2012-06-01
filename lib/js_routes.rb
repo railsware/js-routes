@@ -137,10 +137,13 @@ class JsRoutes
   def build_js(route, parent_route)
     name = [parent_route.try(:name), route.name].compact
     parent_spec = parent_route.try(:path).try(:spec)
+    required_parts = route.required_parts.clone
+    optional_parts = route.optional_parts.clone
+    optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
-  #{name.join('_')}_path: function(#{build_params(route)}) {
-  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
+  #{name.join('_')}_path: function(#{build_params(required_parts)}) {
+  return Utils.build_path(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
   }
   JS
   end
@@ -149,8 +152,8 @@ class JsRoutes
     self.class.json(string)
   end
 
-  def build_params route
-    params = route.required_parts.map do |name|
+  def build_params required_parts
+    params = required_parts.map do |name|
       # prepending each parameter name with underscore
       # to prevent conflict with JS reserved words
       "_" + name.to_s
