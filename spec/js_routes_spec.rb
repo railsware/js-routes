@@ -207,6 +207,9 @@ describe JsRoutes do
       evaljs("Routes.inbox_path(1, {format: null})").should == routes.inbox_path(1)
     end
 
+    it "shouldn't include the format when {:format => false} is specified" do
+      evaljs("Routes.no_format_path()").should == routes.no_format_path
+    end
   end
 
   describe "when namespace option is specified" do

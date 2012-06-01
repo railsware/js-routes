@@ -140,7 +140,7 @@ class JsRoutes
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{name.join('_')}_path: function(#{build_params(route)}) {
-  return Utils.build_path(#{json(route.required_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
+  return Utils.build_path(#{json(route.required_parts)}, #{json(route.optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
   }
   JS
   end
