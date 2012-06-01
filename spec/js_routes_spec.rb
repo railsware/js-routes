@@ -69,6 +69,10 @@ describe JsRoutes do
       evaljs("Routes.blog_app_post_path(1)").should == blog_routes.post_path(1)
     end
 
+    it "shouldn't require the format" do
+      evaljs("Routes.json_only_path({format: 'json'})").should == routes.json_only_path('json')
+    end
+
     context "routes globbing" do
       it "should be supported as parameters" do
         evaljs("Routes.book_path('thrillers', 1)").should == routes.book_path('thrillers', 1)
@@ -209,6 +213,10 @@ describe JsRoutes do
 
     it "shouldn't include the format when {:format => false} is specified" do
       evaljs("Routes.no_format_path()").should == routes.no_format_path
+    end
+
+    it "shouldn't require the format" do
+      evaljs("Routes.json_only_path()").should == routes.json_only_path('json')
     end
   end
 
