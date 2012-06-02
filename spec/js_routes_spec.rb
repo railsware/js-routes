@@ -70,7 +70,7 @@ describe JsRoutes do
     end
 
     it "shouldn't require the format" do
-      evaljs("Routes.json_only_path({format: 'json'})").should == routes.json_only_path('json')
+      evaljs("Routes.json_only_path({format: 'json'})").should == routes.json_only_path(:format => 'json')
     end
 
     context "routes globbing" do
@@ -216,7 +216,7 @@ describe JsRoutes do
     end
 
     it "shouldn't require the format" do
-      evaljs("Routes.json_only_path()").should == routes.json_only_path('json')
+      evaljs("Routes.json_only_path()").should == routes.json_only_path(:format => 'json')
     end
   end
 
