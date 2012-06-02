@@ -56,6 +56,10 @@ class App < Rails::Application
     match 'books/*section/:title' => 'books#show', :as => :book
 
     mount BlogEngine::Engine => "/blog", :as => :blog_app
+
+    get '/no_format' => "foo#foo", :format => false, :as => :no_format
+
+    get '/json_only' => "foo#foo", :format => true, :constraints => {:format => /json/}, :as => :json_only
   end
 
 end
