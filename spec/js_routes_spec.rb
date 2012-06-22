@@ -302,6 +302,10 @@ describe JsRoutes do
     it "should have correct function signature with Ruby 1.8.7 and unordered hash" do
       should include("inbox_message_attachment_path: function(_inbox_id, _message_id, _id, options)")
     end
+
+    it "routes should be sorted in alphabetical order" do
+      subject.index("book_path").should <= subject.index("inboxes_path")
+    end
   end
 
   describe ".generate!" do
