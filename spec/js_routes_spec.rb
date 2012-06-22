@@ -180,6 +180,15 @@ describe JsRoutes do
     end
 
   end
+
+  context "when prefix with http:// is specified" do
+    
+    let(:_options) { {:prefix => "http://localhost:3000" } }
+
+    it "should render routing with prefix" do
+      evaljs("Routes.inbox_path(1)").should == _options[:prefix] + routes.inbox_path(1)
+    end
+  end
   
   context "when prefix without trailing slash is specified" do
     
