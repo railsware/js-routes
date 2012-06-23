@@ -87,6 +87,33 @@ describe JsRoutes do
       end
     end
 
+    context "when jQuery is present" do
+      before do
+        evaljs("window.jQuery = {};")
+        jscontext[:parameterize] = lambda {|object| _value.to_param}
+        evaljs("window.jQuery.param = parameterize")
+      end
+
+      shared_examples_for "serialization" do
+        it "should support serialization of objects" do
+          evaljs("window.jQuery.param(#{_value.to_json})").should == _value.to_param
+          evaljs("Routes.inboxes_path(#{_value.to_json})").should == routes.inboxes_path(_value)
+        end
+      end
+      context "when parameters is a hash" do
+        let(:_value) do
+          {a: {b: 'c'}, q: [1,2]}
+        end
+        it_should_behave_like 'serialization'
+      end
+      context "when parameters is null" do
+        let(:_value) do
+          nil
+        end
+        it_should_behave_like 'serialization'
+      end
+    end
+
     context "using optional path fragments" do
       context "including not optional parts" do
         it "should include everything that is not optional" do
