@@ -3,8 +3,10 @@ require "fileutils"
 
 
 describe JsRoutes do
+  before(:all) do
+    draw_routes
+  end
   before(:each) do
-    Rails.application.stub!(:reload_routes!).and_return(true)
     evaljs(_presetup)
     evaljs(JsRoutes.generate(_options))
   end

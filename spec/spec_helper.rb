@@ -30,8 +30,11 @@ end
 class App < Rails::Application
   # Enable the asset pipeline
   config.assets.enabled = true
+end
 
-  self.routes.draw do 
+def draw_routes
+
+  App.routes.draw do 
     resources :inboxes do
       resources :messages do
         resources :attachments
