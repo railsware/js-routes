@@ -232,6 +232,15 @@ describe JsRoutes do
 
   end
 
+  context "when javascript engine without Array#indexOf is used" do
+    before(:each) do
+      evaljs("Array.prototype.indexOf = null")
+    end
+    it "should still work correctly" do
+      evaljs("Routes.inboxes_path()").should == routes.inboxes_path()
+    end
+  end
+
   context "when default_format is specified" do
     let(:_options) { {:default_format => "json"} }
     
