@@ -38,6 +38,7 @@ Available options:
 * `namespace` - global object used to access routes. Default: `Routes`
   * Supports nested namespace like `MyProject.routes`
 * `prefix` - String representing a url path to prepend to all paths. Default: blank
+  * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only. 
 
 
 ### Advanced Setup
