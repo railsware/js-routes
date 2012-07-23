@@ -12,7 +12,8 @@ class JsRoutes
     :exclude => [],
     :include => //,
     :file => DEFAULT_PATH,
-    :prefix => ""
+    :prefix => "",
+    :host => ""
   }
 
   # We encode node symbols as integer to reduce the routes.js file size
@@ -88,6 +89,7 @@ class JsRoutes
     js.gsub!("NAMESPACE", @options[:namespace])
     js.gsub!("DEFAULT_FORMAT", @options[:default_format].to_s)
     js.gsub!("PREFIX", @options[:prefix])
+    js.gsub!("HOST", @options[:host])
     js.gsub!("NODE_TYPES", json(NODE_TYPES))
     js.gsub!("ROUTES", js_routes)
   end
@@ -144,6 +146,9 @@ class JsRoutes
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{name.join('_')}_path: function(#{build_params(required_parts)}) {
   return Utils.build_path(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
+  },
+  #{name.join('_')}_url: function(#{build_params(required_parts)}) {
+  return Utils.build_url(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
   }
   JS
   end
