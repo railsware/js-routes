@@ -21,9 +21,6 @@ module BlogEngine
     isolate_namespace BlogEngine
   end
 
-  Engine.routes.draw do
-    resources :posts
-  end
 end
 
 
@@ -34,6 +31,9 @@ end
 
 def draw_routes
 
+  BlogEngine::Engine.routes.draw do
+    resources :posts
+  end
   App.routes.draw do 
     resources :inboxes do
       resources :messages do
