@@ -104,7 +104,7 @@ describe JsRoutes do
       end
       context "when parameters is a hash" do
         let(:_value) do
-          {a: {b: 'c'}, q: [1,2]}
+          {:a => {:b => 'c'}, :q => [1,2]}
         end
         it_should_behave_like 'serialization'
       end
