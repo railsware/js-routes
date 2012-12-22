@@ -83,4 +83,3 @@ RSpec.configure do |config|
     evaljs("function encodeURIComponent(string) {return cgi.escape(string);}")
   end
 end
-end
