@@ -370,4 +370,3 @@ describe JsRoutes do
     end
   end
 end
-end

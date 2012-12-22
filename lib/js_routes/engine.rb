@@ -14,7 +14,3 @@ class JsRoutes
     end
   end
 end
-end
-
-end
-end

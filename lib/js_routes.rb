@@ -188,4 +188,4 @@ class JsRoutes
     ]
   end
 end
-end
+

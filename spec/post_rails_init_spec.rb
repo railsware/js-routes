@@ -90,4 +90,3 @@ describe "after Rails initialization" do
     end
   end
 end
-end
