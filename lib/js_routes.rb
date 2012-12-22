@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class JsRoutes
 
   #
@@ -187,3 +188,4 @@ class JsRoutes
     ]
   end
 end
+

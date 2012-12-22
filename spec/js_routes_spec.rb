@@ -1,3 +1,4 @@
+# -*- encoding : . -*-
 require 'spec_helper'
 require "fileutils"
 
