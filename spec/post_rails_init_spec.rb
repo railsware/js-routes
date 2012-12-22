@@ -1,3 +1,4 @@
+# -*- encoding : . -*-
 require 'spec_helper'
 require "fileutils"
 
@@ -88,4 +89,5 @@ describe "after Rails initialization" do
       end
     end
   end
+end
 end

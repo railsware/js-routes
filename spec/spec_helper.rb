@@ -1,3 +1,4 @@
+# -*- encoding : . -*-
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
@@ -81,4 +82,5 @@ RSpec.configure do |config|
     jscontext[:cgi] = CGI
     evaljs("function encodeURIComponent(string) {return cgi.escape(string);}")
   end
+end
 end

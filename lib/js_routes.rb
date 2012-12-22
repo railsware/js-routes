@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class JsRoutes
 
   #
@@ -186,4 +187,5 @@ class JsRoutes
       spec.respond_to?(:right) && serialize(spec.right)
     ]
   end
+end
 end

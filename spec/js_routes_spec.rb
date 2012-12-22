@@ -1,3 +1,4 @@
+# -*- encoding : . -*-
 require 'spec_helper'
 require "fileutils"
 
@@ -368,4 +369,5 @@ describe JsRoutes do
       FileUtils.rm_f(name)
     end
   end
+end
 end
