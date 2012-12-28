@@ -1,3 +1,4 @@
+# encoding: utf-8
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
@@ -63,6 +64,8 @@ def draw_routes
     get '/no_format' => "foo#foo", :format => false, :as => :no_format
 
     get '/json_only' => "foo#foo", :format => true, :constraints => {:format => /json/}, :as => :json_only
+
+    get '/привет' => "foo#foo", :as => :hello
   end
 
 end

@@ -75,6 +75,10 @@ describe JsRoutes do
       evaljs("Routes.json_only_path({format: 'json'})").should == routes.json_only_path(:format => 'json')
     end
 
+    it "should support utf-8 route" do
+      evaljs("Routes.hello_path()").should == routes.hello_path
+    end
+
     context "routes globbing" do
       it "should be supported as parameters" do
         evaljs("Routes.book_path('thrillers', 1)").should == routes.book_path('thrillers', 1)
@@ -366,6 +370,13 @@ describe JsRoutes do
 
     after(:all) do
       FileUtils.rm_f(name)
+    end
+  end
+
+  describe "compiled javascript asset" do
+    subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }
+    it "should have js routes code" do
+      should include("inbox_message_path: function(_inbox_id, _id, options)")
     end
   end
 end
