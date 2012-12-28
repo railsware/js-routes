@@ -16,6 +16,14 @@ def evaljs(string)
   jscontext.eval(string)
 end
 
+def routes
+  App.routes.url_helpers
+end
+
+def blog_routes
+  BlogEngine::Engine.routes.url_helpers
+end
+
 
 module BlogEngine
   class Engine < Rails::Engine
@@ -83,5 +91,8 @@ RSpec.configure do |config|
     evaljs("var window = this;")
     jscontext[:cgi] = CGI
     evaljs("function encodeURIComponent(string) {return cgi.escape(string);}")
+  end
+  config.before(:all) do
+    draw_routes
   end
 end
