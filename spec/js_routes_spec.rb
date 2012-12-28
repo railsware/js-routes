@@ -84,11 +84,13 @@ describe JsRoutes do
         evaljs("Routes.book_path('thrillers', 1)").should == routes.book_path('thrillers', 1)
       end
 
-      xit "should support routes globbing as hash" do
+      it "should support routes globbing as hash" do
+        pending
         evaljs("Routes.book_path(1, {section: 'thrillers'})").should == routes.book_path(1, :section => 'thrillers')
       end
 
-      xit "should bee support routes globbing as hash" do
+      it "should bee support routes globbing as hash" do
+        pending
         evaljs("Routes.book_path(1)").should == routes.book_path(1)
       end
     end
@@ -132,8 +134,9 @@ describe JsRoutes do
           evaljs("Routes.things_path()").should == routes.things_path
         end
 
-        xit "should not require the optional parts as arguments" do
+        it "should not require the optional parts as arguments" do
           #TODO: fix this inconsistence
+          pending
           evaljs("Routes.thing_path(null, 5)").should == routes.thing_path(nil, 5)
         end
 
