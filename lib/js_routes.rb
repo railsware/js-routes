@@ -1,4 +1,3 @@
-# -*- encoding : utf-8 -*-
 class JsRoutes
 
   #
@@ -124,10 +123,10 @@ class JsRoutes
 
   def build_route_if_match(route, parent_route=nil)
     if any_match?(route, parent_route, @options[:exclude]) || !any_match?(route, parent_route, @options[:include])
-       nil
-     else
-       build_js(route, parent_route)
-     end
+      nil
+    else
+      build_js(route, parent_route)
+    end
   end
 
   def any_match?(route, parent_route, matchers)

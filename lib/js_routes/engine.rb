@@ -1,4 +1,3 @@
-# -*- encoding : utf-8 -*-
 class JsRoutes
   class Engine < Rails::Engine
     JS_ROUTES_ASSET = 'js-routes'
