@@ -20,7 +20,18 @@ Require js routes file in `application.js` or other bundle
 */
 ```
 
-**Optional**: If you need to customize routes file create initializer, like `config/initializers/jsroutes.rb`:
+Also in order to flush asset pipeline cache sometimes you might need to run:
+
+``` sh
+rake tmp:cache:clear
+```
+
+This cache is not flushed on server restart in development environment. 
+Iff routes.js file is not updated after some configuration change you need to run this command again.
+
+### Advanced Setup
+
+If you need to customize routes file create initializer, like `config/initializers/jsroutes.rb`:
 
 ``` ruby
 JsRoutes.setup do |config|
@@ -40,8 +51,6 @@ Available options:
 * `prefix` - String representing a url path to prepend to all paths. Default: blank
   * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only. 
 
-
-### Advanced Setup
 
 You can generate routes files on the application side like this:
 
