@@ -27,7 +27,8 @@ rake tmp:cache:clear
 ```
 
 This cache is not flushed on server restart in development environment. 
-Iff routes.js file is not updated after some configuration change you need to run this command again.
+
+**Important:** If routes.js file is not updated after some configuration change you need to run this command again.
 
 ### Advanced Setup
 
