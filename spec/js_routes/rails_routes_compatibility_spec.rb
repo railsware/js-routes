@@ -15,6 +15,10 @@ describe JsRoutes, "compatibility with Rails"  do
     evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
   end
 
+  it "should support 0 as a member parameter" do
+    evaljs("Routes.inbox_path(0)").should == routes.inbox_path(0)
+  end
+
   it "should generate nested routing with one parameter" do
     evaljs("Routes.inbox_messages_path(1)").should == routes.inbox_messages_path(1)
   end
