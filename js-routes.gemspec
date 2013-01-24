@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "js-routes"
-  s.version = "0.8.5"
+  s.version = "0.8.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bogdan Gusiev"]
-  s.date = "2013-01-04"
+  s.date = "2013-01-24"
   s.description = "Generates javascript file that defines all Rails named routes as javascript helpers"
   s.email = "agresso@gmail.com"
   s.extra_rdoc_files = [
