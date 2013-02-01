@@ -42,22 +42,30 @@ end
 
 Available options:
 
-* `default_format` - Format to append to urls. Default: blank
-* `exclude` - Array of regexps to exclude from js routes. Default: []
+* `default_url_options` - default parameters to be used to generate url
+  * Note that currently only optional parameters (like `:format`) can be defaulted.
+  * Example: {:format => "json"}
+  * Default: {}
+* `exclude` - Array of regexps to exclude from js routes. 
   * Note that regexp applied to **named route** not to *URL*
-* `include` - Array of regexps to include in js routes. Default: []
+  * Default: []
+* `include` - Array of regexps to include in js routes. 
   * Note that regexp applied to **named route** not to *URL*
-* `namespace` - global object used to access routes. Default: `Routes`
+  * Default: []
+* `namespace` - global object used to access routes. 
   * Supports nested namespace like `MyProject.routes`
-* `prefix` - String representing a url path to prepend to all paths. Default: blank
+  * Default: `Routes`
+* `prefix` - String representing a url path to prepend to all paths. 
   * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only. 
+  * Default: blank
 
 
 You can generate routes files on the application side like this:
 
 ``` ruby
-JsRoutes.generate!("#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => /^admin_/, :default_format => "json")
-JsRoutes.generate!("#{path}/adm_routes.js", :namespace => "AdmRoutes", :include => /^admin_/, :default_format => "json")
+JsRoutes.generate!("#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => [/^admin_/, /^api_])
+JsRoutes.generate!("#{path}/adm_routes.js", :namespace => "AdmRoutes", :include => /^admin_/)
+JsRoutes.generate!("#{path}/api_routes.js", :namespace => "ApiRoutes", :include => /^api_/, :default_url_options => {:format => "json"})
 ```
 
 In order to generate javascript to string and manipulate them yourself use:

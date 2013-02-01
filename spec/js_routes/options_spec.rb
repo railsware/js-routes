@@ -4,11 +4,14 @@ describe JsRoutes, "options" do
   
   before(:each) do
     evaljs(_presetup)
-    evaljs(JsRoutes.generate(_options))
+    with_warnings(_warnings) do
+      evaljs(JsRoutes.generate(_options))
+    end
   end
 
   let(:_presetup) { "this;" }
   let(:_options) { {} }
+  let(:_warnings) { true }
 
   context "when exclude is specified" do
     
@@ -76,6 +79,7 @@ describe JsRoutes, "options" do
 
   context "when default_format is specified" do
     let(:_options) { {:default_format => "json"} }
+    let(:_warnings) { nil }
     
     it "should render routing with default_format" do
       evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1, :format => "json")
@@ -128,6 +132,23 @@ describe JsRoutes, "options" do
       it "should not overwrite existing parts" do
         evaljs("window.PHM.Utils").should_not be_nil
         evaljs("window.PHM.Routes.inbox_path").should_not be_nil
+      end
+    end
+  end
+
+  describe "default_url_options" do
+    context "with optional route parts" do
+      let(:_options) { {:default_url_options => {:optional_id => "12", :format => "json"}}}
+      it "should use this opions to fill optional parameters" do
+        evaljs("Routes.things_path()").should == routes.things_path(:optional_id => 12, :format => "json")
+      end
+    end
+
+    context "with required route parts" do
+      let(:_options) { {:default_url_options => {:inbox_id => "12"}} }
+      it "should use this opions to fill optional parameters" do
+        pending
+        evaljs("Routes.inbox_messages_path()").should == routes.inbox_messages_path(:inbox_id => 12)
       end
     end
   end

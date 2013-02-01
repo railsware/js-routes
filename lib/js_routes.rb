@@ -8,11 +8,11 @@ class JsRoutes
 
   DEFAULTS = {
     :namespace => "Routes",
-    :default_format => "",
     :exclude => [],
     :include => //,
     :file => DEFAULT_PATH,
-    :prefix => ""
+    :prefix => "",
+    :default_url_options => {}
   }
 
   # We encode node symbols as integer to reduce the routes.js file size
@@ -86,10 +86,19 @@ class JsRoutes
   def generate
     js = File.read(File.dirname(__FILE__) + "/routes.js")
     js.gsub!("NAMESPACE", @options[:namespace])
-    js.gsub!("DEFAULT_FORMAT", @options[:default_format].to_s)
+    js.gsub!("DEFAULT_URL_OPTIONS", json(@options[:default_url_options].merge(deprecated_default_format)))
     js.gsub!("PREFIX", @options[:prefix])
     js.gsub!("NODE_TYPES", json(NODE_TYPES))
     js.gsub!("ROUTES", js_routes)
+  end
+
+  def deprecated_default_format
+    if @options.key?(:default_format) 
+      warn("default_format option is deprecated. Use default_url_options = {:format => <format>} instead")
+      {:format => @options[:default_format]} 
+    else
+      {}
+    end
   end
 
   def generate!(file_name = nil)

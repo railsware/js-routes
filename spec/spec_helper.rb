@@ -92,6 +92,7 @@ RSpec.configure do |config|
     evaljs("var window = this;")
     jscontext[:cgi] = CGI
     evaljs("function encodeURIComponent(string) {return cgi.escape(string);}")
+    jscontext[:log] = lambda {|arg| puts arg.inspect}
   end
   config.before(:all) do
     draw_routes
