@@ -54,11 +54,11 @@ describe JsRoutes, "compatibility with Rails"  do
   it "should support url anchor given as parameter" do
     evaljs("Routes.inbox_path(1, {anchor: 'hello'})").should == routes.inbox_path(1, :anchor => "hello")
   end
-  
+
   it "should support engine routes" do
     evaljs("Routes.blog_app_posts_path()").should == blog_routes.posts_path()
   end
-  
+
   it "should support engine routes with parameter" do
     evaljs("Routes.blog_app_post_path(1)").should == blog_routes.post_path(1)
   end
@@ -149,7 +149,7 @@ describe JsRoutes, "compatibility with Rails"  do
   end
 
   context "when wrong parameters given" do
-    
+
     it "should throw Exception if not enough parameters" do
       lambda {
         evaljs("Routes.inbox_path()")
