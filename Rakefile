@@ -10,9 +10,10 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 require 'bundler/gem_tasks'
-
 require 'rspec/core'
 require 'rspec/core/rake_task'
+require 'coffee-script'
+
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern =  FileList['spec/**/*_spec.rb'].sort_by do|n|
     # we need to run post_rails_init_spec as the latest
@@ -21,5 +22,15 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
   end
 end
 
-task :default => :spec
+namespace :coffee do
+  desc 'compile coffee files'
+  task :compile do
+    Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "lib"))}/**/*.coffee"].each do |coffee|
+      File.open(coffee.gsub(/\.coffee$/, ""), 'w') {|f| f.write(CoffeeScript.compile(File.read(coffee))) }
+    end
+    puts "Coffee files compiled"
+  end
+end
+
+task :default => ["coffee:compile", :spec]
 
