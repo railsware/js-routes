@@ -1,4 +1,5 @@
 # JsRoutes
+[![Build Status](https://travis-ci.org/railsware/js-routes.png)](https://travis-ci.org/railsware/js-routes)
 
 Generates javascript file that defines all Rails named routes as javascript helpers
 
@@ -26,7 +27,7 @@ Also in order to flush asset pipeline cache sometimes you might need to run:
 rake tmp:cache:clear
 ```
 
-This cache is not flushed on server restart in development environment. 
+This cache is not flushed on server restart in development environment.
 
 **Important:** If routes.js file is not updated after some configuration change you need to run this command again.
 
@@ -46,17 +47,17 @@ Available options:
   * Note that currently only optional parameters (like `:format`) can be defaulted.
   * Example: {:format => "json"}
   * Default: {}
-* `exclude` - Array of regexps to exclude from js routes. 
+* `exclude` - Array of regexps to exclude from js routes.
   * Note that regexp applied to **named route** not to *URL*
   * Default: []
-* `include` - Array of regexps to include in js routes. 
+* `include` - Array of regexps to include in js routes.
   * Note that regexp applied to **named route** not to *URL*
   * Default: []
-* `namespace` - global object used to access routes. 
+* `namespace` - global object used to access routes.
   * Supports nested namespace like `MyProject.routes`
   * Default: `Routes`
-* `prefix` - String representing a url path to prepend to all paths. 
-  * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only. 
+* `prefix` - String representing a url path to prepend to all paths.
+  * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only.
   * Default: blank
 
 
@@ -105,7 +106,7 @@ jQuery.extend(window, Routes)
 
 ## What about security?
 
-js-routes itself do not have security holes. It makes URLs 
+js-routes itself do not have security holes. It makes URLs
 without access protection more reachable by potential attacker.
 In order to prevent this use `:exclude` option for sensitive urls like `/admin_/`
 
@@ -119,7 +120,7 @@ Spork.trap_method(JsRoutes, :generate!)
 
 ## Advantages over alternatives
 
-There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept. 
+There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept.
 Advantages of this one are:
 
 * Rails3 support
@@ -129,4 +130,4 @@ Advantages of this one are:
 
 #### Thanks to [Contributors](https://github.com/railsware/js-routes/contributors)
 
-#### Have fun 
+#### Have fun
