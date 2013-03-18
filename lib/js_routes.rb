@@ -1,3 +1,4 @@
+require 'js_routes/version'
 class JsRoutes
 
   #
@@ -93,9 +94,9 @@ class JsRoutes
   end
 
   def deprecated_default_format
-    if @options.key?(:default_format) 
+    if @options.key?(:default_format)
       warn("default_format option is deprecated. Use default_url_options = {:format => <format>} instead")
-      {:format => @options[:default_format]} 
+      {:format => @options[:default_format]}
     else
       {}
     end
