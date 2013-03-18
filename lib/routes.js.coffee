@@ -30,7 +30,8 @@ Utils =
 
   set_default_url_options: (optional_parts, options) ->
     for part, i in optional_parts
-      options[part] = defaults.default_url_options[part] if not options.hasOwnProperty(part) and defaults.default_url_options.hasOwnProperty(part)
+      if not options.hasOwnProperty(part) and defaults.default_url_options.hasOwnProperty(part)
+        options[part] = defaults.default_url_options[part]
 
   extract_anchor: (options) ->
     anchor = (if options.hasOwnProperty("anchor") then options.anchor else null)
@@ -76,15 +77,15 @@ Utils =
     result += @visit(route, parameters)
     Utils.clean_path(result + anchor) + Utils.serialize(parameters)
   #
-  #     * This function is JavaScript impelementation of the
-  #     * Journey::Visitors::Formatter that builds route by given parameters
-  #     * from route binary tree.
-  #     * Binary tree is serialized in the following way:
-  #     * [node type, left node, right node ]
-  #     *
-  #     * @param  {Boolean} optional  Marks the currently visited branch as optional.
-  #     *   If set to `true`, this method will not throw when encountering
-  #     *   a missing parameter (used in recursive calls).
+  # This function is JavaScript impelementation of the
+  # Journey::Visitors::Formatter that builds route by given parameters
+  # from route binary tree.
+  # Binary tree is serialized in the following way:
+  # [node type, left node, right node ]
+  #
+  # @param  {Boolean} optional  Marks the currently visited branch as optional.
+  # If set to `true`, this method will not throw when encountering
+  # a missing parameter (used in recursive calls).
   #
   visit: (route, parameters, optional) ->
     [type, left, right] = route
@@ -110,10 +111,10 @@ Utils =
         else
           throw new ParameterMissing("Route parameter missing: #{left}")
       #
-      #         * I don't know what is this node type
-      #         * Please send your PR if you do
+      # I don't know what is this node type
+      # Please send your PR if you do
       #
-      #case NodeTypes.OR:
+      # when NodeTypes.OR:
       else
         throw new Error("Unknown Rails node type")
 
