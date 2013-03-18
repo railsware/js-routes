@@ -12,7 +12,6 @@ end
 require 'bundler/gem_tasks'
 require 'rspec/core'
 require 'rspec/core/rake_task'
-require 'coffee-script'
 
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern =  FileList['spec/**/*_spec.rb'].sort_by do|n|
@@ -22,15 +21,5 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
   end
 end
 
-namespace :coffee do
-  desc 'compile coffee files'
-  task :compile do
-    Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "lib"))}/**/*.coffee"].each do |coffee|
-      File.open(coffee.gsub(/\.coffee$/, ""), 'w') {|f| f.write(CoffeeScript.compile(File.read(coffee))) }
-    end
-    puts "Coffee files compiled"
-  end
-end
-
-task :default => ["coffee:compile", :spec]
+task :default => :spec
 

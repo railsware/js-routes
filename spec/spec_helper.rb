@@ -8,6 +8,7 @@ require 'js-routes'
 require "v8"
 require "cgi"
 require "active_support/core_ext/hash/slice"
+require 'coffee-script'
 
 def jscontext
   @context ||= V8::Context.new
@@ -96,6 +97,11 @@ RSpec.configure do |config|
     jscontext[:log] = lambda {|arg| puts arg.inspect}
   end
   config.before(:all) do
+    # compile all js files begin
+    Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))}/**/*.coffee"].each do |coffee|
+      File.open(coffee.gsub(/\.coffee$/, ""), 'w') {|f| f.write(CoffeeScript.compile(File.read(coffee))) }
+    end
+    # compile all js files end
     draw_routes
   end
 end
