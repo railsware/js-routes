@@ -34,26 +34,27 @@ Utils =
         options[part] = defaults.default_url_options[part]
 
   extract_anchor: (options) ->
-    anchor = (if options.hasOwnProperty("anchor") then options.anchor else null)
-    options.anchor = null
-    (if anchor then "##{anchor}" else "")
+    anchor = ""
+    if options.hasOwnProperty("anchor")
+      anchor = "##{options.anchor}"
+      options.anchor = null
+    anchor
 
   extract_options: (number_of_params, args) ->
-    if args.length > number_of_params
-      (if typeof (args[args.length - 1]) is "object" then args.pop() else {})
-    else
-      {}
+    ret_value = {}
+    if args.length > number_of_params and typeof (args[args.length - 1]) is "object"
+      ret_value = args.pop()
+    ret_value
 
   path_identifier: (object) ->
     return "0"  if object is 0
     # null, undefined, false or ''
     return ""  unless object
+    property = object
     if typeof (object) is "object"
       property = object.to_param or object.id or object
       property = property.call(object) if typeof (property) is "function"
-      property.toString()
-    else
-      object.toString()
+    property.toString()
 
   clone: (obj) ->
     return obj if null is obj or "object" isnt typeof obj
@@ -72,10 +73,8 @@ Utils =
     throw new Error("Too many parameters provided for path") if args.length > required_parameters.length
     parameters = @prepare_parameters(required_parameters, args, opts)
     @set_default_url_options optional_parts, parameters
-    result = Utils.get_prefix()
-    anchor = Utils.extract_anchor(parameters)
-    result += @visit(route, parameters)
-    Utils.clean_path(result + anchor) + Utils.serialize(parameters)
+    result = "#{Utils.get_prefix()}#{@visit(route, parameters)}"
+    Utils.clean_path("#{result}#{Utils.extract_anchor(parameters)}") + Utils.serialize(parameters)
   #
   # This function is JavaScript impelementation of the
   # Journey::Visitors::Formatter that builds route by given parameters
@@ -90,17 +89,15 @@ Utils =
   visit: (route, parameters, optional) ->
     [type, left, right] = route
     switch type
-      when NodeTypes.GROUP
+      when NodeTypes.GROUP, NodeTypes.STAR
         @visit left, parameters, true
-      when NodeTypes.STAR
-        @visit left, parameters, true
-      when NodeTypes.CAT
-        leftPart = @visit(left, parameters, optional)
-        rightPart = @visit(right, parameters, optional)
-        return "" if optional and not (leftPart and rightPart)
-        "#{leftPart}#{rightPart}"
       when NodeTypes.LITERAL, NodeTypes.SLASH, NodeTypes.DOT
         left
+      when NodeTypes.CAT
+        left_part = @visit(left, parameters, optional)
+        right_part = @visit(right, parameters, optional)
+        return "" if optional and not (left_part and right_part)
+        "#{left_part}#{right_part}"
       when NodeTypes.SYMBOL
         value = parameters[left]
         if value?
@@ -120,7 +117,7 @@ Utils =
 
   get_prefix: ->
     prefix = defaults.prefix
-    prefix = (if prefix.match("/$") then prefix else (prefix + "/")) if prefix isnt ""
+    prefix = (if prefix.match("/$") then prefix else "#{prefix}/") if prefix isnt ""
     prefix
 
   namespace: (root, namespaceString) ->
