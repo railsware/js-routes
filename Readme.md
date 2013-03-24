@@ -59,7 +59,7 @@ Available options:
 * `prefix` - String representing a url path to prepend to all paths.
   * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only.
   * Default: blank
-* `camel_case` - Generate camel case route names.
+* `camel_case` (version >= 0.8.8) - Generate camel case route names.
   * Default: false
 
 You can generate routes files on the application side like this:
