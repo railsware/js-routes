@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe JsRoutes, "options" do
-  
+
   before(:each) do
     evaljs(_presetup)
     with_warnings(_warnings) do
@@ -14,7 +14,7 @@ describe JsRoutes, "options" do
   let(:_warnings) { true }
 
   context "when exclude is specified" do
-    
+
     let(:_options) { {:exclude => /^admin_/} }
 
     it "should exclude specified routes from file" do
@@ -26,7 +26,7 @@ describe JsRoutes, "options" do
     end
   end
   context "when include is specified" do
-    
+
     let(:_options) { {:include => /^admin_/} }
 
     it "should exclude specified routes from file" do
@@ -39,7 +39,7 @@ describe JsRoutes, "options" do
   end
 
   context "when prefix with trailing slash is specified" do
-    
+
     let(:_options) { {:prefix => "/myprefix/" } }
 
     it "should render routing with prefix" do
@@ -54,22 +54,22 @@ describe JsRoutes, "options" do
   end
 
   context "when prefix with http:// is specified" do
-    
+
     let(:_options) { {:prefix => "http://localhost:3000" } }
 
     it "should render routing with prefix" do
       evaljs("Routes.inbox_path(1)").should == _options[:prefix] + routes.inbox_path(1)
     end
   end
-  
+
   context "when prefix without trailing slash is specified" do
-    
+
     let(:_options) { {:prefix => "/myprefix" } }
 
     it "should render routing with prefix" do
       evaljs("Routes.inbox_path(1)").should == "/myprefix#{routes.inbox_path(1)}"
     end
-    
+
     it "should render routing with prefix set in JavaScript" do
       evaljs("Routes.options.prefix = '/newprefix'")
       evaljs("Routes.inbox_path(1)").should == "/newprefix#{routes.inbox_path(1)}"
@@ -80,7 +80,7 @@ describe JsRoutes, "options" do
   context "when default_format is specified" do
     let(:_options) { {:default_format => "json"} }
     let(:_warnings) { nil }
-    
+
     it "should render routing with default_format" do
       evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1, :format => "json")
     end
@@ -110,7 +110,7 @@ describe JsRoutes, "options" do
     end
   end
 
-  describe "when nested namespace option is specified" do 
+  describe "when nested namespace option is specified" do
     context "and defined on client" do
       let(:_presetup) { "window.PHM = {}" }
       let(:_options) { {:namespace => "PHM.Routes"} }
@@ -123,7 +123,7 @@ describe JsRoutes, "options" do
       let(:_options) { {:namespace => "PHM.Routes"} }
       it "should initialize namespace" do
         evaljs("window.PHM.Routes.inbox_path").should_not be_nil
-      end 
+      end
     end
 
     context "and some parts are defined" do
@@ -149,6 +149,26 @@ describe JsRoutes, "options" do
       it "should use this opions to fill optional parameters" do
         pending
         evaljs("Routes.inbox_messages_path()").should == routes.inbox_messages_path(:inbox_id => 12)
+      end
+    end
+  end
+
+  describe "camel_case" do
+    context "with default option" do
+      let(:_options) { Hash.new }
+      it "should use snake case routes" do
+        evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
+        evaljs("Routes.inboxPath").should be_nil
+      end
+    end
+
+    context "with true" do
+      let(:_options) { { :camel_case => true } }
+      it "should generate camel case routes" do
+        evaljs("Routes.inbox_path").should be_nil
+        evaljs("Routes.inboxPath").should_not be_nil
+        evaljs("Routes.inboxPath(1)").should == routes.inbox_path(1)
+        evaljs("Routes.inboxMessagesPath(10)").should == routes.inbox_messages_path(:inbox_id => 10)
       end
     end
   end
