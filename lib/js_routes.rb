@@ -13,6 +13,7 @@ class JsRoutes
     :include => //,
     :file => DEFAULT_PATH,
     :prefix => "",
+    :camel_case => false,
     :default_url_options => {}
   }
 
@@ -150,9 +151,11 @@ class JsRoutes
     required_parts = route.required_parts.clone
     optional_parts = route.optional_parts.clone
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
+    route_name = "#{name.join('_')}_path"
+    route_name = route_name.camelize(:lower) if true == @options[:camel_case]
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
-  #{name.join('_')}_path: function(#{build_params(required_parts)}) {
+  #{route_name}: function(#{build_params(required_parts)}) {
   return Utils.build_path(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
   }
   JS
