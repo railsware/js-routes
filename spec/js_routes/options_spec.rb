@@ -189,6 +189,7 @@ describe JsRoutes, "options" do
         evaljs("Routes.inbox_url").should_not be_nil
         evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
         evaljs("Routes.inbox_url(1)").should == "http://localhost#{routes.inbox_path(1)}"
+        evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })").should == "http://localhost#{routes.inbox_path(1, :test_key => "test_val")}"
       end
     end
 
