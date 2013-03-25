@@ -172,4 +172,50 @@ describe JsRoutes, "options" do
       end
     end
   end
+
+  describe "url_links" do
+    context "with default option" do
+      let(:_options) { Hash.new }
+      it "should generate only path links" do
+        evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
+        evaljs("Routes.inbox_url").should be_nil
+      end
+    end
+
+    context "with host" do
+      let(:_options) { { :url_links => "http://localhost" } }
+      it "should generate path and url links" do
+        evaljs("Routes.inbox_path").should_not be_nil
+        evaljs("Routes.inbox_url").should_not be_nil
+        evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
+        evaljs("Routes.inbox_url(1)").should == "http://localhost#{routes.inbox_path(1)}"
+      end
+    end
+
+    context "with invalid host" do
+      it "should raise error" do
+        expect { JsRoutes.generate({ :url_links => "localhost" }) }.to raise_error RuntimeError
+      end
+    end
+
+    context "with host and camel_case" do
+      let(:_options) { { :camel_case => true, :url_links => "http://localhost" } }
+      it "should generate path and url links" do
+        evaljs("Routes.inboxPath").should_not be_nil
+        evaljs("Routes.inboxUrl").should_not be_nil
+        evaljs("Routes.inboxPath(1)").should == routes.inbox_path(1)
+        evaljs("Routes.inboxUrl(1)").should == "http://localhost#{routes.inbox_path(1)}"
+      end
+    end
+
+    context "with host and prefix" do
+      let(:_options) { { :prefix => "/api", :url_links => "https://example.com" } }
+      it "should generate path and url links" do
+        evaljs("Routes.inbox_path").should_not be_nil
+        evaljs("Routes.inbox_url").should_not be_nil
+        evaljs("Routes.inbox_path(1)").should == "/api#{routes.inbox_path(1)}"
+        evaljs("Routes.inbox_url(1)").should == "https://example.com/api#{routes.inbox_path(1)}"
+      end
+    end
+  end
 end
