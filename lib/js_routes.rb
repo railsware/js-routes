@@ -1,4 +1,6 @@
+require 'uri'
 require 'js_routes/version'
+
 class JsRoutes
 
   #
@@ -12,7 +14,8 @@ class JsRoutes
     :exclude => [],
     :include => //,
     :file => DEFAULT_PATH,
-    :prefix => "",
+    :prefix => nil,
+    :url_links => nil,
     :camel_case => false,
     :default_url_options => {}
   }
@@ -28,6 +31,8 @@ class JsRoutes
     :SLASH => 7,
     :DOT => 8
   }
+
+  LAST_OPTIONS_KEY = "options".freeze
 
   class Options < Struct.new(*DEFAULTS.keys)
     def to_hash
@@ -89,7 +94,7 @@ class JsRoutes
     js = File.read(File.dirname(__FILE__) + "/routes.js")
     js.gsub!("NAMESPACE", @options[:namespace])
     js.gsub!("DEFAULT_URL_OPTIONS", json(@options[:default_url_options].merge(deprecated_default_format)))
-    js.gsub!("PREFIX", @options[:prefix])
+    js.gsub!("PREFIX", @options[:prefix] || "")
     js.gsub!("NODE_TYPES", json(NODE_TYPES))
     js.gsub!("ROUTES", js_routes)
   end
@@ -153,12 +158,26 @@ class JsRoutes
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     route_name = "#{name.join('_')}_path"
     route_name = route_name.camelize(:lower) if true == @options[:camel_case]
+    url_link = generate_url_link(name, route_name, required_parts)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{route_name}: function(#{build_params(required_parts)}) {
   return Utils.build_path(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
-  }
+  }#{",\n" + url_link if url_link.length > 0}
   JS
+  end
+
+  def generate_url_link(name, route_name, required_parts)
+    return "" unless @options[:url_links]
+    raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
+    url_route_name = "#{name.join('_')}_url"
+    url_route_name = url_route_name.camelize(:lower) if true == @options[:camel_case]
+    _ = <<-JS.strip!
+    #{url_route_name}: function(#{build_params(required_parts)}) {
+    if (!#{LAST_OPTIONS_KEY}){ #{LAST_OPTIONS_KEY} = {}; }
+    return "" + #{@options[:url_links].inspect} + this.#{route_name}(#{build_params(required_parts)});
+    }
+    JS
   end
 
   def json(string)
@@ -170,7 +189,7 @@ class JsRoutes
       # prepending each parameter name with underscore
       # to prevent conflict with JS reserved words
       "_" + name.to_s
-    end << "options"
+    end << LAST_OPTIONS_KEY
     params.join(", ")
   end
 

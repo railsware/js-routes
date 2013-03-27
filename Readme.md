@@ -61,6 +61,8 @@ Available options:
   * Default: blank
 * `camel_case` (version >= 0.8.8) - Generate camel case route names.
   * Default: false
+* `url_links` (version >= 0.8.9) - Generate additional url links, where url_links value is beginning of url routes (ex: http[s]://example.com).
+  * Default: false
 
 You can generate routes files on the application side like this:
 
