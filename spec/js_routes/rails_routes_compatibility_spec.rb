@@ -73,17 +73,35 @@ describe JsRoutes, "compatibility with Rails"  do
 
   context "routes globbing" do
     it "should be supported as parameters" do
-      evaljs("Routes.book_path('thrillers', 1)").should == routes.book_path('thrillers', 1)
+      evaljs("Routes.book_path(1, 'thrillers')").should == routes.book_path(1, 'thrillers')
+    end
+
+    it "should support routes globbing as array" do
+      evaljs("Routes.book_path(1, ['thrillers'])").should == routes.book_path(1, 'thrillers')
+    end
+
+    it "should bee support routes globbing as array" do
+      evaljs("Routes.book_path(1, [1, 2, 3])").should == routes.book_path(1, [1, 2, 3])
     end
 
     it "should support routes globbing as hash" do
-      pending
-      evaljs("Routes.book_path(1, {section: 'thrillers'})").should == routes.book_path(1, :section => 'thrillers')
+      evaljs("Routes.book_path(1, {section: 'a_test'})").should == routes.book_path(1, {:section => 'a_test'})
     end
 
     it "should bee support routes globbing as hash" do
-      pending
-      evaljs("Routes.book_path(1)").should == routes.book_path(1)
+      evaljs("Routes.book_path(1, {section: 'a_test/b_test/c_test'})").should == routes.book_path(1, {:section => 'a_test/b_test/c_test'})
+    end
+
+    it "should bee support routes globbing as hash in hash" do
+      evaljs("Routes.book_path(1, {section: {a: '1', b: '2'}})").should == routes.book_path(1, {:section => { :a => "1", :b => "2"}})
+    end
+
+    it "should bee support routes globbing as hash in hash with array" do
+      evaljs("Routes.book_path(1, {section: {a: '1', b: ['t', 'c']}})").should == routes.book_path(1, {:section => { :a => "1", :b => ["t", "c"]}})
+    end
+
+    it "should support routes globbing as hash in hash even without named key" do
+      evaljs("Routes.book_path(1, {a: '1', b: ['t', 'c']}, {c: '1'})").should == routes.book_path(1, {:section => { :a => "1", :b => ["t", "c"]}, :c => "1"})
     end
   end
 
@@ -98,6 +116,7 @@ describe JsRoutes, "compatibility with Rails"  do
       it "should support serialization of objects" do
         evaljs("window.jQuery.param(#{_value.to_json})").should == _value.to_param
         evaljs("Routes.inboxes_path(#{_value.to_json})").should == routes.inboxes_path(_value)
+        evaljs("Routes.inbox_path(1, #{_value.to_json})").should == routes.inbox_path(1, _value)
       end
     end
     context "when parameters is a hash" do

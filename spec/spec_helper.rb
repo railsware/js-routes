@@ -67,7 +67,7 @@ def draw_routes
 
     match "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
 
-    match 'books/*section/:title' => 'books#show', :as => :book
+    match 'books/:title/*section' => 'books#show', :as => :book
 
     mount BlogEngine::Engine => "/blog", :as => :blog_app
 
