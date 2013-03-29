@@ -9,8 +9,11 @@ Utils =
   serialize: (obj) ->
     return ""  unless obj
     if window.jQuery
+      has_values = false
+      for key of obj
+        has_values = true if obj[key]
       result = window.jQuery.param(obj)
-      return (if not result then "" else "?#{result}")
+      return (if (has_values && result) then "?#{result}" else "")
     s = []
     for own key, prop of obj
       if prop?
