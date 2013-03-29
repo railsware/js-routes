@@ -112,6 +112,14 @@ describe JsRoutes, "compatibility with Rails"  do
       end
       it_should_behave_like 'serialization'
     end
+    context "when parameters include null value" do
+      let(:_value) do
+        {id: nil}
+      end
+      it "should support routes with parameters" do
+        evaljs("Routes.frood_path(1)").should == routes.frood_path(1)
+      end
+    end
   end
 
   context "using optional path fragments" do

@@ -76,6 +76,8 @@ def draw_routes
     get '/json_only' => "foo#foo", :format => true, :constraints => {:format => /json/}, :as => :json_only
 
     get '/привет' => "foo#foo", :as => :hello
+
+    get '/froods/:id' => "foo#foo", :as => :frood
   end
 
 end
