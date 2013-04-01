@@ -153,15 +153,14 @@ class JsRoutes
   def build_js(route, parent_route)
     name = [parent_route.try(:name), route.name].compact
     parent_spec = parent_route.try(:path).try(:spec)
-    required_parts = route.required_parts.clone
-    optional_parts = route.optional_parts.clone
+    required_parts, optional_parts = route.required_parts.clone, route.optional_parts.clone
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
-    route_name = "#{name.join('_')}_path"
-    route_name = route_name.camelize(:lower) if true == @options[:camel_case]
+    route_name = generate_route_name(name)
     url_link = generate_url_link(name, route_name, required_parts)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{route_name}: function(#{build_params(required_parts)}) {
+  if (!#{LAST_OPTIONS_KEY}){ #{LAST_OPTIONS_KEY} = {}; }
   return Utils.build_path(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
   }#{",\n" + url_link if url_link.length > 0}
   JS
@@ -170,14 +169,16 @@ class JsRoutes
   def generate_url_link(name, route_name, required_parts)
     return "" unless @options[:url_links]
     raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
-    url_route_name = "#{name.join('_')}_url"
-    url_route_name = url_route_name.camelize(:lower) if true == @options[:camel_case]
     _ = <<-JS.strip!
-    #{url_route_name}: function(#{build_params(required_parts)}) {
-    if (!#{LAST_OPTIONS_KEY}){ #{LAST_OPTIONS_KEY} = {}; }
+    #{generate_route_name(name, true)}: function(#{build_params(required_parts)}) {
     return "" + #{@options[:url_links].inspect} + this.#{route_name}(#{build_params(required_parts)});
     }
     JS
+  end
+
+  def generate_route_name(name, is_url = false)
+    route_name = "#{name.join('_')}_#{is_url ? "url" : "path"}"
+    @options[:camel_case] ? route_name.camelize(:lower) : route_name
   end
 
   def json(string)
@@ -188,7 +189,7 @@ class JsRoutes
     params = required_parts.map do |name|
       # prepending each parameter name with underscore
       # to prevent conflict with JS reserved words
-      "_" + name.to_s
+      "_#{name}"
     end << LAST_OPTIONS_KEY
     params.join(", ")
   end

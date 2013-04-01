@@ -76,14 +76,28 @@ describe JsRoutes, "compatibility with Rails"  do
       evaljs("Routes.book_path('thrillers', 1)").should == routes.book_path('thrillers', 1)
     end
 
-    it "should support routes globbing as hash" do
-      pending
-      evaljs("Routes.book_path(1, {section: 'thrillers'})").should == routes.book_path(1, :section => 'thrillers')
+    it "should support routes globbing as array" do
+      evaljs("Routes.book_path(['thrillers'], 1)").should == routes.book_path(['thrillers'], 1)
+    end
+
+    it "should bee support routes globbing as array" do
+      evaljs("Routes.book_path([1, 2, 3], 1)").should == routes.book_path([1, 2, 3], 1)
     end
 
     it "should bee support routes globbing as hash" do
-      pending
-      evaljs("Routes.book_path(1)").should == routes.book_path(1)
+      evaljs("Routes.book_path('a_test/b_test/c_test', 1)").should == routes.book_path('a_test/b_test/c_test', 1)
+    end
+
+    it "should support routes globbing as array with optional params" do
+      evaljs("Routes.book_path([1, 2, 3, 5], 1, {c: '1'})").should == routes.book_path([1, 2, 3, 5], 1, { :c => "1" })
+    end
+
+    it "should support routes globbing in book_title route as array" do
+      evaljs("Routes.book_title_path('john', ['thrillers', 'comedian'])").should == routes.book_title_path('john', ['thrillers', 'comedian'])
+    end
+
+    it "should support routes globbing in book_title route as array with optional params" do
+      evaljs("Routes.book_title_path('john', ['thrillers', 'comedian'], {some_key: 'some_value'})").should == routes.book_title_path('john', ['thrillers', 'comedian'], {:some_key => 'some_value'})
     end
   end
 
@@ -98,6 +112,7 @@ describe JsRoutes, "compatibility with Rails"  do
       it "should support serialization of objects" do
         evaljs("window.jQuery.param(#{_value.to_json})").should == _value.to_param
         evaljs("Routes.inboxes_path(#{_value.to_json})").should == routes.inboxes_path(_value)
+        evaljs("Routes.inbox_path(1, #{_value.to_json})").should == routes.inbox_path(1, _value)
       end
     end
     context "when parameters is a hash" do
@@ -201,6 +216,26 @@ describe JsRoutes, "compatibility with Rails"  do
       evaljs(
         "Routes.inbox_message_path({id:1, to_param: 'my'}, {id:2}, {custom: true, format: 'json'})"
       ).should == routes.inbox_message_path(inbox, 2, :custom => true, :format => "json")
+    end
+
+    context "when globbing" do
+      it "should prefer to_param property over id property" do
+        evaljs("Routes.book_path({id: 1, to_param: 'my'}, 1)").should == routes.book_path(inbox, 1)
+      end
+
+      it "should call to_param if it is a function" do
+        evaljs("Routes.book_path({id: 1, to_param: function(){ return 'my';}}, 1)").should == routes.book_path(inbox, 1)
+      end
+
+      it "should call id if it is a function" do
+        evaljs("Routes.book_path({id: function() { return 'technical';}}, 1)").should == routes.book_path('technical', 1)
+      end
+
+      it "should support options argument" do
+        evaljs(
+          "Routes.book_path({id:1, to_param: 'my'}, {id:2}, {custom: true, format: 'json'})"
+        ).should == routes.book_path(inbox, 2, :custom => true, :format => "json")
+      end
     end
   end
 end
