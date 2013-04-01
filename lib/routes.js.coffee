@@ -129,12 +129,6 @@ Utils =
     parameters[left] = switch @getObjectType(value)
       when "array"
         value.join("/")
-      when "object"
-        v = if value[left] then value[left] else value
-        if @getObjectType(v) is "string"
-          v
-        else
-          @serialize(v)
       else
         value
     @visit route, parameters, optional
