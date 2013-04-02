@@ -6,21 +6,21 @@ defaults =
 
 NodeTypes = NODE_TYPES
 Utils =
+
   serialize: (obj) ->
     return ""  unless obj
     if window.jQuery
       result = window.jQuery.param(obj)
-      return (if not result then "" else "?#{result}")
+      return (if not result then "" else result)
     s = []
-    for own key, prop of obj
-      if prop?
-        if prop instanceof Array
-          for val, i in prop
-            s.push "#{key}#{encodeURIComponent("[]")}=#{encodeURIComponent(val.toString())}"
-        else
-          s.push "#{key}=#{encodeURIComponent(prop.toString())}"
+    for own key, prop of obj when prop?
+      if @getObjectType(prop) is "array"
+        for val, i in prop
+          s.push "#{key}#{encodeURIComponent("[]")}=#{encodeURIComponent(val.toString())}"
+      else
+        s.push "#{key}=#{encodeURIComponent(prop.toString())}"
     return "" unless s.length
-    "?#{s.join("&")}"
+    s.join("&")
 
   clean_path: (path) ->
     path = path.split("://")
@@ -37,12 +37,12 @@ Utils =
     anchor = ""
     if options.hasOwnProperty("anchor")
       anchor = "##{options.anchor}"
-      options.anchor = null
+      delete options.anchor
     anchor
 
   extract_options: (number_of_params, args) ->
     ret_value = {}
-    if args.length > number_of_params and typeof (args[args.length - 1]) is "object"
+    if args.length > number_of_params and @getObjectType(args[args.length - 1]) is "object"
       ret_value = args.pop()
     ret_value
 
@@ -51,13 +51,13 @@ Utils =
     # null, undefined, false or ''
     return ""  unless object
     property = object
-    if typeof (object) is "object"
+    if @getObjectType(object) is "object"
       property = object.to_param or object.id or object
-      property = property.call(object) if typeof (property) is "function"
+      property = property.call(object) if @getObjectType(property) is "function"
     property.toString()
 
   clone: (obj) ->
-    return obj if null is obj or "object" isnt typeof obj
+    return obj if !obj? or "object" isnt @getObjectType(obj)
     copy = obj.constructor()
     copy[key] = attr for own key, attr of obj
     copy
@@ -73,8 +73,10 @@ Utils =
     throw new Error("Too many parameters provided for path") if args.length > required_parameters.length
     parameters = @prepare_parameters(required_parameters, args, opts)
     @set_default_url_options optional_parts, parameters
-    result = "#{Utils.get_prefix()}#{@visit(route, parameters)}"
-    Utils.clean_path("#{result}#{Utils.extract_anchor(parameters)}") + Utils.serialize(parameters)
+    result = "#{@get_prefix()}#{@visit(route, parameters)}"
+    url = Utils.clean_path("#{result}#{@extract_anchor(parameters)}")
+    url += "?#{url_params}" if (url_params = @serialize(parameters)).length
+    url
   #
   # This function is JavaScript impelementation of the
   # Journey::Visitors::Formatter that builds route by given parameters
@@ -86,11 +88,13 @@ Utils =
   # If set to `true`, this method will not throw when encountering
   # a missing parameter (used in recursive calls).
   #
-  visit: (route, parameters, optional) ->
+  visit: (route, parameters, optional = false) ->
     [type, left, right] = route
     switch type
-      when NodeTypes.GROUP, NodeTypes.STAR
+      when NodeTypes.GROUP
         @visit left, parameters, true
+      when NodeTypes.STAR
+        @visit_globbing left, parameters, true
       when NodeTypes.LITERAL, NodeTypes.SLASH, NodeTypes.DOT
         left
       when NodeTypes.CAT
@@ -101,7 +105,7 @@ Utils =
       when NodeTypes.SYMBOL
         value = parameters[left]
         if value?
-          parameters[left] = null
+          delete parameters[left]
           return @path_identifier(value)
         if optional
           "" # missing parameter
@@ -115,10 +119,64 @@ Utils =
       else
         throw new Error("Unknown Rails node type")
 
+  #
+  # This method convert value for globbing in right value for rails route
+  #
+  visit_globbing: (route, parameters, optional) ->
+    [type, left, right] = route
+    value = parameters[left]
+    return @visit(route, parameters, optional) unless value?
+    parameters[left] = switch @getObjectType(value)
+      when "array"
+        value.join("/")
+      else
+        value
+    @visit route, parameters, optional
+
+  #
+  # This method check and return prefix from options
+  #
   get_prefix: ->
     prefix = defaults.prefix
     prefix = (if prefix.match("/$") then prefix else "#{prefix}/") if prefix isnt ""
     prefix
+
+  #
+  # This is helper method to define object type.
+  # The typeof operator is probably the biggest design flaw of JavaScript, simply because it's basically completely broken.
+  #
+  # Value               Class      Type
+  # -------------------------------------
+  # "foo"               String     string
+  # new String("foo")   String     object
+  # 1.2                 Number     number
+  # new Number(1.2)     Number     object
+  # true                Boolean    boolean
+  # new Boolean(true)   Boolean    object
+  # new Date()          Date       object
+  # new Error()         Error      object
+  # [1,2,3]             Array      object
+  # new Array(1, 2, 3)  Array      object
+  # new Function("")    Function   function
+  # /abc/g              RegExp     object
+  # new RegExp("meow")  RegExp     object
+  # {}                  Object     object
+  # new Object()        Object     object
+  #
+  # What is why I use Object.prototype.toString() to know better type of variable. Or use jQuery.type, if it available.
+  # _classToTypeCache used for perfomance cache of types map (underscore at the beginning mean private method - of course it doesn't realy private).
+  #
+  _classToTypeCache: null
+  _classToType: ->
+    return @_classToTypeCache if @_classToTypeCache?
+    @_classToTypeCache = {}
+    for name in "Boolean Number String Function Array Date RegExp Undefined Null".split(" ")
+      @_classToTypeCache["[object " + name + "]"] = name.toLowerCase()
+    @_classToTypeCache
+  getObjectType: (obj) ->
+    return window.jQuery.type(obj) if window.jQuery and window.jQuery.type?
+    strType = Object::toString.call(obj)
+    @_classToType()[strType] or "object"
 
   namespace: (root, namespaceString) ->
     parts = (if namespaceString then namespaceString.split(".") else [])
