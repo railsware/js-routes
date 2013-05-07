@@ -7,20 +7,31 @@ defaults =
 NodeTypes = NODE_TYPES
 Utils =
 
-  serialize: (obj) ->
+  serialize: (obj, prefix = null) ->
     return ""  unless obj
     if window.jQuery
       result = window.jQuery.param(obj)
       return (if not result then "" else result)
     s = []
     for own key, prop of obj when prop?
+      key = "#{prefix}[#{key}]" if prefix?
       if @getObjectType(prop) is "array"
+        key = key + "[]"
         for val, i in prop
-          s.push "#{key}#{encodeURIComponent("[]")}=#{encodeURIComponent(val.toString())}"
+          if @getObjectType(val) is "object"
+            s.push @serialize(val, key)
+          else
+            s.push @encode_parameter(key, val)
       else
-        s.push "#{key}=#{encodeURIComponent(prop.toString())}"
+        if @getObjectType(prop) is "object"
+          s.push @serialize(prop, key)
+        else
+          s.push @encode_parameter(key, prop)
     return "" unless s.length
     s.join("&")
+
+  encode_parameter: (key, value) ->
+    "#{encodeURIComponent(key.toString())}=#{encodeURIComponent(value.toString())}"
 
   clean_path: (path) ->
     path = path.split("://")

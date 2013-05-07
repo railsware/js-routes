@@ -39,6 +39,11 @@ describe JsRoutes, "compatibility with Rails"  do
     evaljs("Routes.inbox_path(1, {hello: ['world', 'mars']})").should == routes.inbox_path(1, :hello => [:world, :mars])
   end
 
+  it "should support nested get parameters" do
+    evaljs("Routes.inbox_path(1, {format: 'json', env: 'test', search: { category_ids: [2,5], q: 'hello'}})").should == 
+      routes.inbox_path(1, :env => 'test', :search => {:category_ids => [2,5], :q => "hello"}, :format => "json")
+  end
+
   it "should support null and undefined parameters" do
     evaljs("Routes.inboxes_path({uri: null, key: undefined})").should == routes.inboxes_path(:uri => nil, :key => nil)
   end

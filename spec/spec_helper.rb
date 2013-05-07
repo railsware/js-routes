@@ -95,7 +95,7 @@ RSpec.configure do |config|
     # No need to replace native V8 functions for now
     #jscontext[:cgi] = CGI
     #evaljs("function encodeURIComponent(string) {return cgi.escape(string);}")
-    jscontext[:log] = lambda {|arg| puts arg.inspect}
+    jscontext[:log] = lambda {|context, value| puts value.inspect}
   end
   config.before(:all) do
     # compile all js files begin
