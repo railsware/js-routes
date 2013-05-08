@@ -5,33 +5,33 @@ defaults =
   default_url_options: DEFAULT_URL_OPTIONS
 
 NodeTypes = NODE_TYPES
+
 Utils =
 
-  serialize: (obj, prefix = null) ->
-    return ""  unless obj
+  serialize: (object, prefix = null) ->
+    return ""  unless object
+    if !prefix and !(@get_object_type(object) is "object")
+      throw new Error("Url parameters should be a javascript hash")
+
     if window.jQuery
-      result = window.jQuery.param(obj)
+      result = window.jQuery.param(object)
       return (if not result then "" else result)
+
     s = []
-    for own key, prop of obj when prop?
-      key = "#{prefix}[#{key}]" if prefix?
-      if @getObjectType(prop) is "array"
-        key = key + "[]"
-        for val, i in prop
-          if @getObjectType(val) is "object"
-            s.push @serialize(val, key)
-          else
-            s.push @encode_parameter(key, val)
-      else
-        if @getObjectType(prop) is "object"
+    switch @get_object_type(object)
+      when "array"
+        for element, i in object
+          s.push @serialize(element, prefix + "[]")
+      when "object"
+        for own key, prop of object when prop?
+          key = "#{prefix}[#{key}]" if prefix?
           s.push @serialize(prop, key)
-        else
-          s.push @encode_parameter(key, prop)
+      else
+        if object
+          s.push "#{encodeURIComponent(prefix.toString())}=#{encodeURIComponent(object.toString())}"
+
     return "" unless s.length
     s.join("&")
-
-  encode_parameter: (key, value) ->
-    "#{encodeURIComponent(key.toString())}=#{encodeURIComponent(value.toString())}"
 
   clean_path: (path) ->
     path = path.split("://")
@@ -53,7 +53,7 @@ Utils =
 
   extract_options: (number_of_params, args) ->
     ret_value = {}
-    if args.length > number_of_params and @getObjectType(args[args.length - 1]) is "object"
+    if args.length > number_of_params and @get_object_type(args[args.length - 1]) is "object"
       ret_value = args.pop()
     ret_value
 
@@ -62,13 +62,13 @@ Utils =
     # null, undefined, false or ''
     return ""  unless object
     property = object
-    if @getObjectType(object) is "object"
+    if @get_object_type(object) is "object"
       property = object.to_param or object.id or object
-      property = property.call(object) if @getObjectType(property) is "function"
+      property = property.call(object) if @get_object_type(property) is "function"
     property.toString()
 
   clone: (obj) ->
-    return obj if !obj? or "object" isnt @getObjectType(obj)
+    return obj if !obj? or "object" isnt @get_object_type(obj)
     copy = obj.constructor()
     copy[key] = attr for own key, attr of obj
     copy
@@ -137,7 +137,7 @@ Utils =
     [type, left, right] = route
     value = parameters[left]
     return @visit(route, parameters, optional) unless value?
-    parameters[left] = switch @getObjectType(value)
+    parameters[left] = switch @get_object_type(value)
       when "array"
         value.join("/")
       else
@@ -184,7 +184,7 @@ Utils =
     for name in "Boolean Number String Function Array Date RegExp Undefined Null".split(" ")
       @_classToTypeCache["[object " + name + "]"] = name.toLowerCase()
     @_classToTypeCache
-  getObjectType: (obj) ->
+  get_object_type: (obj) ->
     return window.jQuery.type(obj) if window.jQuery and window.jQuery.type?
     strType = Object::toString.call(obj)
     @_classToType()[strType] or "object"
