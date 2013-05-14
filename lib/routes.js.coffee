@@ -69,6 +69,7 @@ Utils =
 
   build_path: (required_parameters, optional_parts, route, args) ->
     args = Array::slice.call(args)
+    args[args.length - 1] ||= {}
     opts = @extract_options(required_parameters.length, args)
     throw new Error("Too many parameters provided for path") if args.length > required_parameters.length
     parameters = @prepare_parameters(required_parameters, args, opts)
