@@ -80,9 +80,12 @@ Utils =
 
   build_path: (required_parameters, optional_parts, route, args) ->
     args = Array::slice.call(args)
-    args[args.length - 1] ||= {}
+    if args.length > required_parameters.length and !args[args.length - 1]?
+      args[args.length - 1] ||= {}
     opts = @extract_options(required_parameters.length, args)
-    throw new Error("Too many parameters provided for path") if args.length > required_parameters.length
+
+    if args.length > required_parameters.length
+      throw new Error("Too many parameters provided for path")
     parameters = @prepare_parameters(required_parameters, args, opts)
     @set_default_url_options optional_parts, parameters
     result = "#{@get_prefix()}#{@visit(route, parameters)}"

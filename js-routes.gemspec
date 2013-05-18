@@ -29,5 +29,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<guard>, [">= 0"])
   s.add_development_dependency(%q<rb-fsevent>, [">= 0"])
   s.add_development_dependency(%q<guard-coffeescript>, [">= 0"])
+  if RUBY_VERSION >= "1.9"
+    s.add_development_dependency(%q<debugger>, [">= 0"])
+  end
 end
 
