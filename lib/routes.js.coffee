@@ -53,7 +53,7 @@ Utils =
 
   extract_options: (number_of_params, args) ->
     ret_value = {}
-    if args.length > number_of_params and @get_object_type(args[args.length - 1]) is "object"
+    if args.length > number_of_params
       ret_value = args.pop()
     ret_value
 
@@ -80,8 +80,6 @@ Utils =
 
   build_path: (required_parameters, optional_parts, route, args) ->
     args = Array::slice.call(args)
-    if args.length > required_parameters.length and !args[args.length - 1]?
-      args[args.length - 1] ||= {}
     opts = @extract_options(required_parameters.length, args)
 
     if args.length > required_parameters.length
