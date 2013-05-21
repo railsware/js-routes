@@ -50,9 +50,11 @@ Available options:
 * `exclude` - Array of regexps to exclude from js routes.
   * Note that regexp applied to **named route** not to *URL*
   * Default: []
+  * The regexp applies only to the name before the `_path` subfix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
 * `include` - Array of regexps to include in js routes.
   * Note that regexp applied to **named route** not to *URL*
   * Default: []
+  * The regexp applies only to the name before the `_path` subfix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
 * `namespace` - global object used to access routes.
   * Supports nested namespace like `MyProject.routes`
   * Default: `Routes`
