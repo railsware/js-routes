@@ -67,10 +67,10 @@ def draw_routes
       resources :things
     end
 
-    match "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
+    get "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
 
-    match 'books/*section/:title' => 'books#show', :as => :book
-    match 'books/:title/*section' => 'books#show', :as => :book_title
+    get 'books/*section/:title' => 'books#show', :as => :book
+    get 'books/:title/*section' => 'books#show', :as => :book_title
 
     mount BlogEngine::Engine => "/blog", :as => :blog_app
 
