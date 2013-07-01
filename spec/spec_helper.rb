@@ -52,6 +52,8 @@ def draw_routes
       end
     end
 
+    root :to => "inboxes#index" 
+
     namespace :admin do
       resources :users
     end

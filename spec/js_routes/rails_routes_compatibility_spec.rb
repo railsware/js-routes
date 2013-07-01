@@ -76,6 +76,10 @@ describe JsRoutes, "compatibility with Rails"  do
     evaljs("Routes.hello_path()").should == routes.hello_path
   end
 
+  it "should support root_path" do
+    evaljs("Routes.root_path()").should == routes.root_path
+  end
+
   context "routes globbing" do
     it "should be supported as parameters" do
       evaljs("Routes.book_path('thrillers', 1)").should == routes.book_path('thrillers', 1)

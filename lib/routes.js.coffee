@@ -36,7 +36,7 @@ Utils =
   clean_path: (path) ->
     path = path.split("://")
     last_index = path.length - 1
-    path[last_index] = path[last_index].replace(/\/+/g, "/").replace(/\/$/m, "")
+    path[last_index] = path[last_index].replace(/\/+/g, "/").replace(/.\/$/m, "")
     path.join "://"
 
   set_default_url_options: (optional_parts, options) ->
