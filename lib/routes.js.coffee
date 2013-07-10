@@ -86,10 +86,14 @@ Utils =
       throw new Error("Too many parameters provided for path")
     parameters = @prepare_parameters(required_parameters, args, opts)
     @set_default_url_options optional_parts, parameters
+    anchor = @extract_anchor(parameters)
     result = "#{@get_prefix()}#{@visit(route, parameters)}"
-    url = Utils.clean_path("#{result}#{@extract_anchor(parameters)}")
-    url += "?#{url_params}" if (url_params = @serialize(parameters)).length
+    url = Utils.clean_path("#{result}")
+    if (url_params = @serialize(parameters)).length
+      url += "?#{url_params}"
+    url += anchor
     url
+
   #
   # This function is JavaScript impelementation of the
   # Journey::Visitors::Formatter that builds route by given parameters

@@ -60,6 +60,10 @@ describe JsRoutes, "compatibility with Rails"  do
     evaljs("Routes.inbox_path(1, {anchor: 'hello'})").should == routes.inbox_path(1, :anchor => "hello")
   end
 
+  it "should support url anchor and get parameters" do
+    evaljs("Routes.inbox_path(1, {expanded: true, anchor: 'hello'})").should == routes.inbox_path(1, :expanded => true, :anchor => "hello")
+  end
+
   it "should support engine routes" do
     evaljs("Routes.blog_app_posts_path()").should == blog_routes.posts_path()
   end
