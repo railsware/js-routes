@@ -38,6 +38,8 @@ end
 class App < Rails::Application
   # Enable the asset pipeline
   config.assets.enabled = true
+  # initialize_on_precompile
+  config.assets.initialize_on_precompile = true
 end
 
 def draw_routes
