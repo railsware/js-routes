@@ -15,7 +15,7 @@ describe JsRoutes do
     it "should have correct function with arguments signature" do
       should include("inbox_message_path: function(_inbox_id, _id, options)")
     end
-    it "should have correct function signature with Ruby 1.8.7 and unordered hash" do
+    it "should have correct function signature with unordered hash" do
       should include("inbox_message_attachment_path: function(_inbox_id, _message_id, _id, options)")
     end
 
