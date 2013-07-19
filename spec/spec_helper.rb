@@ -9,24 +9,18 @@ require "active_support/core_ext/hash/slice"
 require 'coffee-script'
 if defined?(JRUBY_VERSION)
   require 'rhino'
-
-  def jscontext
-    @context ||= Rhino::Context.new
-  end
-
-  def js_error_class
-    Rhino::JSError
-  end
+  JS_LIB_CLASS = Rhino
 else
   require "v8"
+  JS_LIB_CLASS = V8
+end
 
-  def jscontext
-    @context ||= V8::Context.new
-  end
+def jscontext
+  @context ||= JS_LIB_CLASS::Context.new
+end
 
-  def js_error_class
-    V8::JSError
-  end
+def js_error_class
+  JS_LIB_CLASS::JSError
 end
 
 def evaljs(string)
