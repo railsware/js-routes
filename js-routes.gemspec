@@ -23,14 +23,15 @@ Gem::Specification.new do |s|
   s.summary = %q{Brings Rails named routes to javascript}
 
   s.add_runtime_dependency(%q<rails>, [">= 3.2"])
-  s.add_development_dependency(%q<therubyracer>, [">= 0"])
   s.add_development_dependency(%q<rspec>, ["~> 2.10.0"])
   s.add_development_dependency(%q<bundler>, [">= 1.1.0"])
   s.add_development_dependency(%q<guard>, [">= 0"])
-  s.add_development_dependency(%q<rb-fsevent>, [">= 0"])
   s.add_development_dependency(%q<guard-coffeescript>, [">= 0"])
-  if RUBY_VERSION >= "1.9"
+  if defined?(JRUBY_VERSION)
+    s.add_development_dependency(%q<therubyrhino>, [">= 0"])
+  else
     s.add_development_dependency(%q<debugger>, [">= 0"])
+    s.add_development_dependency(%q<therubyracer>, [">= 0"])
   end
 end
 
