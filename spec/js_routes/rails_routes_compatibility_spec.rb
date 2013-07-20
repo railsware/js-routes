@@ -40,7 +40,7 @@ describe JsRoutes, "compatibility with Rails"  do
   end
 
   it "should support nested get parameters" do
-    evaljs("Routes.inbox_path(1, {format: 'json', env: 'test', search: { category_ids: [2,5], q: 'hello'}})").should == 
+    evaljs("Routes.inbox_path(1, {format: 'json', env: 'test', search: { category_ids: [2,5], q: 'hello'}})").should ==
       routes.inbox_path(1, :env => 'test', :search => {:category_ids => [2,5], :q => "hello"}, :format => "json")
   end
 
@@ -181,18 +181,18 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should throw Exception if not enough parameters" do
       lambda {
         evaljs("Routes.inbox_path()")
-      }.should raise_error(V8::JSError)
+      }.should raise_error(js_error_class)
     end
     it "should throw Exception if required parameter is not defined" do
       lambda {
         evaljs("Routes.inbox_path(null)")
-      }.should raise_error(V8::JSError)
+      }.should raise_error(js_error_class)
     end
 
     it "should throw Exceptions if when there is too many parameters" do
       lambda {
         evaljs("Routes.inbox_path(1,2)")
-      }.should raise_error(V8::JSError)
+      }.should raise_error(js_error_class)
     end
   end
 
