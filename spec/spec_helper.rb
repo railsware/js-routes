@@ -5,13 +5,22 @@ $:.unshift(File.dirname(__FILE__))
 require 'rspec'
 require 'rails/all'
 require 'js-routes'
-require "v8"
-require "cgi"
 require "active_support/core_ext/hash/slice"
 require 'coffee-script'
+if defined?(JRUBY_VERSION)
+  require 'rhino'
+  JS_LIB_CLASS = Rhino
+else
+  require "v8"
+  JS_LIB_CLASS = V8
+end
 
 def jscontext
-  @context ||= V8::Context.new
+  @context ||= JS_LIB_CLASS::Context.new
+end
+
+def js_error_class
+  JS_LIB_CLASS::JSError
 end
 
 def evaljs(string)
@@ -38,6 +47,8 @@ end
 class App < Rails::Application
   # Enable the asset pipeline
   config.assets.enabled = true
+  # initialize_on_precompile
+  config.assets.initialize_on_precompile = true
 end
 
 def draw_routes
@@ -52,7 +63,7 @@ def draw_routes
       end
     end
 
-    root :to => "inboxes#index" 
+    root :to => "inboxes#index"
 
     namespace :admin do
       resources :users
@@ -94,9 +105,6 @@ RSpec.configure do |config|
 
   config.before(:each) do
     evaljs("var window = this;")
-    # No need to replace native V8 functions for now
-    #jscontext[:cgi] = CGI
-    #evaljs("function encodeURIComponent(string) {return cgi.escape(string);}")
     jscontext[:log] = lambda {|context, value| puts value.inspect}
   end
   config.before(:all) do

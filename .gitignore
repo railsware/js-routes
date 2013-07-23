@@ -48,5 +48,6 @@ pkg
 # For rubinius:
 #*.rbc
 .rvmrc
+.ruby-version
 
 Gemfile.lock

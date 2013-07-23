@@ -1,10 +1,10 @@
 language: ruby
 rvm:
-  - 1.8.7
-  - 1.9.2
   - 1.9.3
   - 2.0.0
+  - jruby-19mode
   - ruby-head
+  - jruby-head
 notifications:
   email:
     - agresso@gmail.com
@@ -14,3 +14,4 @@ branches:
 matrix:
   allow_failures:
     - rvm: ruby-head
+    - rvm: jruby-head
