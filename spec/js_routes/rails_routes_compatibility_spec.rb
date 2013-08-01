@@ -31,27 +31,6 @@ describe JsRoutes, "compatibility with Rails"  do
     evaljs("Routes.inbox_path(1, {format: 'json'})").should == routes.inbox_path(1, :format => "json")
   end
 
-  it "should support simple get parameters" do
-    evaljs("Routes.inbox_path(1, {format: 'json', lang: 'ua', q: 'hello'})").should == routes.inbox_path(1, :lang => "ua", :q => "hello", :format => "json")
-  end
-
-  it "should support array get parameters" do
-    evaljs("Routes.inbox_path(1, {hello: ['world', 'mars']})").should == routes.inbox_path(1, :hello => [:world, :mars])
-  end
-
-  it "should support nested get parameters" do
-    evaljs("Routes.inbox_path(1, {format: 'json', env: 'test', search: { category_ids: [2,5], q: 'hello'}})").should ==
-      routes.inbox_path(1, :env => 'test', :search => {:category_ids => [2,5], :q => "hello"}, :format => "json")
-  end
-
-  it "should support null and undefined parameters" do
-    evaljs("Routes.inboxes_path({uri: null, key: undefined})").should == routes.inboxes_path(:uri => nil, :key => nil)
-  end
-
-  it "should escape get parameters" do
-    evaljs("Routes.inboxes_path({uri: 'http://example.com'})").should == routes.inboxes_path(:uri => 'http://example.com')
-  end
-
   it "should support routes with reserved javascript words as parameters" do
     evaljs("Routes.object_path(1, 2)").should == routes.object_path(1,2)
   end
@@ -83,6 +62,30 @@ describe JsRoutes, "compatibility with Rails"  do
   it "should support root_path" do
     evaljs("Routes.root_path()").should == routes.root_path
   end
+
+  describe "get paramters" do
+    it "should support simple get parameters" do
+      evaljs("Routes.inbox_path(1, {format: 'json', lang: 'ua', q: 'hello'})").should == routes.inbox_path(1, :lang => "ua", :q => "hello", :format => "json")
+    end
+
+    it "should support array get parameters" do
+      evaljs("Routes.inbox_path(1, {hello: ['world', 'mars']})").should == routes.inbox_path(1, :hello => [:world, :mars])
+    end
+
+    it "should support nested get parameters" do
+      evaljs("Routes.inbox_path(1, {format: 'json', env: 'test', search: { category_ids: [2,5], q: 'hello'}})").should ==
+        routes.inbox_path(1, :env => 'test', :search => {:category_ids => [2,5], :q => "hello"}, :format => "json")
+    end
+
+    it "should support null and undefined parameters" do
+      evaljs("Routes.inboxes_path({uri: null, key: undefined})").should == routes.inboxes_path(:uri => nil, :key => nil)
+    end
+
+    it "should escape get parameters" do
+      evaljs("Routes.inboxes_path({uri: 'http://example.com'})").should == routes.inboxes_path(:uri => 'http://example.com')
+    end
+  end
+
 
   context "routes globbing" do
     it "should be supported as parameters" do
