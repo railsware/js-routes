@@ -18,11 +18,11 @@ describe JsRoutes, "options" do
     let(:_options) { {:exclude => /^admin_/} }
 
     it "should exclude specified routes from file" do
-      evaljs("Routes.admin_users_path").should be_nil
+      expect(evaljs("Routes.admin_users_path")).to be_nil
     end
 
     it "should not exclude routes not under specified pattern" do
-      evaljs("Routes.inboxes_path()").should_not be_nil
+      expect(evaljs("Routes.inboxes_path()")).not_to be_nil
     end
   end
   context "when include is specified" do
@@ -30,11 +30,11 @@ describe JsRoutes, "options" do
     let(:_options) { {:include => /^admin_/} }
 
     it "should exclude specified routes from file" do
-      evaljs("Routes.admin_users_path()").should_not be_nil
+      expect(evaljs("Routes.admin_users_path()")).not_to be_nil
     end
 
     it "should not exclude routes not under specified pattern" do
-      evaljs("Routes.inboxes_path").should be_nil
+      expect(evaljs("Routes.inboxes_path")).to be_nil
     end
   end
 
@@ -43,12 +43,12 @@ describe JsRoutes, "options" do
     let(:_options) { {:prefix => "/myprefix/" } }
 
     it "should render routing with prefix" do
-        evaljs("Routes.inbox_path(1)").should == "/myprefix#{routes.inbox_path(1)}"
+        expect(evaljs("Routes.inbox_path(1)")).to eq("/myprefix#{routes.inbox_path(1)}")
     end
 
     it "should render routing with prefix set in JavaScript" do
       evaljs("Routes.options.prefix = '/newprefix/'")
-      evaljs("Routes.inbox_path(1)").should == "/newprefix#{routes.inbox_path(1)}"
+      expect(evaljs("Routes.inbox_path(1)")).to eq("/newprefix#{routes.inbox_path(1)}")
     end
 
   end
@@ -58,7 +58,7 @@ describe JsRoutes, "options" do
     let(:_options) { {:prefix => "http://localhost:3000" } }
 
     it "should render routing with prefix" do
-      evaljs("Routes.inbox_path(1)").should == _options[:prefix] + routes.inbox_path(1)
+      expect(evaljs("Routes.inbox_path(1)")).to eq(_options[:prefix] + routes.inbox_path(1))
     end
   end
 
@@ -67,12 +67,12 @@ describe JsRoutes, "options" do
     let(:_options) { {:prefix => "/myprefix" } }
 
     it "should render routing with prefix" do
-      evaljs("Routes.inbox_path(1)").should == "/myprefix#{routes.inbox_path(1)}"
+      expect(evaljs("Routes.inbox_path(1)")).to eq("/myprefix#{routes.inbox_path(1)}")
     end
 
     it "should render routing with prefix set in JavaScript" do
       evaljs("Routes.options.prefix = '/newprefix'")
-      evaljs("Routes.inbox_path(1)").should == "/newprefix#{routes.inbox_path(1)}"
+      expect(evaljs("Routes.inbox_path(1)")).to eq("/newprefix#{routes.inbox_path(1)}")
     end
 
   end
@@ -82,31 +82,31 @@ describe JsRoutes, "options" do
     let(:_warnings) { nil }
 
     it "should render routing with default_format" do
-      evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1, :format => "json")
+      expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1, :format => "json"))
     end
 
     it "should override default_format when spefified implicitly" do
-      evaljs("Routes.inbox_path(1, {format: 'xml'})").should == routes.inbox_path(1, :format => "xml")
+      expect(evaljs("Routes.inbox_path(1, {format: 'xml'})")).to eq(routes.inbox_path(1, :format => "xml"))
     end
 
     it "should override nullify implicitly when specified implicitly" do
-      evaljs("Routes.inbox_path(1, {format: null})").should == routes.inbox_path(1)
+      expect(evaljs("Routes.inbox_path(1, {format: null})")).to eq(routes.inbox_path(1))
     end
 
     it "shouldn't include the format when {:format => false} is specified" do
-      evaljs("Routes.no_format_path()").should == routes.no_format_path
+      expect(evaljs("Routes.no_format_path()")).to eq(routes.no_format_path)
     end
 
     it "shouldn't require the format" do
-      evaljs("Routes.json_only_path()").should == routes.json_only_path(:format => 'json')
+      expect(evaljs("Routes.json_only_path()")).to eq(routes.json_only_path(:format => 'json'))
     end
   end
 
   describe "when namespace option is specified" do
     let(:_options) { {:namespace => "PHM"} }
     it "should use this namespace for routing" do
-      evaljs("window.Routes").should be_nil
-      evaljs("PHM.inbox_path").should_not be_nil
+      expect(evaljs("window.Routes")).to be_nil
+      expect(evaljs("PHM.inbox_path")).not_to be_nil
     end
   end
 
@@ -115,14 +115,14 @@ describe JsRoutes, "options" do
       let(:_presetup) { "window.PHM = {}" }
       let(:_options) { {:namespace => "PHM.Routes"} }
       it "should use this namespace for routing" do
-        evaljs("PHM.Routes.inbox_path").should_not be_nil
+        expect(evaljs("PHM.Routes.inbox_path")).not_to be_nil
       end
     end
 
     context "but undefined on client" do
       let(:_options) { {:namespace => "PHM.Routes"} }
       it "should initialize namespace" do
-        evaljs("window.PHM.Routes.inbox_path").should_not be_nil
+        expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
       end
     end
 
@@ -130,8 +130,8 @@ describe JsRoutes, "options" do
       let(:_presetup) { "window.PHM = { Utils: {} };" }
       let(:_options) { {:namespace => "PHM.Routes"} }
       it "should not overwrite existing parts" do
-        evaljs("window.PHM.Utils").should_not be_nil
-        evaljs("window.PHM.Routes.inbox_path").should_not be_nil
+        expect(evaljs("window.PHM.Utils")).not_to be_nil
+        expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
       end
     end
   end
@@ -140,7 +140,7 @@ describe JsRoutes, "options" do
     context "with optional route parts" do
       let(:_options) { {:default_url_options => {:optional_id => "12", :format => "json"}}}
       it "should use this opions to fill optional parameters" do
-        evaljs("Routes.things_path()").should == routes.things_path(:optional_id => 12, :format => "json")
+        expect(evaljs("Routes.things_path()")).to eq(routes.things_path(:optional_id => 12, :format => "json"))
       end
     end
 
@@ -148,7 +148,7 @@ describe JsRoutes, "options" do
       let(:_options) { {:default_url_options => {:inbox_id => "12"}} }
       it "should use this opions to fill optional parameters" do
         pending
-        evaljs("Routes.inbox_messages_path()").should == routes.inbox_messages_path(:inbox_id => 12)
+        expect(evaljs("Routes.inbox_messages_path()")).to eq(routes.inbox_messages_path(:inbox_id => 12))
       end
     end
   end
@@ -157,18 +157,18 @@ describe JsRoutes, "options" do
     context "with default option" do
       let(:_options) { Hash.new }
       it "should use snake case routes" do
-        evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
-        evaljs("Routes.inboxPath").should be_nil
+        expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
+        expect(evaljs("Routes.inboxPath")).to be_nil
       end
     end
 
     context "with true" do
       let(:_options) { { :camel_case => true } }
       it "should generate camel case routes" do
-        evaljs("Routes.inbox_path").should be_nil
-        evaljs("Routes.inboxPath").should_not be_nil
-        evaljs("Routes.inboxPath(1)").should == routes.inbox_path(1)
-        evaljs("Routes.inboxMessagesPath(10)").should == routes.inbox_messages_path(:inbox_id => 10)
+        expect(evaljs("Routes.inbox_path")).to be_nil
+        expect(evaljs("Routes.inboxPath")).not_to be_nil
+        expect(evaljs("Routes.inboxPath(1)")).to eq(routes.inbox_path(1))
+        expect(evaljs("Routes.inboxMessagesPath(10)")).to eq(routes.inbox_messages_path(:inbox_id => 10))
       end
     end
   end
@@ -177,19 +177,19 @@ describe JsRoutes, "options" do
     context "with default option" do
       let(:_options) { Hash.new }
       it "should generate only path links" do
-        evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
-        evaljs("Routes.inbox_url").should be_nil
+        expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
+        expect(evaljs("Routes.inbox_url")).to be_nil
       end
     end
 
     context "with host" do
       let(:_options) { { :url_links => "http://localhost" } }
       it "should generate path and url links" do
-        evaljs("Routes.inbox_path").should_not be_nil
-        evaljs("Routes.inbox_url").should_not be_nil
-        evaljs("Routes.inbox_path(1)").should == routes.inbox_path(1)
-        evaljs("Routes.inbox_url(1)").should == "http://localhost#{routes.inbox_path(1)}"
-        evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })").should == "http://localhost#{routes.inbox_path(1, :test_key => "test_val")}"
+        expect(evaljs("Routes.inbox_path")).not_to be_nil
+        expect(evaljs("Routes.inbox_url")).not_to be_nil
+        expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
+        expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
+        expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://localhost#{routes.inbox_path(1, :test_key => "test_val")}")
       end
     end
 
@@ -202,20 +202,20 @@ describe JsRoutes, "options" do
     context "with host and camel_case" do
       let(:_options) { { :camel_case => true, :url_links => "http://localhost" } }
       it "should generate path and url links" do
-        evaljs("Routes.inboxPath").should_not be_nil
-        evaljs("Routes.inboxUrl").should_not be_nil
-        evaljs("Routes.inboxPath(1)").should == routes.inbox_path(1)
-        evaljs("Routes.inboxUrl(1)").should == "http://localhost#{routes.inbox_path(1)}"
+        expect(evaljs("Routes.inboxPath")).not_to be_nil
+        expect(evaljs("Routes.inboxUrl")).not_to be_nil
+        expect(evaljs("Routes.inboxPath(1)")).to eq(routes.inbox_path(1))
+        expect(evaljs("Routes.inboxUrl(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
       end
     end
 
     context "with host and prefix" do
       let(:_options) { { :prefix => "/api", :url_links => "https://example.com" } }
       it "should generate path and url links" do
-        evaljs("Routes.inbox_path").should_not be_nil
-        evaljs("Routes.inbox_url").should_not be_nil
-        evaljs("Routes.inbox_path(1)").should == "/api#{routes.inbox_path(1)}"
-        evaljs("Routes.inbox_url(1)").should == "https://example.com/api#{routes.inbox_path(1)}"
+        expect(evaljs("Routes.inbox_path")).not_to be_nil
+        expect(evaljs("Routes.inbox_url")).not_to be_nil
+        expect(evaljs("Routes.inbox_path(1)")).to eq("/api#{routes.inbox_path(1)}")
+        expect(evaljs("Routes.inbox_url(1)")).to eq("https://example.com/api#{routes.inbox_path(1)}")
       end
     end
   end

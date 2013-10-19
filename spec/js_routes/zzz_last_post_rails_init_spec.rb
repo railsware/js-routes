@@ -19,7 +19,7 @@ describe "after Rails initialization" do
   end
 
   it "should generate routes file" do
-    File.exists?(NAME).should be_true
+    expect(File.exists?(NAME)).to be_true
   end
 
   context "JsRoutes::Engine" do
@@ -37,12 +37,12 @@ describe "after Rails initialization" do
     it "should have registered a preprocessor" do
       pps = Rails.application.assets.preprocessors
       js_pps = pps['application/javascript']
-      js_pps.map(&:name).should include('Sprockets::Processor (js-routes_dependent_on_routes)')
+      expect(js_pps.map(&:name)).to include('Sprockets::Processor (js-routes_dependent_on_routes)')
     end
 
     context "the preprocessor" do
       before(:each) do
-        ctx.should_receive(:depend_on).with(Rails.root.join('config','routes.rb'))
+        expect(ctx).to receive(:depend_on).with(Rails.root.join('config','routes.rb'))
       end
       let!(:ctx) do
         Sprockets::Context.new(Rails.application.assets,
@@ -59,7 +59,7 @@ describe "after Rails initialization" do
               Rails.application.config.assets.initialize_on_precompile = true
             end
             it "should render some javascript" do
-              ctx.evaluate('js-routes.js').should =~ /window\.Routes/
+              expect(ctx.evaluate('js-routes.js')).to match(/window\.Routes/)
             end
           end
           context "and not initialize on precompile" do
@@ -68,9 +68,9 @@ describe "after Rails initialization" do
             end
             it "should raise an exception if 3 version" do
               if 3 == Rails::VERSION::MAJOR
-                lambda { ctx.evaluate('js-routes.js') }.should raise_error(/Cannot precompile/)
+                expect { ctx.evaluate('js-routes.js') }.to raise_error(/Cannot precompile/)
               else
-                ctx.evaluate('js-routes.js').should =~ /window\.Routes/
+                expect(ctx.evaluate('js-routes.js')).to match(/window\.Routes/)
               end
             end
           end
@@ -85,7 +85,7 @@ describe "after Rails initialization" do
         ctx = Sprockets::Context.new(Rails.application.assets,
                                      'test.js',
                                      TEST_ASSET_PATH)
-        ctx.should_not_receive(:depend_on)
+        expect(ctx).not_to receive(:depend_on)
         ctx.evaluate('test.js')
       end
     end
