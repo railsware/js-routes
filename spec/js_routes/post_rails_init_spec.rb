@@ -55,7 +55,7 @@ describe "after Rails initialization" do
       context "when dealing with js-routes.js" do
 
 
-        context "with Rails 3.1.1" do
+        context "with Rails" do
           context "and initialize on precompile" do
             before(:each) do
               Rails.application.config.assets.initialize_on_precompile = true
@@ -68,8 +68,12 @@ describe "after Rails initialization" do
             before(:each) do
               Rails.application.config.assets.initialize_on_precompile = false
             end
-            it "should raise an exception" do
-              lambda { ctx.evaluate('js-routes.js') }.should raise_error(/Cannot precompile/)
+            it "should raise an exception if 3 version" do
+              if 3 == Rails::VERSION::MAJOR
+                lambda { ctx.evaluate('js-routes.js') }.should raise_error(/Cannot precompile/)
+              else
+                ctx.evaluate('js-routes.js').should =~ /window\.Routes/
+              end
             end
           end
 
