@@ -6,7 +6,6 @@ describe JsRoutes, "compatibility with Rails"  do
     evaljs(JsRoutes.generate({}))
   end
 
-
   it "should generate collection routing" do
     evaljs("Routes.inboxes_path()").should == routes.inboxes_path()
   end
