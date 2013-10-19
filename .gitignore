@@ -51,3 +51,4 @@ pkg
 .ruby-version
 
 Gemfile.lock
+gemfiles/*.lock

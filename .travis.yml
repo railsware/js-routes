@@ -5,6 +5,9 @@ rvm:
   - jruby-19mode
   - ruby-head
   - jruby-head
+gemfile:
+  - gemfiles/rails32.gemfile
+  - gemfiles/rails40.gemfile
 notifications:
   email:
     - agresso@gmail.com

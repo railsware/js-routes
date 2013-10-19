@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<bundler>, [">= 1.1.0"])
   s.add_development_dependency(%q<guard>, [">= 0"])
   s.add_development_dependency(%q<guard-coffeescript>, [">= 0"])
+  s.add_development_dependency(%q<appraisal>, [">= 0"])
   if defined?(JRUBY_VERSION)
     s.add_development_dependency(%q<therubyrhino>, [">= 0"])
   else
