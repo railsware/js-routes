@@ -20,7 +20,7 @@ describe JsRoutes do
     end
 
     it "routes should be sorted in alphabetical order" do
-      subject.index("book_path").should <= subject.index("inboxes_path")
+      expect(subject.index("book_path")).to be <= subject.index("inboxes_path")
     end
   end
 
@@ -39,7 +39,7 @@ describe JsRoutes do
       if Rails.application.instance_variable_get("@initialized")
         pending
       end
-      File.exists?(name).should be_false
+      expect(File.exists?(name)).to be_false
     end
 
     after(:all) do

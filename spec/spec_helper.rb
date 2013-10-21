@@ -15,16 +15,20 @@ else
   JS_LIB_CLASS = V8
 end
 
-def jscontext
-  @context ||= JS_LIB_CLASS::Context.new
+def jscontext(force = false)
+  if force
+    @jscontext = JS_LIB_CLASS::Context.new
+  else
+    @jscontext ||= JS_LIB_CLASS::Context.new
+  end
 end
 
 def js_error_class
   JS_LIB_CLASS::JSError
 end
 
-def evaljs(string)
-  jscontext.eval(string)
+def evaljs(string, force = false)
+  jscontext(force).eval(string)
 end
 
 def routes
@@ -102,11 +106,10 @@ Rails.configuration.active_support.deprecation = :log
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
-
-  config.before(:each) do
-    evaljs("var window = this;")
-    jscontext[:log] = lambda {|context, value| puts value.inspect}
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
   end
+
   config.before(:all) do
     # compile all js files begin
     Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))}/**/*.coffee"].each do |coffee|
@@ -114,5 +117,10 @@ RSpec.configure do |config|
     end
     # compile all js files end
     draw_routes
+  end
+
+  config.before :each do
+    evaljs("var window = this;", true)
+    jscontext[:log] = lambda {|context, value| puts value.inspect}
   end
 end
