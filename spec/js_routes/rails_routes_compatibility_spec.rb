@@ -115,6 +115,10 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should support routes globbing in book_title route as array with optional params" do
       expect(evaljs("Routes.book_title_path('john', ['thrillers', 'comedian'], {some_key: 'some_value'})")).to eq(routes.book_title_path('john', ['thrillers', 'comedian'], {:some_key => 'some_value'}))
     end
+
+    it "should support required paramters given as options hash" do
+      expect(evaljs("Routes.search_path({q: 'hello'})")).to eq(routes.search_path(:q => 'hello'))
+    end
   end
 
   context "when jQuery is present" do

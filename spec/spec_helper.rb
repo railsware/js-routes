@@ -94,6 +94,8 @@ def draw_routes
     get '/json_only' => "foo#foo", :format => true, :constraints => {:format => /json/}, :as => :json_only
 
     get '/привет' => "foo#foo", :as => :hello
+    get '(/o/:organization)/search/:q' => "foo#foo", as: :search
+    
   end
 
 end

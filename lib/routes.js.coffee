@@ -52,10 +52,17 @@ Utils =
     anchor
 
   extract_options: (number_of_params, args) ->
-    ret_value = {}
-    if args.length > number_of_params
-      ret_value = args.pop()
-    ret_value
+    last_argument = args[args.length - 1]
+    type = @get_object_type(last_argument)
+    if args.length > number_of_params or (type == "object" and !@look_like_serialized_model(last_argument))
+      args.pop()
+    else
+      {}
+
+  look_like_serialized_model: (object) ->
+    # consider object a model if it have a path identifier properties like id and to_param
+    "id" of object or "to_param" of object
+
 
   path_identifier: (object) ->
     return "0"  if object is 0
@@ -75,7 +82,9 @@ Utils =
 
   prepare_parameters: (required_parameters, actual_parameters, options) ->
     result = @clone(options) or {}
-    result[val] = actual_parameters[i] for val, i in required_parameters
+    for val, i in required_parameters
+      if i < actual_parameters.length
+        result[val] = actual_parameters[i]
     result
 
   build_path: (required_parameters, optional_parts, route, args) ->
