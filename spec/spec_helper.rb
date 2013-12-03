@@ -58,6 +58,7 @@ end
 def draw_routes
 
   BlogEngine::Engine.routes.draw do
+    root to: "application#index"
     resources :posts
   end
   App.routes.draw do
