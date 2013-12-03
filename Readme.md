@@ -65,9 +65,14 @@ Available options:
   * Example: http[s]://example.com
   * Default: false
 
-You can generate routes files on the application side like this:
+### Very Advanced Setup
+
+In case you need multiple route files for different parts of your application, you can not use asset pipeline.
+
+You need to generate routes files on the application side like this:
 
 ``` ruby
+path = "app/assets/javascripts"
 JsRoutes.generate!("#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => [/^admin_/, /^api_/])
 JsRoutes.generate!("#{path}/adm_routes.js", :namespace => "AdmRoutes", :include => /^admin_/)
 JsRoutes.generate!("#{path}/api_routes.js", :namespace => "ApiRoutes", :include => /^api_/, :default_url_options => {:format => "json"})
