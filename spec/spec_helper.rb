@@ -62,6 +62,9 @@ def draw_routes
     resources :posts
   end
   App.routes.draw do
+
+    get 'support(/page/:page)', to: BlogEngine::Engine, as: 'support'
+
     resources :inboxes do
       resources :messages do
         resources :attachments
@@ -96,7 +99,6 @@ def draw_routes
 
     get '/привет' => "foo#foo", :as => :hello
     get '(/o/:organization)/search/:q' => "foo#foo", as: :search
-    
   end
 
 end

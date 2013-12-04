@@ -53,6 +53,9 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should support root path" do
       expect(evaljs("Routes.blog_app_root_path()")).to eq(blog_routes.root_path)
     end
+    it "should support single route mapping" do
+      expect(evaljs("Routes.support_path({page: 3})")).to eq(routes.support_path(:page => 3))
+    end
   end
 
   it "shouldn't require the format" do
@@ -185,6 +188,7 @@ describe JsRoutes, "compatibility with Rails"  do
       it "should include the optional parts" do
         expect(evaljs("Routes.things_path({optional_id: 5})")).to eq(routes.things_path(:optional_id => 5))
       end
+
     end
   end
 
