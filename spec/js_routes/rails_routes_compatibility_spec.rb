@@ -18,6 +18,14 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.inbox_path(0)")).to eq(routes.inbox_path(0))
   end
 
+  it "should support 0 as a to_param option" do
+    expect(evaljs("Routes.inbox_path({to_param: 0})")).to eq(routes.inbox_path(0))
+  end
+
+  it "should support 0 as an id option" do
+    expect(evaljs("Routes.inbox_path({id: 0})")).to eq(routes.inbox_path(0))
+  end
+
   it "should generate nested routing with one parameter" do
     expect(evaljs("Routes.inbox_messages_path(1)")).to eq(routes.inbox_messages_path(1))
   end
