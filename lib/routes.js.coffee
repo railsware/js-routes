@@ -40,9 +40,8 @@ Utils =
     path.join "://"
 
   set_default_url_options: (optional_parts, options) ->
-    for part, i in optional_parts
-      if not options.hasOwnProperty(part) and defaults.default_url_options.hasOwnProperty(part)
-        options[part] = defaults.default_url_options[part]
+    for part, i in optional_parts when (not options.hasOwnProperty(part) and defaults.default_url_options.hasOwnProperty(part))
+      options[part] = defaults.default_url_options[part]
 
   extract_anchor: (options) ->
     anchor = ""
@@ -52,9 +51,8 @@ Utils =
     anchor
 
   extract_options: (number_of_params, args) ->
-    last_argument = args[args.length - 1]
-    type = @get_object_type(last_argument)
-    if args.length > number_of_params or (type == "object" and !@look_like_serialized_model(last_argument))
+    last_el = args[args.length - 1]
+    if args.length > number_of_params or (last_el? and "object" is @get_object_type(last_el) and !@look_like_serialized_model(last_el))
       args.pop()
     else
       {}
@@ -67,7 +65,7 @@ Utils =
   path_identifier: (object) ->
     return "0"  if object is 0
     # null, undefined, false or ''
-    return ""  unless object
+    return "" unless object
     property = object
     if @get_object_type(object) is "object"
       property = object.to_param or object.id or object
@@ -82,9 +80,8 @@ Utils =
 
   prepare_parameters: (required_parameters, actual_parameters, options) ->
     result = @clone(options) or {}
-    for val, i in required_parameters
-      if i < actual_parameters.length
-        result[val] = actual_parameters[i]
+    for val, i in required_parameters when i < actual_parameters.length
+      result[val] = actual_parameters[i]
     result
 
   build_path: (required_parameters, optional_parts, route, args) ->
