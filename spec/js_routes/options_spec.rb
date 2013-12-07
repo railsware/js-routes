@@ -85,6 +85,10 @@ describe JsRoutes, "options" do
       expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1, :format => "json"))
     end
 
+    it "should render routing with default_format and zero object" do
+      expect(evaljs("Routes.inbox_path(0)")).to eq(routes.inbox_path(0, :format => "json"))
+    end
+
     it "should override default_format when spefified implicitly" do
       expect(evaljs("Routes.inbox_path(1, {format: 'xml'})")).to eq(routes.inbox_path(1, :format => "xml"))
     end
