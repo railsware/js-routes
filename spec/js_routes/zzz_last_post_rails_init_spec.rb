@@ -91,3 +91,26 @@ describe "after Rails initialization" do
     end
   end
 end
+
+describe "JSRoutes thread safety" do
+  before do
+    begin
+      Rails.application.initialize!
+    rescue
+    end
+  end
+
+  it "can produce the routes from multiple threads" do
+    threads = 2.times.map do
+      Thread.start do
+        10.times {
+          expect { JsRoutes.generate }.to_not raise_error
+        }
+      end
+    end
+
+    threads.each do |thread|
+      thread.join
+    end
+  end
+end

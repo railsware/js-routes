@@ -123,7 +123,6 @@ class JsRoutes
   protected
 
   def js_routes
-    Rails.application.reload_routes!
     js_routes = Rails.application.routes.named_routes.routes.sort_by(&:to_s).map do |_, route|
       if route.app.respond_to?(:superclass) && route.app.superclass == Rails::Engine && !route.path.anchored
         route.app.routes.named_routes.map do |_, engine_route|

@@ -53,6 +53,12 @@ class App < Rails::Application
   config.assets.enabled = true
   # initialize_on_precompile
   config.assets.initialize_on_precompile = true
+
+  if 3 == Rails::VERSION::MAJOR
+    config.paths['config/routes'] << 'spec/config/routes.rb'
+  else
+    config.paths['config/routes.rb'] << 'spec/config/routes.rb'
+  end
 end
 
 def draw_routes
