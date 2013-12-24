@@ -1,7 +1,7 @@
-
 # we need to run post_rails_init_spec as the latest
 # because it cause unrevertable changes to runtime
 # what is why I added "zzz_last" in the beginning
+
 require 'spec_helper'
 require "fileutils"
 
@@ -11,6 +11,7 @@ describe "after Rails initialization" do
   before(:all) do
     FileUtils.rm_f(NAME)
     JsRoutes.generate!(NAME)
+    Rails.configuration.eager_load = false
     Rails.application.initialize!
   end
 
