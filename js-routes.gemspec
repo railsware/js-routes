@@ -31,7 +31,6 @@ Gem::Specification.new do |s|
   if defined?(JRUBY_VERSION)
     s.add_development_dependency(%q<therubyrhino>, [">= 0"])
   else
-    s.add_development_dependency(%q<debugger>, [">= 0"])
     s.add_development_dependency(%q<therubyracer>, [">= 0"])
   end
 end
