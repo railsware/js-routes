@@ -59,7 +59,7 @@ Utils =
 
   look_like_serialized_model: (object) ->
     # consider object a model if it have a path identifier properties like id and to_param
-    "id" of object or "to_param" of object
+    object and ("id" of object or "to_param" of object)
 
 
   path_identifier: (object) ->
