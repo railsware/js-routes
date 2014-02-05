@@ -20,7 +20,6 @@ class JsRoutes
     default_url_options: {}
   }
 
-  # We encode node symbols as integer to reduce the routes.js file size
   NODE_TYPES = {
     GROUP: 1,
     CAT: 2,
@@ -202,6 +201,8 @@ class JsRoutes
     result = serialize_spec(spec, parent_spec)
     if parent_spec && result[1].is_a?(String)
       result = [
+        # We encode node symbols as integer 
+        # to reduce the routes.js file size
         NODE_TYPES[:CAT],
         serialize_spec(parent_spec),
         result

@@ -100,6 +100,7 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should escape get parameters" do
       expect(evaljs("Routes.inboxes_path({uri: 'http://example.com'})")).to eq(routes.inboxes_path(:uri => 'http://example.com'))
     end
+
   end
 
 
@@ -135,6 +136,11 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should support required paramters given as options hash" do
       expect(evaljs("Routes.search_path({q: 'hello'})")).to eq(routes.search_path(:q => 'hello'))
     end
+
+    it "should ignore null parameters" do
+      pending
+      expect(evaljs("Routes.inboxes_path({hello: {world: null}})")).to eq(routes.inboxes_path(:hello => {world: nil}))
+    end
   end
 
   context "when jQuery is present" do
@@ -154,6 +160,12 @@ describe JsRoutes, "compatibility with Rails"  do
     context "when parameters is a hash" do
       let(:_value) do
         {:a => {:b => 'c'}, :q => [1,2]}
+      end
+      it_should_behave_like 'serialization'
+    end
+    context "when parameters is null" do
+      let(:_value) do
+        {:hello => {world: nil}}
       end
       it_should_behave_like 'serialization'
     end
