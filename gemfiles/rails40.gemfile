@@ -4,6 +4,5 @@ source "http://rubygems.org"
 
 gem "rails", "~> 4.0.2"
 gem "minitest", "~> 4.0"
-gem "js-routes", :path=>"../"
 
 gemspec :path=>"../"
