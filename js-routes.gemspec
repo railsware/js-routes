@@ -22,7 +22,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.6.0}
   s.summary = %q{Brings Rails named routes to javascript}
 
-  s.add_runtime_dependency(%q<rails>, [">= 3.2"])
+  s.add_runtime_dependency(%q<railties>, [">= 3.2"])
+  s.add_runtime_dependency(%q<sprockets-rails>)
   s.add_development_dependency(%q<rspec>, [">= 2.14.0"])
   s.add_development_dependency(%q<bundler>, [">= 1.1.0"])
   s.add_development_dependency(%q<guard>, [">= 0"])

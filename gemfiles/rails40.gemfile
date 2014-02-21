@@ -2,7 +2,8 @@
 
 source "http://rubygems.org"
 
-gem "rails", "~> 4.0.2"
+gem "railties", "~> 4.0.2"
+gem "tzinfo"
 gem "minitest", "~> 4.0"
 
 gemspec :path=>"../"
