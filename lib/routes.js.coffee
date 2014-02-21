@@ -201,13 +201,13 @@ Utils =
   _classToType: ->
     return @_classToTypeCache if @_classToTypeCache?
     @_classToTypeCache = {}
-    for name in "Boolean Number String Function Array Date RegExp Undefined Null".split(" ")
-      @_classToTypeCache["[object " + name + "]"] = name.toLowerCase()
+    for name in "Boolean Number String Function Array Date RegExp Object Error".split(" ")
+      @_classToTypeCache["[object #{name}]"] = name.toLowerCase()
     @_classToTypeCache
   get_object_type: (obj) ->
     return window.jQuery.type(obj) if window.jQuery and window.jQuery.type?
-    strType = Object::toString.call(obj)
-    @_classToType()[strType] or "object"
+    return "#{obj}" unless obj?
+    (if typeof obj is "object" or typeof obj is "function" then @_classToType()[Object::toString.call(obj)] or "object" else typeof obj)
 
   namespace: (root, namespaceString) ->
     parts = (if namespaceString then namespaceString.split(".") else [])
