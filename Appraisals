@@ -5,6 +5,5 @@ end
 
 appraise "rails40" do
   gem "railties", "~> 4.0.2"
-  gem 'tzinfo'
   gem "minitest", "~> 4.0"
 end
