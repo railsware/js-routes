@@ -86,6 +86,12 @@ If your application has an `admin` and an `application` namespace for example:
 #= require application/routes
 ```
 
+In order to generate the routes to a string:
+
+```ruby
+routes_js = JsRoutes.generate(options)
+```
+
 If you want to generate the routes files outside of the asset pipeline, you can use `JsRoutes.generate!`:
 
 ``` ruby
