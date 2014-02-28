@@ -67,22 +67,38 @@ Available options:
 
 ### Very Advanced Setup
 
-In case you need multiple route files for different parts of your application, you can not use asset pipeline.
+In case you need multiple route files for different parts of your application, you have to create the files manually.
+If your application has an `admin` and an `application` namespace for example:
 
-You need to generate routes files on the application side like this:
+```
+# app/assets/javascripts/admin/routes.js.erb
+<%= JsRoutes.generate(namespace: "AdminRoutes", include: /admin/) %>
+
+# app/assets/javascripts/admin.js.coffee
+#= require admin/routes
+```
+
+```
+# app/assets/javascripts/application/routes.js.erb
+<%= JsRoutes.generate(namespace: "AppRoutes", exclude: /admin/) %>
+
+# app/assets/javascripts/application.js.coffee
+#= require application/routes
+```
+
+In order to generate the routes to a string:
+
+```ruby
+routes_js = JsRoutes.generate(options)
+```
+
+If you want to generate the routes files outside of the asset pipeline, you can use `JsRoutes.generate!`:
 
 ``` ruby
 path = "app/assets/javascripts"
 JsRoutes.generate!("#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => [/^admin_/, /^api_/])
 JsRoutes.generate!("#{path}/adm_routes.js", :namespace => "AdmRoutes", :include => /^admin_/)
 JsRoutes.generate!("#{path}/api_routes.js", :namespace => "ApiRoutes", :include => /^api_/, :default_url_options => {:format => "json"})
-```
-
-In order to generate javascript to string and manipulate them yourself use:
-Like:
-
-``` ruby
-routes_js = JsRoutes.generate(options)
 ```
 
 ## Usage
