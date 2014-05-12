@@ -2,7 +2,7 @@
 
 source "http://rubygems.org"
 
-gem "railties", "~> 3.2.16"
+gem "railties", "~> 3.2.18"
 gem "tzinfo"
 
 gemspec :path=>"../"
