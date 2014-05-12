@@ -148,6 +148,18 @@ describe JsRoutes, "options" do
       end
     end
 
+    context "with trailing_slash" do
+      let(:_options) { {:default_url_options => {:trailing_slash => true}} }
+      it "should use this opions to create trailing slash" do
+        expect(evaljs("Routes.inbox_path(1)")).to eq("#{routes.inbox_path(1)}/")
+      end
+
+      it "should use this opions with additional params" do
+        expect(evaljs("Routes.inbox_path(1, {test: 'trailing'})")).to eq("#{routes.inbox_path(1)}/?test=trailing")
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: true})")).to eq("#{routes.inbox_path(1)}/?trailing_slash=true")
+      end
+    end
+
     context "with required route parts" do
       let(:_options) { {:default_url_options => {:inbox_id => "12"}} }
       it "should use this opions to fill optional parameters" do

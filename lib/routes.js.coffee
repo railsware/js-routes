@@ -50,6 +50,9 @@ Utils =
       delete options.anchor
     anchor
 
+  need_trailing_slash: ->
+    defaults.default_url_options.hasOwnProperty("trailing_slash") and defaults.default_url_options.trailing_slash is true
+
   extract_options: (number_of_params, args) ->
     last_el = args[args.length - 1]
     if args.length > number_of_params or (last_el? and "object" is @get_object_type(last_el) and !@look_like_serialized_model(last_el))
@@ -101,6 +104,9 @@ Utils =
     anchor = @extract_anchor(parameters)
     result = "#{@get_prefix()}#{@visit(route, parameters)}"
     url = Utils.clean_path("#{result}")
+    # set trailing_slash
+    url = url.replace(/(.*?)[\/]?$/, "$1/") if @need_trailing_slash() is true
+    # set additional url params
     if (url_params = @serialize(parameters)).length
       url += "?#{url_params}"
     url += anchor

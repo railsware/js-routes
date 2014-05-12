@@ -201,7 +201,7 @@ class JsRoutes
     result = serialize_spec(spec, parent_spec)
     if parent_spec && result[1].is_a?(String)
       result = [
-        # We encode node symbols as integer 
+        # We encode node symbols as integer
         # to reduce the routes.js file size
         NODE_TYPES[:CAT],
         serialize_spec(parent_spec),

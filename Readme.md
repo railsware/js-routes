@@ -44,8 +44,8 @@ end
 Available options:
 
 * `default_url_options` - default parameters to be used to generate url
-  * Note that currently only optional parameters (like `:format`) can be defaulted.
-  * Example: {:format => "json"}
+  * Note that currently only optional parameters (like `:format` or `:trailing_slash`) can be defaulted.
+  * Example: {:format => "json", :trailing_slash => true}
   * Default: {}
 * `exclude` - Array of regexps to exclude from js routes.
   * Default: []
