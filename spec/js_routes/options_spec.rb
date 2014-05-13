@@ -148,23 +148,46 @@ describe JsRoutes, "options" do
       end
     end
 
-    context "with trailing_slash" do
-      let(:_options) { {:default_url_options => {:trailing_slash => true}} }
-      it "should use this opions to create trailing slash" do
-        expect(evaljs("Routes.inbox_path(1)")).to eq("#{routes.inbox_path(1)}/")
-      end
-
-      it "should use this opions with additional params" do
-        expect(evaljs("Routes.inbox_path(1, {test: 'trailing'})")).to eq("#{routes.inbox_path(1)}/?test=trailing")
-        expect(evaljs("Routes.inbox_path(1, {trailing_slash: true})")).to eq("#{routes.inbox_path(1)}/?trailing_slash=true")
-      end
-    end
-
     context "with required route parts" do
       let(:_options) { {:default_url_options => {:inbox_id => "12"}} }
       it "should use this opions to fill optional parameters" do
         pending
         expect(evaljs("Routes.inbox_messages_path()")).to eq(routes.inbox_messages_path(:inbox_id => 12))
+      end
+    end
+  end
+
+  describe "trailing_slash" do
+    context "with default option" do
+      let(:_options) { Hash.new }
+      it "should working in params" do
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: true})")).to eq(routes.inbox_path(1, trailing_slash: true))
+      end
+
+      it "should working with additional params" do
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: true, test: 'params'})")).to eq(routes.inbox_path(1, trailing_slash: true, test: 'params'))
+      end
+    end
+
+    context "with default_url_options option" do
+      let(:_options) { {:default_url_options => {:trailing_slash => true}} }
+      it "should working" do
+        expect(evaljs("Routes.inbox_path(1, {test: 'params'})")).to eq(routes.inbox_path(1, trailing_slash: true, test: 'params'))
+      end
+
+      it "should remove it by params" do
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: false})")).to eq(routes.inbox_path(1))
+      end
+    end
+
+    context "with disabled default_url_options option" do
+      let(:_options) { {:default_url_options => {:trailing_slash => false}} }
+      it "should not use trailing_slash" do
+        expect(evaljs("Routes.inbox_path(1, {test: 'params'})")).to eq(routes.inbox_path(1, test: 'params'))
+      end
+
+      it "should use it by params" do
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: true})")).to eq(routes.inbox_path(1, trailing_slash: true))
       end
     end
   end

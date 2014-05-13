@@ -42,6 +42,10 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.object_path(1, 2)")).to eq(routes.object_path(1,2))
   end
 
+  it "should support routes with trailing_slash" do
+    expect(evaljs("Routes.inbox_path(1, {trailing_slash: true})")).to eq(routes.inbox_path(1, trailing_slash: true))
+  end
+
   it "should support url anchor given as parameter" do
     expect(evaljs("Routes.inbox_path(1, {anchor: 'hello'})")).to eq(routes.inbox_path(1, :anchor => "hello"))
   end

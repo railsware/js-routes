@@ -50,8 +50,14 @@ Utils =
       delete options.anchor
     anchor
 
-  need_trailing_slash: ->
-    defaults.default_url_options.hasOwnProperty("trailing_slash") and defaults.default_url_options.trailing_slash is true
+  extract_trailing_slash: (options) ->
+    trailing_slash = false
+    if defaults.default_url_options.hasOwnProperty("trailing_slash")
+      trailing_slash = defaults.default_url_options.trailing_slash
+    if options.hasOwnProperty("trailing_slash")
+      trailing_slash = options.trailing_slash
+      delete options.trailing_slash
+    trailing_slash
 
   extract_options: (number_of_params, args) ->
     last_el = args[args.length - 1]
@@ -101,14 +107,18 @@ Utils =
       throw new Error("Too many parameters provided for path")
     parameters = @prepare_parameters(required_parameters, args, opts)
     @set_default_url_options optional_parts, parameters
+    # options
     anchor = @extract_anchor(parameters)
+    trailing_slash = @extract_trailing_slash(parameters)
+    # path
     result = "#{@get_prefix()}#{@visit(route, parameters)}"
     url = Utils.clean_path("#{result}")
     # set trailing_slash
-    url = url.replace(/(.*?)[\/]?$/, "$1/") if @need_trailing_slash() is true
+    url = url.replace(/(.*?)[\/]?$/, "$1/") if trailing_slash is true
     # set additional url params
     if (url_params = @serialize(parameters)).length
       url += "?#{url_params}"
+    # set anchor
     url += anchor
     url
 
