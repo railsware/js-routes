@@ -7,6 +7,9 @@ require 'rails/all'
 require 'js-routes'
 require "active_support/core_ext/hash/slice"
 require 'coffee-script'
+# fix ends_with? error for rails 3.2
+require 'active_support/core_ext/string/starts_ends_with' if 3 == Rails::VERSION::MAJOR
+
 if defined?(JRUBY_VERSION)
   require 'rhino'
   JS_LIB_CLASS = Rhino
@@ -135,11 +138,3 @@ RSpec.configure do |config|
     jscontext[:log] = lambda {|context, value| puts value.inspect}
   end
 end
-
-# fix ends_with? error for rails 3.2
-# get from
-# https://github.com/rails/rails/blob/e20dd73df42d63b206d221e2258cc6dc7b1e6068/activesupport/lib/active_support/core_ext/string/starts_ends_with.rb
-class String
-  alias_method :starts_with?, :start_with?
-  alias_method :ends_with?, :end_with?
-end if 3 == Rails::VERSION::MAJOR
