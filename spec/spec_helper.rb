@@ -7,6 +7,9 @@ require 'rails/all'
 require 'js-routes'
 require "active_support/core_ext/hash/slice"
 require 'coffee-script'
+# fix ends_with? error for rails 3.2
+require 'active_support/core_ext/string/starts_ends_with' if 3 == Rails::VERSION::MAJOR
+
 if defined?(JRUBY_VERSION)
   require 'rhino'
   JS_LIB_CLASS = Rhino
