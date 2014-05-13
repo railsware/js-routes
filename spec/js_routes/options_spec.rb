@@ -157,6 +157,41 @@ describe JsRoutes, "options" do
     end
   end
 
+  describe "trailing_slash" do
+    context "with default option" do
+      let(:_options) { Hash.new }
+      it "should working in params" do
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: true})")).to eq(routes.inbox_path(1, trailing_slash: true))
+      end
+
+      it "should working with additional params" do
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: true, test: 'params'})")).to eq(routes.inbox_path(1, trailing_slash: true, test: 'params'))
+      end
+    end
+
+    context "with default_url_options option" do
+      let(:_options) { {:default_url_options => {:trailing_slash => true}} }
+      it "should working" do
+        expect(evaljs("Routes.inbox_path(1, {test: 'params'})")).to eq(routes.inbox_path(1, trailing_slash: true, test: 'params'))
+      end
+
+      it "should remove it by params" do
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: false})")).to eq(routes.inbox_path(1))
+      end
+    end
+
+    context "with disabled default_url_options option" do
+      let(:_options) { {:default_url_options => {:trailing_slash => false}} }
+      it "should not use trailing_slash" do
+        expect(evaljs("Routes.inbox_path(1, {test: 'params'})")).to eq(routes.inbox_path(1, test: 'params'))
+      end
+
+      it "should use it by params" do
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: true})")).to eq(routes.inbox_path(1, trailing_slash: true))
+      end
+    end
+  end
+
   describe "camel_case" do
     context "with default option" do
       let(:_options) { Hash.new }
