@@ -1,5 +1,7 @@
 # JsRoutes
 [![Build Status](https://travis-ci.org/railsware/js-routes.png)](https://travis-ci.org/railsware/js-routes)
+[![Code Climate](https://codeclimate.com/github/railsware/js-routes.png)](https://codeclimate.com/github/railsware/js-routes)
+[![Dependency Status](https://gemnasium.com/railsware/js-routes.png)](https://gemnasium.com/railsware/js-routes)
 
 Generates javascript file that defines all Rails named routes as javascript helpers
 
