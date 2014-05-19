@@ -143,6 +143,18 @@ When using Spork and `Spork.trap_method(Rails::Application::RoutesReloader, :rel
 Spork.trap_method(JsRoutes, :generate!)
 ```
 
+## JS-Routes and heroku
+
+Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environtment. You should use "Very Advanced Setup" schema in this case. 
+
+For example create routes.js.erb in assets folder with needed content:
+
+``` erb
+<%= JsRoutes.generate({ options }) %>
+```
+
+This should just work.
+
 ## Advantages over alternatives
 
 There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept.
