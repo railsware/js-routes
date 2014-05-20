@@ -1,7 +1,7 @@
 ((root, factory) ->
   # globalJsObject
-  createGlobalJsRoutesObject = (root) ->
-    # namespace function
+  createGlobalJsRoutesObject = ->
+    # namespace function, private
     namespace = (mainRoot, namespaceString) ->
       parts = (if namespaceString then namespaceString.split(".") else [])
       return unless parts.length
@@ -15,10 +15,10 @@
   # Set up Routes appropriately for the environment.
   if typeof define is "function" and define.amd
     # AMD
-    define -> createGlobalJsRoutesObject(root)
+    define -> createGlobalJsRoutesObject()
   else
     # Browser globals
-    createGlobalJsRoutesObject(root)
+    createGlobalJsRoutesObject()
 )(this, (root) ->
   # begin function
   ParameterMissing = (@message) -> #
