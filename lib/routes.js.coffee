@@ -34,8 +34,8 @@
       if !prefix and !(@getObjectType(object) is "object")
         throw new Error("Url parameters should be a javascript hash")
 
-      if window.jQuery
-        result = window.jQuery.param(object)
+      if root.jQuery
+        result = root.jQuery.param(object)
         return (if not result then "" else result)
 
       s = []
@@ -242,7 +242,7 @@
         @_classToTypeCache["[object #{name}]"] = name.toLowerCase()
       @_classToTypeCache
     getObjectType: (obj) ->
-      return window.jQuery.type(obj) if window.jQuery and window.jQuery.type?
+      return root.jQuery.type(obj) if root.jQuery and root.jQuery.type?
       return "#{obj}" unless obj?
       (if typeof obj is "object" or typeof obj is "function" then @_classToType()[Object::toString.call(obj)] or "object" else typeof obj)
 
