@@ -15,7 +15,7 @@
   # Set up Routes appropriately for the environment.
   if typeof define is "function" and define.amd
     # AMD
-    define -> createGlobalJsRoutesObject()
+    define [], -> createGlobalJsRoutesObject()
   else
     # Browser globals
     createGlobalJsRoutesObject()
