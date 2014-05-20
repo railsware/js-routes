@@ -23,7 +23,7 @@
   ParameterMissing:: = new Error()
   defaults =
     prefix: "PREFIX"
-    default_url_options: DEFAULT_URL_OPTIONS
+    defaultUrlOptions: DEFAULT_URL_OPTIONS
 
   NodeTypes = NODE_TYPES
 
@@ -31,7 +31,7 @@
 
     serialize: (object, prefix = null) ->
       return ""  unless object
-      if !prefix and !(@get_object_type(object) is "object")
+      if !prefix and !(@getObjectType(object) is "object")
         throw new Error("Url parameters should be a javascript hash")
 
       if window.jQuery
@@ -39,10 +39,10 @@
         return (if not result then "" else result)
 
       s = []
-      switch @get_object_type(object)
+      switch @getObjectType(object)
         when "array"
           for element, i in object
-            s.push @serialize(element, prefix + "[]")
+            s.push @serialize(element, "#{prefix}[]")
         when "object"
           for own key, prop of object when prop?
             key = "#{prefix}[#{key}]" if prefix?
@@ -54,50 +54,50 @@
       return "" unless s.length
       s.join("&")
 
-    clean_path: (path) ->
+    cleanPath: (path) ->
       path = path.split("://")
-      last_index = path.length - 1
-      path[last_index] = path[last_index].replace(/\/+/g, "/")
+      lastIndex = path.length - 1
+      path[lastIndex] = path[lastIndex].replace(/\/+/g, "/")
       path.join "://"
 
-    set_default_url_options: (optional_parts, options) ->
-      for part, i in optional_parts when (not options.hasOwnProperty(part) and defaults.default_url_options.hasOwnProperty(part))
-        options[part] = defaults.default_url_options[part]
+    setDefaultUrlOptions: (optionalParts, options) ->
+      for part, i in optionalParts when (not options.hasOwnProperty(part) and defaults.defaultUrlOptions.hasOwnProperty(part))
+        options[part] = defaults.defaultUrlOptions[part]
 
-    extract_anchor: (options) ->
+    extractAnchor: (options) ->
       anchor = ""
       if options.hasOwnProperty("anchor")
         anchor = "##{options.anchor}"
         delete options.anchor
       anchor
 
-    extract_trailing_slash: (options) ->
-      trailing_slash = false
-      if defaults.default_url_options.hasOwnProperty("trailing_slash")
-        trailing_slash = defaults.default_url_options.trailing_slash
+    extractTrailingSlash: (options) ->
+      trailingSlash = false
+      if defaults.defaultUrlOptions.hasOwnProperty("trailing_slash")
+        trailingSlash = defaults.defaultUrlOptions.trailing_slash
       if options.hasOwnProperty("trailing_slash")
-        trailing_slash = options.trailing_slash
+        trailingSlash = options.trailing_slash
         delete options.trailing_slash
-      trailing_slash
+      trailingSlash
 
-    extract_options: (number_of_params, args) ->
-      last_el = args[args.length - 1]
-      if args.length > number_of_params or (last_el? and "object" is @get_object_type(last_el) and !@look_like_serialized_model(last_el))
+    extractOptions: (numberOfParams, args) ->
+      lastEl = args[args.length - 1]
+      if args.length > numberOfParams or (lastEl? and "object" is @getObjectType(lastEl) and !@lookLikeSerializedModel(lastEl))
         args.pop()
       else
         {}
 
-    look_like_serialized_model: (object) ->
+    lookLikeSerializedModel: (object) ->
       # consider object a model if it have a path identifier properties like id and to_param
       "id" of object or "to_param" of object
 
 
-    path_identifier: (object) ->
+    pathIdentifier: (object) ->
       return "0"  if object is 0
       # null, undefined, false or ''
       return "" unless object
       property = object
-      if @get_object_type(object) is "object"
+      if @getObjectType(object) is "object"
         if "to_param" of object
           property = object.to_param
         else if "id" of object
@@ -105,40 +105,40 @@
         else
           property = object
 
-        property = property.call(object) if @get_object_type(property) is "function"
+        property = property.call(object) if @getObjectType(property) is "function"
       property.toString()
 
     clone: (obj) ->
-      return obj if !obj? or "object" isnt @get_object_type(obj)
+      return obj if !obj? or "object" isnt @getObjectType(obj)
       copy = obj.constructor()
       copy[key] = attr for own key, attr of obj
       copy
 
-    prepare_parameters: (required_parameters, actual_parameters, options) ->
+    prepareParameters: (requiredParameters, actualParameters, options) ->
       result = @clone(options) or {}
-      for val, i in required_parameters when i < actual_parameters.length
-        result[val] = actual_parameters[i]
+      for val, i in requiredParameters when i < actualParameters.length
+        result[val] = actualParameters[i]
       result
 
-    build_path: (required_parameters, optional_parts, route, args) ->
+    buildPath: (requiredParameters, optionalParts, route, args) ->
       args = Array::slice.call(args)
-      opts = @extract_options(required_parameters.length, args)
+      opts = @extractOptions(requiredParameters.length, args)
 
-      if args.length > required_parameters.length
+      if args.length > requiredParameters.length
         throw new Error("Too many parameters provided for path")
-      parameters = @prepare_parameters(required_parameters, args, opts)
-      @set_default_url_options optional_parts, parameters
+      parameters = @prepareParameters(requiredParameters, args, opts)
+      @setDefaultUrlOptions optionalParts, parameters
       # options
-      anchor = @extract_anchor(parameters)
-      trailing_slash = @extract_trailing_slash(parameters)
+      anchor = @extractAnchor(parameters)
+      trailingSlash = @extractTrailingSlash(parameters)
       # path
-      result = "#{@get_prefix()}#{@visit(route, parameters)}"
-      url = Utils.clean_path("#{result}")
+      result = "#{@getPrefix()}#{@visit(route, parameters)}"
+      url = @cleanPath("#{result}")
       # set trailing_slash
-      url = url.replace(/(.*?)[\/]?$/, "$1/") if trailing_slash is true
+      url = url.replace(/(.*?)[\/]?$/, "$1/") if trailingSlash is true
       # set additional url params
-      if (url_params = @serialize(parameters)).length
-        url += "?#{url_params}"
+      if (urlParams = @serialize(parameters)).length
+        url += "?#{urlParams}"
       # set anchor
       url += anchor
       url
@@ -160,19 +160,19 @@
         when NodeTypes.GROUP
           @visit left, parameters, true
         when NodeTypes.STAR
-          @visit_globbing left, parameters, true
+          @visitGlobbing left, parameters, true
         when NodeTypes.LITERAL, NodeTypes.SLASH, NodeTypes.DOT
           left
         when NodeTypes.CAT
-          left_part = @visit(left, parameters, optional)
-          right_part = @visit(right, parameters, optional)
-          return "" if optional and not (left_part and right_part)
-          "#{left_part}#{right_part}"
+          leftPart = @visit(left, parameters, optional)
+          rightPart = @visit(right, parameters, optional)
+          return "" if optional and not (leftPart and rightPart)
+          "#{leftPart}#{rightPart}"
         when NodeTypes.SYMBOL
           value = parameters[left]
           if value?
             delete parameters[left]
-            return @path_identifier(value)
+            return @pathIdentifier(value)
           if optional
             "" # missing parameter
           else
@@ -188,13 +188,13 @@
     #
     # This method convert value for globbing in right value for rails route
     #
-    visit_globbing: (route, parameters, optional) ->
+    visitGlobbing: (route, parameters, optional) ->
       [type, left, right] = route
       # fix for rails 4 globbing
       route[1] = left = left.replace(/^\*/i, "") if left.replace(/^\*/i, "") isnt left
       value = parameters[left]
       return @visit(route, parameters, optional) unless value?
-      parameters[left] = switch @get_object_type(value)
+      parameters[left] = switch @getObjectType(value)
         when "array"
           value.join("/")
         else
@@ -204,7 +204,7 @@
     #
     # This method check and return prefix from options
     #
-    get_prefix: ->
+    getPrefix: ->
       prefix = defaults.prefix
       prefix = (if prefix.match("/$") then prefix else "#{prefix}/") if prefix isnt ""
       prefix
@@ -241,7 +241,7 @@
       for name in "Boolean Number String Function Array Date RegExp Object Error".split(" ")
         @_classToTypeCache["[object #{name}]"] = name.toLowerCase()
       @_classToTypeCache
-    get_object_type: (obj) ->
+    getObjectType: (obj) ->
       return window.jQuery.type(obj) if window.jQuery and window.jQuery.type?
       return "#{obj}" unless obj?
       (if typeof obj is "object" or typeof obj is "function" then @_classToType()[Object::toString.call(obj)] or "object" else typeof obj)
