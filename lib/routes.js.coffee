@@ -1,22 +1,24 @@
 ((root, factory) ->
-  # namespace function
-  namespace = (root, namespaceString) ->
-    parts = (if namespaceString then namespaceString.split(".") else [])
-    return unless parts.length
-    current = parts.shift()
-    root[current] = root[current] or {}
-    namespace root[current], parts.join(".")
+  # globalJsObject
+  createGlobalJsRoutesObject = (root) ->
+    # namespace function
+    namespace = (mainRoot, namespaceString) ->
+      parts = (if namespaceString then namespaceString.split(".") else [])
+      return unless parts.length
+      current = parts.shift()
+      mainRoot[current] = mainRoot[current] or {}
+      namespace mainRoot[current], parts.join(".")
+    # object
+    namespace(root, "NAMESPACE")
+    root.NAMESPACE = factory(root)
+    root.NAMESPACE
   # Set up Routes appropriately for the environment.
   if typeof define is "function" and define.amd
     # AMD
-    define ->
-      namespace(root, "NAMESPACE")
-      [root.NAMESPACE, root.NAMESPACE.options] = factory(root)
-      root.NAMESPACE
+    define -> createGlobalJsRoutesObject(root)
   else
     # Browser globals
-    namespace(root, "NAMESPACE")
-    [root.NAMESPACE, root.NAMESPACE.options] = factory(root)
+    createGlobalJsRoutesObject(root)
 )(this, (root) ->
   # begin function
   ParameterMissing = (@message) -> #
@@ -247,5 +249,7 @@
       (if typeof obj is "object" or typeof obj is "function" then @_classToType()[Object::toString.call(obj)] or "object" else typeof obj)
 
   # return objects
-  [ROUTES, defaults]
+  JsRoutes = ROUTES
+  JsRoutes.options = defaults
+  JsRoutes
 )
