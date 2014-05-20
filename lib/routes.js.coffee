@@ -9,7 +9,7 @@
   # Set up Routes appropriately for the environment.
   if typeof define is "function" and define.amd
     # AMD
-    define "NAMESPACE", [], ->
+    define ->
       namespace(root, "NAMESPACE")
       [root.NAMESPACE, root.NAMESPACE.options] = factory(root)
       root.NAMESPACE
