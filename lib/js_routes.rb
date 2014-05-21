@@ -158,7 +158,7 @@ class JsRoutes
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{route_name}: function(#{build_params(required_parts)}) {
-  return Utils.buildPath(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
+  return Utils.build_path(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments);
   }#{",\n" + url_link if url_link.length > 0}
   JS
   end
