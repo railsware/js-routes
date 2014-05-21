@@ -1,3 +1,6 @@
+# root is this
+root = (exports ? this)
+
 ParameterMissing = (@message) -> #
 ParameterMissing:: = new Error()
 defaults =
@@ -13,8 +16,8 @@ Utils =
     if !prefix and !(@get_object_type(object) is "object")
       throw new Error("Url parameters should be a javascript hash")
 
-    if window.jQuery
-      result = window.jQuery.param(object)
+    if root.jQuery
+      result = root.jQuery.param(object)
       return (if not result then "" else result)
 
     s = []
@@ -221,12 +224,10 @@ Utils =
       @_classToTypeCache["[object #{name}]"] = name.toLowerCase()
     @_classToTypeCache
   get_object_type: (obj) ->
-    return window.jQuery.type(obj) if window.jQuery and window.jQuery.type?
+    return root.jQuery.type(obj) if root.jQuery and root.jQuery.type?
     return "#{obj}" unless obj?
     (if typeof obj is "object" or typeof obj is "function" then @_classToType()[Object::toString.call(obj)] or "object" else typeof obj)
 
-# root is this
-root = this
 # globalJsObject
 createGlobalJsRoutesObject = ->
   # namespace function, private
