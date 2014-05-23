@@ -212,6 +212,18 @@ In order to prevent this use <code>:exclude</code> option for sensitive urls lik
 </pre></div>
 
 <h2>
+<a name="js-routes-and-heroku" class="anchor" href="#js-routes-and-heroku"><span class="octicon octicon-link"></span></a>JS-Routes and heroku</h2>
+
+<p>Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environtment. You should use "Very Advanced Setup" schema in this case. </p>
+
+<p>For example create routes.js.erb in assets folder with needed content:</p>
+
+<div class="highlight highlight-erb"><pre><span class="cp">&lt;%=</span> <span class="no">JsRoutes</span><span class="o">.</span><span class="n">generate</span><span class="p">({</span> <span class="n">options</span> <span class="p">})</span> <span class="cp">%&gt;</span><span class="x"></span>
+</pre></div>
+
+<p>This should just work.</p>
+
+<h2>
 <a name="advantages-over-alternatives" class="anchor" href="#advantages-over-alternatives"><span class="octicon octicon-link"></span></a>Advantages over alternatives</h2>
 
 <p>There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept.
