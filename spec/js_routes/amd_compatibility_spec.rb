@@ -6,7 +6,24 @@ describe JsRoutes, "compatibility with AMD/require.js"  do
     evaljs("window.GlobalCheck = {};")
     evaljs("window.define = function (requirs, callback) { window.GlobalCheck['js-routes'] = callback.call(this); return window.GlobalCheck['js-routes']; };")
     evaljs("window.define.amd = { jQuery: true };")
-    evaljs("window.require = function (r, c) { return c.apply(null, [window.GlobalCheck[r[0]]]); };")
+    strRequire =<<EOF
+    window.require = function (r, callback) {
+      var allArgs, i;
+
+      allArgs = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = r.length; _i < _len; _i++) {
+          i = r[_i];
+          _results.push(window.GlobalCheck[i]);
+        }
+        return _results;
+      })();
+
+      return callback.apply(null, allArgs);
+    };
+EOF
+    evaljs(strRequire)
     evaljs(JsRoutes.generate({}))
   end
 
