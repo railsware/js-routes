@@ -60,7 +60,7 @@ describe "after Rails initialization" do
               Rails.application.config.assets.initialize_on_precompile = true
             end
             it "should render some javascript" do
-              expect(ctx.evaluate('js-routes.js')).to match(/window\.Routes/)
+              expect(ctx.evaluate('js-routes.js')).to match(/root\.Routes/)
             end
           end
           context "and not initialize on precompile" do
@@ -71,7 +71,7 @@ describe "after Rails initialization" do
               if 3 == Rails::VERSION::MAJOR
                 expect { ctx.evaluate('js-routes.js') }.to raise_error(/Cannot precompile/)
               else
-                expect(ctx.evaluate('js-routes.js')).to match(/window\.Routes/)
+                expect(ctx.evaluate('js-routes.js')).to match(/root\.Routes/)
               end
             end
           end

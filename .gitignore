@@ -52,3 +52,5 @@ pkg
 
 Gemfile.lock
 gemfiles/*.lock
+
+.DS_Store
