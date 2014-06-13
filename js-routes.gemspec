@@ -9,7 +9,6 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bogdan Gusiev"]
-  s.date = %q{2013-02-13}
   s.description = %q{Generates javascript file that defines all Rails named routes as javascript helpers}
   s.email = %q{agresso@gmail.com}
   s.extra_rdoc_files = [
@@ -24,7 +23,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency(%q<railties>, [">= 3.2"])
   s.add_runtime_dependency(%q<sprockets-rails>)
-  s.add_development_dependency(%q<rspec>, [">= 2.14.0"])
+  s.add_development_dependency(%q<rspec>, [">= 3.0.0"])
   s.add_development_dependency(%q<bundler>, [">= 1.1.0"])
   s.add_development_dependency(%q<guard>, [">= 0"])
   s.add_development_dependency(%q<guard-coffeescript>, [">= 0"])
