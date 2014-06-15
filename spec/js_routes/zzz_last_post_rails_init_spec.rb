@@ -20,7 +20,7 @@ describe "after Rails initialization" do
   end
 
   it "should generate routes file" do
-    expect(File.exists?(NAME)).to be_true
+    expect(File.exists?(NAME)).to be_truthy
   end
 
   context "JsRoutes::Engine" do

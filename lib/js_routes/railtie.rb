@@ -1,5 +1,5 @@
 class JsRoutes
-  class Engine < Rails::Engine
+  class Railtie < (::Rails::VERSION::MAJOR < 4 ? ::Rails::Engine : ::Rails::Railtie)
     JS_ROUTES_ASSET = 'js-routes'
 
     initializer 'js-routes.dependent_on_routes', after: "sprockets.environment" do
