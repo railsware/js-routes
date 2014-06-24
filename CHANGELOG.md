@@ -1,7 +1,5 @@
 ## master
 
-* Load Rails::Railtie for rails 4 instead Rails::Engine [#115](https://github.com/railsware/js-routes/pull/115)
-
 ## v0.9.8
 
 * Support AMD/Require.js [#111](https://github.com/railsware/js-routes/pull/111)
