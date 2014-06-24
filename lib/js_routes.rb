@@ -1,5 +1,5 @@
 require 'uri'
-require 'js_routes/railtie' if defined?(Rails)
+require 'js_routes/engine' if defined?(Rails)
 require 'js_routes/version'
 
 class JsRoutes
