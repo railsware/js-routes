@@ -175,7 +175,7 @@ class JsRoutes
   end
 
   def generate_route_name(name, is_url = false)
-    route_name = "#{name.join('_')}_#{is_url ? "url" : "path"}"
+    route_name = "#{name.join('')}_#{is_url ? "url" : "path"}"
     @options[:camel_case] ? route_name.camelize(:lower) : route_name
   end
 
