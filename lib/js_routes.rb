@@ -146,7 +146,7 @@ class JsRoutes
 
   def any_match?(route, parent_route, matchers)
     matchers = Array(matchers)
-    matchers.any? {|regex| [parent_route.try(:name), route.name].compact.join('') =~ regex}
+    matchers.any? {|regex| [parent_route.try(:name), route.name].compact.join('_') =~ regex}
   end
 
   def build_js(route, parent_route)
@@ -175,7 +175,7 @@ class JsRoutes
   end
 
   def generate_route_name(name, is_url = false)
-    route_name = "#{name.join('')}_#{is_url ? "url" : "path"}"
+    route_name = "#{name.join('_')}_#{is_url ? "url" : "path"}"
     @options[:camel_case] ? route_name.camelize(:lower) : route_name
   end
 

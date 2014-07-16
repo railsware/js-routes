@@ -26,10 +26,10 @@ describe JsRoutes, "options" do
     end
 
     context "for rails engine" do
-      let(:_options) { {:exclude => /^blog_appposts/} }
+      let(:_options) { {:exclude => /^blog_app_posts/} }
 
       it "should exclude specified engine route" do
-        expect(evaljs("Routes.blog_appposts_path")).to be_nil
+        expect(evaljs("Routes.blog_app_posts_path")).to be_nil
       end
     end
   end
@@ -47,10 +47,10 @@ describe JsRoutes, "options" do
     end
 
     context "for rails engine" do
-      let(:_options) { {:include => /^blog_appposts/} }
+      let(:_options) { {:include => /^blog_app_posts/} }
 
       it "should include specified engine route" do
-        expect(evaljs("Routes.blog_appposts_path()")).not_to be_nil
+        expect(evaljs("Routes.blog_app_posts_path()")).not_to be_nil
       end
     end
   end

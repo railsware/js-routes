@@ -56,14 +56,14 @@ describe JsRoutes, "compatibility with Rails"  do
 
   context "with rails engines" do
     it "should support simple route" do
-      expect(evaljs("Routes.blog_appposts_path()")).to eq(blog_routes.posts_path())
+      expect(evaljs("Routes.blog_app_posts_path()")).to eq(blog_routes.posts_path())
     end
 
     it "should support route with parameters" do
-      expect(evaljs("Routes.blog_apppost_path(1)")).to eq(blog_routes.post_path(1))
+      expect(evaljs("Routes.blog_app_post_path(1)")).to eq(blog_routes.post_path(1))
     end
     it "should support root path" do
-      expect(evaljs("Routes.blog_approot_path()")).to eq(blog_routes.root_path)
+      expect(evaljs("Routes.blog_app_root_path()")).to eq(blog_routes.root_path)
     end
     it "should support single route mapping" do
       expect(evaljs("Routes.support_path({page: 3})")).to eq(routes.support_path(:page => 3))
