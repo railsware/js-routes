@@ -146,7 +146,7 @@ class JsRoutes
 
   def any_match?(route, parent_route, matchers)
     matchers = Array(matchers)
-    matchers.any? {|regex| [parent_route.try(:name), route.name].compact.join('') =~ regex}
+    matchers.any? {|regex| [parent_route.try(:name), route.name].compact.join('_') =~ regex}
   end
 
   def build_js(route, parent_route)

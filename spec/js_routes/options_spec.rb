@@ -24,7 +24,16 @@ describe JsRoutes, "options" do
     it "should not exclude routes not under specified pattern" do
       expect(evaljs("Routes.inboxes_path()")).not_to be_nil
     end
+
+    context "for rails engine" do
+      let(:_options) { {:exclude => /^blog_app_posts/} }
+
+      it "should exclude specified engine route" do
+        expect(evaljs("Routes.blog_app_posts_path")).to be_nil
+      end
+    end
   end
+
   context "when include is specified" do
 
     let(:_options) { {:include => /^admin_/} }
@@ -35,6 +44,14 @@ describe JsRoutes, "options" do
 
     it "should not exclude routes not under specified pattern" do
       expect(evaljs("Routes.inboxes_path")).to be_nil
+    end
+
+    context "for rails engine" do
+      let(:_options) { {:include => /^blog_app_posts/} }
+
+      it "should include specified engine route" do
+        expect(evaljs("Routes.blog_app_posts_path()")).not_to be_nil
+      end
     end
   end
 
