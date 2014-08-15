@@ -1,5 +1,9 @@
 ## master
 
+## v0.9.9
+
+* Bugfix Rails Engine subapplication route generation when they are nested [#120](https://github.com/railsware/js-routes/pull/120)
+
 ## v0.9.8
 
 * Support AMD/Require.js [#111](https://github.com/railsware/js-routes/pull/111)
