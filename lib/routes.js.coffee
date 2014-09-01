@@ -1,5 +1,5 @@
 # root is this
-root = (exports ? this)
+root = (CUSTOM_ROOT ? (exports ? this))
 
 ParameterMissing = (@message) -> #
 ParameterMissing:: = new Error()
@@ -229,19 +229,26 @@ Utils =
     (if typeof obj is "object" or typeof obj is "function" then @_classToType()[Object::toString.call(obj)] or "object" else typeof obj)
 
 # globalJsObject
+# globalJsObject
 createGlobalJsRoutesObject = ->
   # namespace function, private
   namespace = (mainRoot, namespaceString) ->
     parts = (if namespaceString then namespaceString.split(".") else [])
-    return unless parts.length
+    return mainRoot unless parts.length
+
     current = parts.shift()
     mainRoot[current] = mainRoot[current] or {}
     namespace mainRoot[current], parts.join(".")
+
   # object
-  namespace(root, "NAMESPACE")
-  root.NAMESPACE = ROUTES
-  root.NAMESPACE.options = defaults
-  root.NAMESPACE
+  routes = ROUTES
+  routes.options = defaults
+
+  namespaced = namespace(root, "NAMESPACE")
+  namespaced[route] = routes[route] for route of routes
+
+  namespaced
+
 # Set up Routes appropriately for the environment.
 if typeof define is "function" and define.amd
   # AMD
