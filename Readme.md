@@ -55,6 +55,7 @@ Available options:
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
 * `namespace` - global object used to access routes.
   * Supports nested namespace like `MyProject.routes`
+  * Can be an empty string, to place routes directly on the root object (version >= 0.9.10)
   * Default: `Routes`
 * `prefix` - String representing a url path to prepend to all paths.
   * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only.
@@ -64,6 +65,7 @@ Available options:
 * `url_links` (version >= 0.8.9) - Generate `*_url` links (in addition to default `*_path`), where url_links value is beginning of url routes
   * Example: http[s]://example.com
   * Default: false
+* `custom_root` (version >= 0.9.10) - Override the root object on which the routes are namespaced. (see #121) 
 
 ### Very Advanced Setup
 
