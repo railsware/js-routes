@@ -123,6 +123,13 @@ var google = {id: 1, name: "Google", to_param: "google"};
 Routes.company_path(google) // => "/companies/google"
 ```
 
+For any route helper, you can access the route's path spec:
+
+```js
+Routes.users_path.spec();   // => "/users(.:format)"
+Routes.company_path.spec(); // => "/companies/:id(.:format)"
+```
+
 In order to make routes helpers available globally:
 
 ``` js

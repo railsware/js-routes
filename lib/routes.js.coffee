@@ -125,17 +125,55 @@ Utils =
     url += anchor
     url
 
-  #
-  # This function is JavaScript impelementation of the
-  # Journey::Visitors::Formatter that builds route by given parameters
-  # from route binary tree.
-  # Binary tree is serialized in the following way:
-  # [node type, left node, right node ]
-  #
-  # @param  {Boolean} optional  Marks the currently visited branch as optional.
-  # If set to `true`, this method will not throw when encountering
-  # a missing parameter (used in recursive calls).
-  #
+
+  build_path_spec: (route) ->
+    spec = ''
+
+    visit_spec = (r, wildcard=false) ->
+      [type, left, right] = r
+      switch type
+        when NodeTypes.GROUP
+          spec += '('
+          visit_spec(left)
+          spec += ')'
+
+        when NodeTypes.CAT
+          visit_spec(left)
+          visit_spec(right)
+
+        when NodeTypes.STAR
+          visit_spec(left, true)
+
+        when NodeTypes.SYMBOL
+          if wildcard
+            spec += '*' unless left[0] is '*'
+            spec += left
+          else
+            spec += ":#{left}"
+
+        when NodeTypes.SLASH, NodeTypes.DOT, NodeTypes.LITERAL
+          spec += left
+
+      # Not sure about this one
+      # when NodeTypes.OR
+
+        else throw new Error("Unknown Rails node type")
+
+    visit_spec(route)
+    spec
+
+
+#
+# This function is JavaScript impelementation of the
+# Journey::Visitors::Formatter that builds route by given parameters
+# from route binary tree.
+# Binary tree is serialized in the following way:
+# [node type, left node, right node ]
+#
+# @param  {Boolean} optional  Marks the currently visited branch as optional.
+# If set to `true`, this method will not throw when encountering
+# a missing parameter (used in recursive calls).
+#
   visit: (route, parameters, optional = false) ->
     [type, left, right] = route
     switch type
@@ -159,17 +197,17 @@ Utils =
           "" # missing parameter
         else
           throw new ParameterMissing("Route parameter missing: #{left}")
-      #
-      # I don't know what is this node type
-      # Please send your PR if you do
-      #
-      # when NodeTypes.OR:
+    #
+    # I don't know what is this node type
+    # Please send your PR if you do
+    #
+    # when NodeTypes.OR:
       else
         throw new Error("Unknown Rails node type")
 
-  #
-  # This method convert value for globbing in right value for rails route
-  #
+#
+# This method convert value for globbing in right value for rails route
+#
   visit_globbing: (route, parameters, optional) ->
     [type, left, right] = route
     # fix for rails 4 globbing
@@ -183,39 +221,39 @@ Utils =
         value
     @visit route, parameters, optional
 
-  #
-  # This method check and return prefix from options
-  #
+#
+# This method check and return prefix from options
+#
   get_prefix: ->
     prefix = defaults.prefix
     prefix = (if prefix.match("/$") then prefix else "#{prefix}/") if prefix isnt ""
     prefix
 
-  #
-  # This is helper method to define object type.
-  # The typeof operator is probably the biggest design flaw of JavaScript, simply because it's basically completely broken.
-  #
-  # Value               Class      Type
-  # -------------------------------------
-  # "foo"               String     string
-  # new String("foo")   String     object
-  # 1.2                 Number     number
-  # new Number(1.2)     Number     object
-  # true                Boolean    boolean
-  # new Boolean(true)   Boolean    object
-  # new Date()          Date       object
-  # new Error()         Error      object
-  # [1,2,3]             Array      object
-  # new Array(1, 2, 3)  Array      object
-  # new Function("")    Function   function
-  # /abc/g              RegExp     object
-  # new RegExp("meow")  RegExp     object
-  # {}                  Object     object
-  # new Object()        Object     object
-  #
-  # What is why I use Object.prototype.toString() to know better type of variable. Or use jQuery.type, if it available.
-  # _classToTypeCache used for perfomance cache of types map (underscore at the beginning mean private method - of course it doesn't realy private).
-  #
+#
+# This is helper method to define object type.
+# The typeof operator is probably the biggest design flaw of JavaScript, simply because it's basically completely broken.
+#
+# Value               Class      Type
+# -------------------------------------
+# "foo"               String     string
+# new String("foo")   String     object
+# 1.2                 Number     number
+# new Number(1.2)     Number     object
+# true                Boolean    boolean
+# new Boolean(true)   Boolean    object
+# new Date()          Date       object
+# new Error()         Error      object
+# [1,2,3]             Array      object
+# new Array(1, 2, 3)  Array      object
+# new Function("")    Function   function
+# /abc/g              RegExp     object
+# new RegExp("meow")  RegExp     object
+# {}                  Object     object
+# new Object()        Object     object
+#
+# What is why I use Object.prototype.toString() to know better type of variable. Or use jQuery.type, if it available.
+# _classToTypeCache used for perfomance cache of types map (underscore at the beginning mean private method - of course it doesn't realy private).
+#
   _classToTypeCache: null
   _classToType: ->
     return @_classToTypeCache if @_classToTypeCache?
@@ -237,6 +275,13 @@ createGlobalJsRoutesObject = ->
     current = parts.shift()
     mainRoot[current] = mainRoot[current] or {}
     namespace mainRoot[current], parts.join(".")
+
+  # route function: create route path function and add spec to it
+  route = (required_parts, optional_parts, route_spec) ->
+    path_fn = -> Utils.build_path(required_parts, optional_parts, route_spec, arguments)
+    path_fn.spec = -> Utils.build_path_spec(route_spec)
+    path_fn
+
   # object
   namespace(root, "NAMESPACE")
   root.NAMESPACE = ROUTES
