@@ -155,9 +155,11 @@ describe JsRoutes, "compatibility with Rails"  do
     end
 
     shared_examples_for "serialization" do
-      it "should support serialization of objects" do
+      before do
         skip('This tests is invalid for nil and jruby 1.7.13') if defined?(JRUBY_VERSION) && '1.7.13' == JRUBY_VERSION && _value.nil?
+      end
 
+      it "should support serialization of objects" do
         expect(evaljs("window.jQuery.param(#{_value.to_json})")).to eq(_value.to_param)
         expect(evaljs("Routes.inboxes_path(#{_value.to_json})")).to eq(routes.inboxes_path(_value))
         expect(evaljs("Routes.inbox_path(1, #{_value.to_json})")).to eq(routes.inbox_path(1, _value))
