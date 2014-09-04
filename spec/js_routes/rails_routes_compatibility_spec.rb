@@ -156,13 +156,11 @@ describe JsRoutes, "compatibility with Rails"  do
 
     shared_examples_for "serialization" do
       it "should support serialization of objects" do
-        begin
-          expect(evaljs("window.jQuery.param(#{_value.to_json})")).to eq(_value.to_param)
-          expect(evaljs("Routes.inboxes_path(#{_value.to_json})")).to eq(routes.inboxes_path(_value))
-          expect(evaljs("Routes.inbox_path(1, #{_value.to_json})")).to eq(routes.inbox_path(1, _value))
-        rescue Java::JavaLang::NullPointerException # jruby 1.7.13 problems
-          expect(evaljs("window.jQuery.param(#{_value.to_json.inspect})")).to eq(_value.to_param)
-        end
+        skip('This tests is invalid for nil and jruby 1.7.13') if defined?(JRUBY_VERSION) && '1.7.13' == JRUBY_VERSION && _value.nil?
+
+        expect(evaljs("window.jQuery.param(#{_value.to_json})")).to eq(_value.to_param)
+        expect(evaljs("Routes.inboxes_path(#{_value.to_json})")).to eq(routes.inboxes_path(_value))
+        expect(evaljs("Routes.inbox_path(1, #{_value.to_json})")).to eq(routes.inbox_path(1, _value))
       end
     end
     context "when parameters is a hash" do
