@@ -29,10 +29,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<guard-coffeescript>, [">= 0"])
   s.add_development_dependency(%q<appraisal>, [">= 0.5.2"])
   if defined?(JRUBY_VERSION)
-    s.add_development_dependency(%q<therubyrhino>, [">= 0"])
+    s.add_development_dependency(%q<therubyrhino>, [">= 2.0.4"])
   else
     s.add_development_dependency(%q<debugger>, [">= 0"]) if RUBY_VERSION =~ /\A2\.0/
-    s.add_development_dependency(%q<therubyracer>, [">= 0"])
+    s.add_development_dependency(%q<therubyracer>, [">= 0.12.1"])
   end
 end
 
