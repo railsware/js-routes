@@ -179,7 +179,7 @@ describe JsRoutes, "compatibility with Rails"  do
       end
 
       before do
-        pending('This tests is invalid for nil/null and jruby 1.7.13') if defined?(JRUBY_VERSION) && '1.7.13' == JRUBY_VERSION
+        pending("This tests is invalid for nil/null and jruby #{JRUBY_VERSION}") if defined?(JRUBY_VERSION) && '1.7.13' == JRUBY_VERSION
       end
 
       it_should_behave_like 'serialization'
