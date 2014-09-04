@@ -150,15 +150,19 @@ describe JsRoutes, "compatibility with Rails"  do
   context "when jQuery is present" do
     before do
       evaljs("window.jQuery = {};")
-      jscontext[:parameterize] = lambda {|object| _value.to_param}
-      evaljs("window.jQuery.param = parameterize")
+      jscontext[:parameterizeFunc] = lambda {|object| _value.to_param}
+      evaljs("window.jQuery.param = parameterizeFunc")
     end
 
     shared_examples_for "serialization" do
       it "should support serialization of objects" do
-        expect(evaljs("window.jQuery.param(#{_value.to_json})")).to eq(_value.to_param)
-        expect(evaljs("Routes.inboxes_path(#{_value.to_json})")).to eq(routes.inboxes_path(_value))
-        expect(evaljs("Routes.inbox_path(1, #{_value.to_json})")).to eq(routes.inbox_path(1, _value))
+        begin
+          expect(evaljs("window.jQuery.param(#{_value.to_json})")).to eq(_value.to_param)
+          expect(evaljs("Routes.inboxes_path(#{_value.to_json})")).to eq(routes.inboxes_path(_value))
+          expect(evaljs("Routes.inbox_path(1, #{_value.to_json})")).to eq(routes.inbox_path(1, _value))
+        rescue Java::JavaLang::NullPointerException # jruby 1.7.13 problems
+          expect(evaljs("window.jQuery.param(#{_value.to_json.inspect})")).to eq(_value.to_param)
+        end
       end
     end
     context "when parameters is a hash" do
