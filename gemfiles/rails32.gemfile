@@ -4,5 +4,8 @@ source "http://rubygems.org"
 
 gem "railties", "~> 3.2.18"
 gem "tzinfo"
+platforms :ruby do
+  gem "libv8", "<= 3.16.14.3"
+end
 
 gemspec :path=>"../"
