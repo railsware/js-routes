@@ -132,6 +132,8 @@ class JsRoutes
         build_route_if_match(route)
       end
     end.flatten.compact
+    
+    js_routes << set_prefix_js
 
     "{\n" + js_routes.join(",\n") + "}\n"
   end
@@ -218,6 +220,14 @@ class JsRoutes
       serialize(spec.left, parent_spec),
       spec.respond_to?(:right) && serialize(spec.right)
     ]
+  end
+  
+  def set_prefix_js
+    _ = <<-JS.strip!
+    set_prefix: function(path) {
+      defaults['prefix'] = path;
+    }
+    JS
   end
 end
 
