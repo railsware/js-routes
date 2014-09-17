@@ -18,7 +18,8 @@ class JsRoutes
     prefix: nil,
     url_links: nil,
     camel_case: false,
-    default_url_options: {}
+    default_url_options: {},
+    compact: false
   }
 
   NODE_TYPES = {
@@ -154,7 +155,7 @@ class JsRoutes
     parent_spec = parent_route.try(:path).try(:spec)
     required_parts, optional_parts = route.required_parts.clone, route.optional_parts.clone
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
-    route_name = generate_route_name(name)
+    route_name = generate_route_name(name, (:path unless @options[:compact]))
     url_link = generate_url_link(name, route_name, required_parts)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
@@ -168,14 +169,15 @@ class JsRoutes
     return "" unless @options[:url_links]
     raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
     _ = <<-JS.strip!
-    #{generate_route_name(name, true)}: function(#{build_params(required_parts)}) {
+    #{generate_route_name(name, :url)}: function(#{build_params(required_parts)}) {
     return "" + #{@options[:url_links].inspect} + this.#{route_name}(#{build_params(required_parts)});
     }
     JS
   end
 
-  def generate_route_name(name, is_url = false)
-    route_name = "#{name.join('_')}_#{is_url ? "url" : "path"}"
+  def generate_route_name(name, suffix)
+    route_name = name.join('_')
+    route_name << "_#{ suffix }" if suffix
     @options[:camel_case] ? route_name.camelize(:lower) : route_name
   end
 

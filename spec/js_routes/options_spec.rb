@@ -275,4 +275,20 @@ describe JsRoutes, "options" do
       end
     end
   end
+
+  describe "when the compact mode is enabled" do
+    let(:_options) { { :compact => true } }
+    it "should avoid a path suffix" do
+      expect(evaljs("Routes.inboxes()")).to eq(routes.inboxes_path())
+      expect(evaljs("Routes.inbox(2)")).to eq(routes.inbox_path(2))
+    end
+
+    context "with url links" do
+      let(:_options) { { :compact => true, :url_links => "http://localhost" } }
+      it "should not strip urls" do
+        expect(evaljs("Routes.inbox(1)")).to eq(routes.inbox_path(1))
+        expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
+      end
+    end
+  end
 end

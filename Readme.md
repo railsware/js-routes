@@ -64,6 +64,9 @@ Available options:
 * `url_links` (version >= 0.8.9) - Generate `*_url` links (in addition to default `*_path`), where url_links value is beginning of url routes
   * Example: http[s]://example.com
   * Default: false
+* `compact` (version > 0.9.9) - Remove `_path` suffix in path routes(`*_url` routes stay untouched if they were enabled)
+  * Default: false
+  * Sample route call when option is set to true: Routes.users() => `/users`
 
 ### Very Advanced Setup
 
@@ -145,7 +148,7 @@ Spork.trap_method(JsRoutes, :generate!)
 
 ## JS-Routes and heroku
 
-Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environtment. You should use "Very Advanced Setup" schema in this case. 
+Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environtment. You should use "Very Advanced Setup" schema in this case.
 
 For example create routes.js.erb in assets folder with needed content:
 
