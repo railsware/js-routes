@@ -133,7 +133,7 @@ class JsRoutes
       end
     end.flatten.compact
     
-    js_routes << set_prefix_js
+    js_routes << defaults_js
 
     "{\n" + js_routes.join(",\n") + "}\n"
   end
@@ -222,10 +222,10 @@ class JsRoutes
     ]
   end
   
-  def set_prefix_js
+  def defaults_js
     _ = <<-JS.strip!
-    set_prefix: function(path) {
-      defaults['prefix'] = path;
+    defaults: function() {
+      return defaults;
     }
     JS
   end
