@@ -224,8 +224,8 @@ class JsRoutes
   
   def configure_js
     _ = <<-JS.strip!
-    configure: function(opts) {
-      $.extend(defaults, opts);
+    configure: function(options) {
+      $.extend(defaults, options);
     }
     JS
   end
