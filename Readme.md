@@ -129,6 +129,18 @@ In order to make routes helpers available globally:
 jQuery.extend(window, Routes)
 ```
 
+## Configuring in javascript
+
+Sometimes there's need to configure some options per client connection (eg. per current user's ID).
+You can do that with JavaScript's `Routes.configure()` function:
+
+``` js
+Routes.configure({prefix: '/MY-USER-UID'});
+// wil result in:
+Routes.articles_path()
+>> "/MY-USER-ID/articles"
+```
+
 ## What about security?
 
 js-routes itself do not have security holes. It makes URLs
