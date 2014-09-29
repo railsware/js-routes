@@ -133,7 +133,7 @@ class JsRoutes
       end
     end.flatten.compact
     
-    js_routes << defaults_js
+    js_routes << configure_js
 
     "{\n" + js_routes.join(",\n") + "}\n"
   end
@@ -222,10 +222,10 @@ class JsRoutes
     ]
   end
   
-  def defaults_js
+  def configure_js
     _ = <<-JS.strip!
-    defaults: function() {
-      return defaults;
+    configure: function(opts) {
+      $.extend(defaults, opts);
     }
     JS
   end
