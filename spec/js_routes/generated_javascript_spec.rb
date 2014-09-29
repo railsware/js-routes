@@ -22,6 +22,10 @@ describe JsRoutes do
     it "routes should be sorted in alphabetical order" do
       expect(subject.index("book_path")).to be <= subject.index("inboxes_path")
     end
+    
+    it "should have .configure function" do
+      is_expected.to include("configure: function(options)")
+    end
   end
 
   describe ".generate!" do
