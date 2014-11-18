@@ -148,7 +148,7 @@ Spork.trap_method(JsRoutes, :generate!)
 
 ## JS-Routes and heroku
 
-Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environtment. You should use "Very Advanced Setup" schema in this case.
+Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environment. You should use "Very Advanced Setup" schema in this case.
 
 For example create routes.js.erb in assets folder with needed content:
 
