@@ -132,8 +132,6 @@ class JsRoutes
         build_route_if_match(route)
       end
     end.flatten.compact
-    
-    js_routes << configure_js
 
     "{\n" + js_routes.join(",\n") + "}\n"
   end
@@ -220,14 +218,6 @@ class JsRoutes
       serialize(spec.left, parent_spec),
       spec.respond_to?(:right) && serialize(spec.right)
     ]
-  end
-  
-  def configure_js
-    _ = <<-JS.strip!
-    configure: function(options) {
-      $.extend(defaults, options);
-    }
-    JS
   end
 end
 
