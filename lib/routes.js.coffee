@@ -195,6 +195,9 @@ Utils =
   # This method allows to change defaults configuration
   configure: (options) ->
     $.extend defaults, options
+  
+  configuration: ->
+    defaults
 
   #
   # This is helper method to define object type.
