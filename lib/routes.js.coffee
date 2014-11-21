@@ -190,6 +190,14 @@ Utils =
     prefix = defaults.prefix
     prefix = (if prefix.match("/$") then prefix else "#{prefix}/") if prefix isnt ""
     prefix
+  
+  #
+  # This method allows to change defaults configuration
+  configure: (options) ->
+    $.extend defaults, options
+  
+  configuration: ->
+    defaults
 
   #
   # This is helper method to define object type.
