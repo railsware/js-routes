@@ -169,7 +169,7 @@ class JsRoutes
   def generate_url_link(name, route_name, required_parts, protocol = nil)
     return "" unless @options[:url_links]
 
-    if ['true', 'false'].include? @options[:url_links].to_s
+    if @options[:url_links].to_s == 'true' # A common misunderstanding of the expected value
       raise "url_links option requires a URL (ex: example.com, http[s]://example.com)"
     elsif @options[:url_links] =~ /^http/ || @options[:url_links] =~ /^\/\//
       base_uri = @options[:url_links] # Assume that they want to hard-code the protocol
