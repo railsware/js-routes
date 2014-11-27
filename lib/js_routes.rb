@@ -172,7 +172,7 @@ class JsRoutes
     if @options[:url_links].to_s == 'true' # A common misunderstanding of the expected value
       raise "url_links option requires a URL (ex: example.com, http[s]://example.com)"
     elsif @options[:url_links] =~ /^http/ || @options[:url_links] =~ /^\/\//
-      base_uri = @options[:url_links] # Assume that they want to hard-code the protocol
+      base_uri = @options[:url_links] # Assume that they want to hard-code the protocol, or use "protocol relative" URLs
     else
       protocol ||= 'http'
       base_uri = "#{protocol}://#{@options[:url_links]}"
