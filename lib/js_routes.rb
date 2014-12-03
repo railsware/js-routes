@@ -157,7 +157,8 @@ class JsRoutes
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     route_name = generate_route_name(name, (:path unless @options[:compact]))
     protocol = route.defaults[:protocol]
-    url_link = generate_url_link(name, route_name, required_parts, protocol)
+    host = route.defaults[:host]
+    url_link = generate_url_link(name, route_name, required_parts, protocol, host)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{route_name}: function(#{build_params(required_parts)}) {
@@ -166,21 +167,15 @@ class JsRoutes
   JS
   end
 
-  def generate_url_link(name, route_name, required_parts, protocol = nil)
+  def generate_url_link(name, route_name, required_parts, protocol = nil, host = nil)
     return "" unless @options[:url_links]
 
-    if @options[:url_links].to_s == 'true' # A common misunderstanding of the expected value
-      raise "url_links option requires a URL (ex: example.com, http[s]://example.com)"
-    elsif @options[:url_links] =~ /^http/ || @options[:url_links] =~ /^\/\//
-      base_uri = @options[:url_links] # Assume that they want to hard-code the protocol, or use "protocol relative" URLs
-    else
-      protocol ||= 'http'
-      base_uri = "#{protocol}://#{@options[:url_links]}"
-    end
-
+    protocol ||= @options[:default_url_options][:protocol] || 'http'
+    host     ||= @options[:default_url_options][:host]
+    
     _ = <<-JS.strip!
     #{generate_route_name(name, :url)}: function(#{build_params(required_parts)}) {
-    return "" + #{base_uri.inspect} + this.#{route_name}(#{build_params(required_parts)});
+    return #{protocol.inspect} + "://" + #{host ? host.inspect : 'window.location.host'} + this.#{route_name}(#{build_params(required_parts)});
     }
     JS
   end

@@ -110,6 +110,8 @@ def draw_routes
     get '(/o/:organization)/search/:q' => "foo#foo", as: :search
 
     resources :sessions, :only => [:new, :create, :destroy], :protocol => 'https'
+
+    get '/' => 'sso#login', host: 'sso.example.com', as: :sso
   end
 
 end
