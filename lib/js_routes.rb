@@ -156,7 +156,8 @@ class JsRoutes
     required_parts, optional_parts = route.required_parts.clone, route.optional_parts.clone
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     route_name = generate_route_name(name, (:path unless @options[:compact]))
-    url_link = generate_url_link(name, route_name, required_parts)
+    protocol = route.defaults[:protocol]
+    url_link = generate_url_link(name, route_name, required_parts, protocol)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{route_name}: function(#{build_params(required_parts)}) {
@@ -165,12 +166,21 @@ class JsRoutes
   JS
   end
 
-  def generate_url_link(name, route_name, required_parts)
+  def generate_url_link(name, route_name, required_parts, protocol = nil)
     return "" unless @options[:url_links]
-    raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
+
+    if @options[:url_links].to_s == 'true' # A common misunderstanding of the expected value
+      raise "url_links option requires a URL (ex: example.com, http[s]://example.com)"
+    elsif @options[:url_links] =~ /^http/ || @options[:url_links] =~ /^\/\//
+      base_uri = @options[:url_links] # Assume that they want to hard-code the protocol, or use "protocol relative" URLs
+    else
+      protocol ||= 'http'
+      base_uri = "#{protocol}://#{@options[:url_links]}"
+    end
+
     _ = <<-JS.strip!
     #{generate_route_name(name, :url)}: function(#{build_params(required_parts)}) {
-    return "" + #{@options[:url_links].inspect} + this.#{route_name}(#{build_params(required_parts)});
+    return "" + #{base_uri.inspect} + this.#{route_name}(#{build_params(required_parts)});
     }
     JS
   end
@@ -185,7 +195,7 @@ class JsRoutes
     self.class.json(string)
   end
 
-  def build_params required_parts
+  def build_params(required_parts)
     params = required_parts.map do |name|
       # prepending each parameter name with underscore
       # to prevent conflict with JS reserved words

@@ -61,9 +61,10 @@ Available options:
   * Default: blank
 * `camel_case` (version >= 0.8.8) - Generate camel case route names.
   * Default: false
-* `url_links` (version >= 0.8.9) - Generate `*_url` links (in addition to default `*_path`), where url_links value is beginning of url routes
-  * Example: http[s]://example.com
+* `url_links` (version >= 0.8.9) - Generate `*_url` route helpers (in addition to default `*_path`), where the `url_links` value is the hostname that will be used to prefix the URLs that are generated.
+  * Examples: http[s]://example.com, //example.com, example.com
   * Default: false
+  * If any of your routes specify a specific protocol (e.g. `https`), you will want to specify the hostname without specifying the protocol (i.e. example.com), otherwise all of the URLs will use the protocol that you specify.
 * `compact` (version > 0.9.9) - Remove `_path` suffix in path routes(`*_url` routes stay untouched if they were enabled)
   * Default: false
   * Sample route call when option is set to true: Routes.users() => `/users`

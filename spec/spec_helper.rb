@@ -108,6 +108,8 @@ def draw_routes
 
     get '/привет' => "foo#foo", :as => :hello
     get '(/o/:organization)/search/:q' => "foo#foo", as: :search
+
+    resources :sessions, :only => [:new, :create, :destroy], :protocol => 'https'
   end
 
 end
