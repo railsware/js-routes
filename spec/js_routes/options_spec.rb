@@ -238,6 +238,22 @@ describe JsRoutes, "options" do
       end
     end
 
+    context "with deprecated, non-boolean config value" do
+      let(:_options) { { :url_links => "http://localhost" } }
+
+      it 'supports the previous behavior until version 1.0.0' do
+        expect(evaljs("Routes.inbox_path")).not_to be_nil
+        expect(evaljs("Routes.inbox_url")).not_to be_nil
+        expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
+        expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
+        expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://localhost#{routes.inbox_path(1, :test_key => "test_val")}")
+        # forcing protocol in route definitions was not previously supported
+        expect(evaljs("Routes.new_session_url()")).to eq("http://localhost#{routes.new_session_path}")
+        # forcing host in route definitions was not previously supported
+        expect(evaljs("Routes.sso_url()")).to eq("http://localhost#{routes.sso_path}")
+      end
+    end
+
     context "without specifying a default host" do
       let(:_options) { { :url_links => true } }
 

@@ -170,12 +170,21 @@ class JsRoutes
   def generate_url_link(name, route_name, required_parts, protocol = nil, host = nil)
     return "" unless @options[:url_links]
 
-    protocol ||= @options[:default_url_options][:protocol] || 'http'
-    host     ||= @options[:default_url_options][:host]
-    
+    # preserve and deprecate previous behavior
+    unless @options[:url_links] == true
+      ActiveSupport::Deprecation.new('1.0.0', 'js-routes').warn('url_links value must be a boolean. Use default_url_options for specifying a default host and/or protocol.')
+      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
+      base_url_js = "#{@options[:url_links].inspect}"
+    else
+      protocol ||= @options[:default_url_options][:protocol] || 'http'
+      host     ||= @options[:default_url_options][:host]
+      base_url_js = "'#{protocol}://' + #{host ? host.inspect : 'window.location.host'}"
+    end
+
+
     _ = <<-JS.strip!
     #{generate_route_name(name, :url)}: function(#{build_params(required_parts)}) {
-    return #{protocol.inspect} + "://" + #{host ? host.inspect : 'window.location.host'} + this.#{route_name}(#{build_params(required_parts)});
+    return #{base_url_js} + this.#{route_name}(#{build_params(required_parts)});
     }
     JS
   end
