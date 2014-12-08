@@ -296,4 +296,32 @@ describe JsRoutes, "compatibility with Rails"  do
       end
     end
   end
+
+  context "when specs" do
+    it "should show inbox spec" do
+      expect(evaljs("Routes.inbox_path.toString()")).to eq('/inboxes/:id(.:format)')
+    end
+
+    it "should show inbox spec convert to string" do
+      expect(evaljs("'' + Routes.inbox_path")).to eq('/inboxes/:id(.:format)')
+    end
+
+    it "should show inbox message spec" do
+      expect(evaljs("Routes.inbox_message_path.toString()")).to eq('/inboxes/:inbox_id/messages/:id(.:format)')
+    end
+
+    it "should show inbox message spec convert to string" do
+      expect(evaljs("'' + Routes.inbox_message_path")).to eq('/inboxes/:inbox_id/messages/:id(.:format)')
+    end
+  end
+
+  context "when params" do
+    it "should show inbox spec" do
+      expect(evaljs("Routes.inbox_path.required_params").to_a).to eq(["id"])
+    end
+
+    it "should show inbox message spec" do
+      expect(evaljs("Routes.inbox_message_path.required_params").to_a).to eq(["inbox_id", "id"])
+    end
+  end
 end

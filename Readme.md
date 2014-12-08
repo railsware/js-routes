@@ -1,5 +1,5 @@
 # JsRoutes
-[![Build Status](https://travis-ci.org/railsware/js-routes.png)](https://travis-ci.org/railsware/js-routes)
+[![Build Status](https://travis-ci.org/railsware/js-routes.svg?branch=master)](https://travis-ci.org/railsware/js-routes)
 
 Generates javascript file that defines all Rails named routes as javascript helpers
 
@@ -109,7 +109,13 @@ JsRoutes.generate!("#{path}/api_routes.js", :namespace => "ApiRoutes", :include 
 Configuration above will create a nice javascript file with `Routes` object that has all the rails routes available:
 
 ``` js
+'' + Routes.users_path // => "/users(.:format)", a string representation of the object
+Routes.users_path.toString() // => "/users(.:format)"
+Routes.users_path.required_params // => []
 Routes.users_path() // => "/users"
+'' + Routes.user_path // => "/users/:id(.:format)"
+Routes.user_path.toString() // => "/users/:id(.:format)"
+Routes.user_path.required_params // => ['id']
 Routes.user_path(1) // => "/users/1"
 Routes.user_path(1, {format: 'json'}) // => "/users/1.json"
 Routes.new_user_project_path(1, {format: 'json'}) // => "/users/1/projects/new.json"
