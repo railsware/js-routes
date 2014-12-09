@@ -112,6 +112,8 @@ def draw_routes
     resources :sessions, :only => [:new, :create, :destroy], :protocol => 'https'
 
     get '/' => 'sso#login', host: 'sso.example.com', as: :sso
+
+    resources :portholes, :port => 8080
   end
 
 end
