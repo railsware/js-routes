@@ -238,40 +238,169 @@ describe JsRoutes, "options" do
       end
     end
 
-    context "with host" do
-      let(:_options) { { :url_links => "http://localhost" } }
-      it "should generate path and url links" do
-        expect(evaljs("Routes.inbox_path")).not_to be_nil
-        expect(evaljs("Routes.inbox_url")).not_to be_nil
-        expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
-        expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
-        expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://localhost#{routes.inbox_path(1, :test_key => "test_val")}")
+    context "with deprecated, non-boolean config value" do
+
+      context "with host" do
+        let(:_options) { { :url_links => "http://localhost" } }
+        it "should generate path and url links" do
+          expect(evaljs("Routes.inbox_path")).not_to be_nil
+          expect(evaljs("Routes.inbox_url")).not_to be_nil
+          expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
+          expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://localhost#{routes.inbox_path(1, :test_key => "test_val")}")
+        end
       end
+
+      context "with invalid host" do
+        it "should raise error" do
+          expect { JsRoutes.generate({ :url_links => "localhost" }) }.to raise_error RuntimeError
+        end
+      end
+
+      context "with host and camel_case" do
+        let(:_options) { { :camel_case => true, :url_links => "http://localhost" } }
+        it "should generate path and url links" do
+          expect(evaljs("Routes.inboxPath")).not_to be_nil
+          expect(evaljs("Routes.inboxUrl")).not_to be_nil
+          expect(evaljs("Routes.inboxPath(1)")).to eq(routes.inbox_path(1))
+          expect(evaljs("Routes.inboxUrl(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
+        end
+      end
+
+      context "with host and prefix" do
+        let(:_options) { { :prefix => "/api", :url_links => "https://example.com" } }
+        it "should generate path and url links" do
+          expect(evaljs("Routes.inbox_path")).not_to be_nil
+          expect(evaljs("Routes.inbox_url")).not_to be_nil
+          expect(evaljs("Routes.inbox_path(1)")).to eq("/api#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.inbox_url(1)")).to eq("https://example.com/api#{routes.inbox_path(1)}")
+        end
+      end
+
     end
 
-    context "with invalid host" do
-      it "should raise error" do
-        expect { JsRoutes.generate({ :url_links => "localhost" }) }.to raise_error RuntimeError
-      end
-    end
+    context "when using default_url_options to specify default protocol and/or host" do
 
-    context "with host and camel_case" do
-      let(:_options) { { :camel_case => true, :url_links => "http://localhost" } }
-      it "should generate path and url links" do
-        expect(evaljs("Routes.inboxPath")).not_to be_nil
-        expect(evaljs("Routes.inboxUrl")).not_to be_nil
-        expect(evaljs("Routes.inboxPath(1)")).to eq(routes.inbox_path(1))
-        expect(evaljs("Routes.inboxUrl(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
-      end
-    end
+      let(:current_protocol){ 'http:' } # window.location.protocol includes the colon character
+      let(:current_hostname){ 'current.example.com' }
+      let(:current_port){ '' } # an empty string means port 80
+      let(:current_host){
+        host = "#{current_hostname}"
+        host += ":#{current_port}" unless current_port == ''
+        host
+      }
 
-    context "with host and prefix" do
-      let(:_options) { { :prefix => "/api", :url_links => "https://example.com" } }
-      it "should generate path and url links" do
-        expect(evaljs("Routes.inbox_path")).not_to be_nil
-        expect(evaljs("Routes.inbox_url")).not_to be_nil
-        expect(evaljs("Routes.inbox_path(1)")).to eq("/api#{routes.inbox_path(1)}")
-        expect(evaljs("Routes.inbox_url(1)")).to eq("https://example.com/api#{routes.inbox_path(1)}")
+      before do
+        # V8 does not assume you want a window object, so we have to create one
+        jscontext['window'] = {:location => {:protocol => current_protocol, :hostname => current_hostname, :port => current_port, :host => current_host}}
+      end
+
+      context "without specifying a default host" do
+        let(:_options) { { :url_links => true } }
+        
+        it "uses the current host" do
+          expect { JsRoutes.generate(_options) }.not_to raise_error
+          expect(evaljs("Routes.inbox_path")).not_to be_nil
+          expect(evaljs("Routes.inbox_url")).not_to be_nil
+          expect(evaljs("Routes.inbox_url(1)")).to eq("http://current.example.com#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://current.example.com#{routes.inbox_path(1, :test_key => "test_val")}")
+          expect(evaljs("Routes.new_session_url()")).to eq("https://current.example.com#{routes.new_session_path}")
+          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+        end
+      end
+
+      context "with host" do
+        let(:_options) { { :url_links => true, :default_url_options => {:host => 'localhost'} } }
+        it "should generate path and url links" do
+          expect(evaljs("Routes.inbox_path")).not_to be_nil
+          expect(evaljs("Routes.inbox_url")).not_to be_nil
+          expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
+          expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://localhost#{routes.inbox_path(1, :test_key => "test_val")}")
+          expect(evaljs("Routes.new_session_url()")).to eq("https://localhost#{routes.new_session_path}")
+          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+        end
+      end
+
+      context "with host and camel_case" do
+        let(:_options) { { :camel_case => true, :url_links => true, :default_url_options => {:host => 'localhost'} } }
+        it "should generate path and url links" do
+          expect(evaljs("Routes.inboxPath")).not_to be_nil
+          expect(evaljs("Routes.inboxUrl")).not_to be_nil
+          expect(evaljs("Routes.inboxPath(1)")).to eq(routes.inbox_path(1))
+          expect(evaljs("Routes.inboxUrl(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
+        end
+      end
+
+      context "with host and prefix" do
+        let(:_options) { { :prefix => "/api", :url_links => true, :default_url_options => {:host => 'example.com'} } }
+        it "should generate path and url links" do
+          expect(evaljs("Routes.inbox_path")).not_to be_nil
+          expect(evaljs("Routes.inbox_url")).not_to be_nil
+          expect(evaljs("Routes.inbox_path(1)")).to eq("/api#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com/api#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.new_session_url()")).to eq("https://example.com/api#{routes.new_session_path}")
+          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com/api#{routes.sso_path}")
+        end
+      end
+
+      context "with host and https protocol" do
+        let(:_options) { { :url_links => true, :default_url_options => {:host => 'example.com', :protocol => 'https'} } }
+        it "should generate url links using the specified protocol instead of http" do
+          expect(evaljs("Routes.inbox_url(1)")).to eq("https://example.com#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
+          expect(evaljs("Routes.sso_url()")).to eq("https://sso.example.com#{routes.sso_path}")
+        end
+      end
+
+      context "with host and http protocol" do
+        let(:_options) { { :url_links => true, :default_url_options => {:host => 'example.com', :protocol => 'http'} } }
+        it "does not override specific https routes" do
+          expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
+          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+        end
+      end
+
+      context "when current port is not 80" do
+        context "without specifying a default host or port" do
+          let(:current_hostname){ 'localhost' }
+          let(:current_port){ '3000' }
+          let(:_options) { { :url_links => true } }
+
+          it "includes the port" do
+            expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost:3000#{routes.inbox_path(1)}")
+            expect(evaljs("Routes.new_session_url()")).to eq("https://localhost:3000#{routes.new_session_path}")
+          end
+
+          it "does not override port when host is different" do
+            expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+          end
+
+          it "does not override port when specified in route" do
+            expect(evaljs("Routes.portholes_url()")).to eq("http://localhost:8080#{routes.portholes_path}")
+          end
+        end
+
+        context "when specifying a default host and port" do
+          let(:current_hostname){ 'localhost' }
+          let(:current_port){ '3000' }
+          let(:_options) { { :url_links => true, :default_url_options => {:host => 'example.com', :port => '3001'} } }
+          
+          it "overrides current port" do
+            expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com:3001#{routes.inbox_path(1)}")
+            expect(evaljs("Routes.new_session_url()")).to eq("https://example.com:3001#{routes.new_session_path}")
+            # expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com:3000#{routes.sso_path}")
+          end
+
+          it "does not override port when host is different" do
+            expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+          end
+
+          it "does not override port when specified in route" do
+            expect(evaljs("Routes.portholes_url()")).to eq("http://example.com:8080#{routes.portholes_path}")
+          end
+        end
       end
     end
   end
@@ -284,10 +413,14 @@ describe JsRoutes, "options" do
     end
 
     context "with url links" do
-      let(:_options) { { :compact => true, :url_links => "http://localhost" } }
+      before do
+        # V8 does not assume you want a window object, so we have to create one
+        jscontext['window'] = {:location => {:protocol => 'http:', :hostname => 'localhost', :port => '3333', :host => 'localhost:3333'}}
+      end
+      let(:_options) { { :compact => true, :url_links => true } }
       it "should not strip urls" do
         expect(evaljs("Routes.inbox(1)")).to eq(routes.inbox_path(1))
-        expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
+        expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost:3333#{routes.inbox_path(1)}")
       end
     end
   end

@@ -156,7 +156,7 @@ class JsRoutes
     required_parts, optional_parts = route.required_parts.clone, route.optional_parts.clone
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     route_name = generate_route_name(name, (:path unless @options[:compact]))
-    url_link = generate_url_link(name, route_name, required_parts)
+    url_link = generate_url_link(name, route_name, required_parts, route)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{route_name}: function(#{build_params(required_parts)}) {
@@ -165,14 +165,49 @@ class JsRoutes
   JS
   end
 
-  def generate_url_link(name, route_name, required_parts)
+  def generate_url_link(name, route_name, required_parts, route)
     return "" unless @options[:url_links]
-    raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
+    
     _ = <<-JS.strip!
     #{generate_route_name(name, :url)}: function(#{build_params(required_parts)}) {
-    return "" + #{@options[:url_links].inspect} + this.#{route_name}(#{build_params(required_parts)});
+    return #{generate_base_url_js(route)} + this.#{route_name}(#{build_params(required_parts)});
     }
     JS
+  end
+
+  def generate_base_url_js(route)
+    # preserve and deprecate previous behavior
+    unless @options[:url_links] == true
+      ActiveSupport::Deprecation.warn('js-routes url_links value must be a boolean. Use default_url_options for specifying a default host and/or protocol.')
+      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
+      return "#{@options[:url_links].inspect}"
+    else
+      protocol = route.defaults[:protocol] || @options[:default_url_options][:protocol]
+      hostname = route.defaults[:host]     || @options[:default_url_options][:host]
+      port     = route.defaults[:port]     || (@options[:default_url_options][:port] unless route.defaults[:host])
+      port = ":#{port}" if port
+
+      if protocol
+        base_url_js = %Q|'#{protocol}://| # don't close string to avoid unnecessary concatenation
+      else
+        base_url_js = %Q|window.location.protocol + '//| # location.protocol includes the colon character, don't close string to avoid unnecessary concatenation
+      end
+
+      if hostname && port
+        base_url_js += %Q|#{hostname}#{port}'|
+      elsif hostname
+        if route.defaults[:host]
+          base_url_js += %Q|#{hostname}'| # don't add port because it's a different host
+        else
+          base_url_js += %Q|#{hostname}' + (window.location.port != '' ? ':' : '') + window.location.port|
+        end
+      elsif port
+        base_url_js += %Q|' + window.location.hostname + '#{port}'|
+      else
+        base_url_js += %Q|' + window.location.host|
+      end
+    end
+    base_url_js
   end
 
   def generate_route_name(name, suffix)
@@ -185,7 +220,7 @@ class JsRoutes
     self.class.json(string)
   end
 
-  def build_params required_parts
+  def build_params(required_parts)
     params = required_parts.map do |name|
       # prepending each parameter name with underscore
       # to prevent conflict with JS reserved words
