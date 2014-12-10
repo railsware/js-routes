@@ -156,7 +156,7 @@ class JsRoutes
     required_parts, optional_parts = route.required_parts.clone, route.optional_parts.clone
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     route_name = generate_route_name(name, (:path unless @options[:compact]))
-    url_link = generate_url_link(name, route_name, required_parts)
+    url_link = generate_url_link(name, route_name, required_parts, route)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   #{route_name}: function(#{build_params(required_parts)}) {
@@ -165,14 +165,33 @@ class JsRoutes
   JS
   end
 
-  def generate_url_link(name, route_name, required_parts)
+  def generate_url_link(name, route_name, required_parts, route)
     return "" unless @options[:url_links]
-    raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
     _ = <<-JS.strip!
     #{generate_route_name(name, :url)}: function(#{build_params(required_parts)}) {
-    return "" + #{@options[:url_links].inspect} + this.#{route_name}(#{build_params(required_parts)});
+    return #{generate_base_url_js(route)} + this.#{route_name}(#{build_params(required_parts)});
     }
     JS
+  end
+
+  def generate_base_url_js(route)
+    # preserve and deprecate previous behavior
+    unless @options[:url_links] == true
+      ActiveSupport::Deprecation.warn('js-routes url_links config value must be a boolean. Use default_url_options for specifying a default host.')
+      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
+      return "#{@options[:url_links].inspect}"
+    else
+      protocol = route.defaults[:protocol] || @options[:default_url_options][:protocol] || 'http'
+      hostname = route.defaults[:host] || @options[:default_url_options][:host]
+      port = route.defaults[:port] || (@options[:default_url_options][:port] unless route.defaults[:host])
+      port = ":#{port}" if port
+
+      unless hostname
+        raise "A :default_url_options[:host] must be configured in order to generate *_url helpers"
+      end
+
+      return %Q|'#{protocol}://#{hostname}#{port}'|
+    end
   end
 
   def generate_route_name(name, suffix)

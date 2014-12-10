@@ -43,9 +43,10 @@ end
 
 Available options:
 
-* `default_url_options` - default parameters to be used to generate url
-  * Note that currently only optional parameters (like `:format` or `:trailing_slash`) can be defaulted.
-  * Example: {:format => "json", :trailing_slash => true}
+* `default_url_options` - default parameters used when generating URLs
+  * Note that only specific options are supported at this time.
+  * Supported options: `:format`, `:trailing_slash`, `:protocol`, `:host`, `:port`
+  * Example: {:format => "json", :trailing_slash => true, :protocol => "https", :host => "example.com", :port => 3000}
   * Default: {}
 * `exclude` - Array of regexps to exclude from js routes.
   * Default: []
@@ -61,9 +62,10 @@ Available options:
   * Default: blank
 * `camel_case` (version >= 0.8.8) - Generate camel case route names.
   * Default: false
-* `url_links` (version >= 0.8.9) - Generate `*_url` links (in addition to default `*_path`), where url_links value is beginning of url routes
-  * Example: http[s]://example.com
+* `url_links` (version >= 0.8.9) - Generate `*_url` helpers (in addition to the default `*_path` helpers).
+  * Example: true
   * Default: false
+  * Be sure to specify a default host in `default_url_options`. Routes which specify a specific host, protocol, or port will be used instead of their corresponding default.
 * `compact` (version > 0.9.9) - Remove `_path` suffix in path routes(`*_url` routes stay untouched if they were enabled)
   * Default: false
   * Sample route call when option is set to true: Routes.users() => `/users`
