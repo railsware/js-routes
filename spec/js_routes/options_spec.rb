@@ -379,10 +379,6 @@ describe JsRoutes, "options" do
       context "with compact option" do
         let(:_options) { { :compact => true, :url_links => true, :default_url_options => {:host => 'example.com'} } }
         it "does not affect url helpers" do
-          expect(evaljs("Routes.inbox_path")).to be_nil
-          expect(evaljs("Routes.inboxes()")).to eq(routes.inboxes_path())
-          expect(evaljs("Routes.inbox(2)")).to eq(routes.inbox_path(2))
-
           expect(evaljs("Routes.inbox_url")).not_to be_nil
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
@@ -407,14 +403,6 @@ describe JsRoutes, "options" do
         it "should not strip urls" do
           expect(evaljs("Routes.inbox(1)")).to eq(routes.inbox_path(1))
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
-        end
-      end
-
-      context "when configuring with default_url_options" do
-        let(:_options) { { :compact => true, :url_links => true, :default_url_options => {:host => 'example.com'} } }
-        it "does not affect url helpers" do
-          expect(evaljs("Routes.inbox_url")).not_to be_nil
-          expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
         end
       end
     end
