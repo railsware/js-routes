@@ -293,7 +293,7 @@ describe JsRoutes, "options" do
         end
         
         it "does not override host when specified in route" do
-          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
         end
 
         it "does not affect path helpers" do
@@ -350,7 +350,7 @@ describe JsRoutes, "options" do
         end
         
         it "does not override port when host is specified in route" do
-          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
         end
       end
 
@@ -360,7 +360,7 @@ describe JsRoutes, "options" do
           expect(evaljs("Routes.inboxUrl")).not_to be_nil
           expect(evaljs("Routes.inboxUrl(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
           expect(evaljs("Routes.newSessionUrl()")).to eq("https://example.com#{routes.new_session_path}")
-          expect(evaljs("Routes.ssoUrl()")).to eq("http://sso.example.com#{routes.sso_path}")
+          expect(evaljs("Routes.ssoUrl()")).to eq(routes.sso_url)
           expect(evaljs("Routes.portalsUrl()")).to eq("http://example.com:8080#{routes.portals_path}")
         end
       end
@@ -386,7 +386,7 @@ describe JsRoutes, "options" do
           expect(evaljs("Routes.inbox_url")).not_to be_nil
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
-          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
           expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{routes.portals_path}")
         end
       end
