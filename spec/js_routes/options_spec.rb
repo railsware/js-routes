@@ -284,80 +284,69 @@ describe JsRoutes, "options" do
         end
       end
 
-      context "when default host is specified" do
+      context "when only host option is specified" do
         let(:_options) { { :url_links => true, :default_url_options => {:host => "example.com"} } }
         
-        it "is used as the host" do
-          expect(evaljs("Routes.inbox_url")).not_to be_nil
-          expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
-        end
-        
-        it "does not override host when specified in route" do
-          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
-        end
-
-        it "does not affect path helpers" do
-          expect(evaljs("Routes.inbox_path")).not_to be_nil
-          expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
-        end
-      end
-
-      context "when default protocol is not specified" do
-        let(:_options) { { :url_links => true, :default_url_options => {:host => "example.com"} } }
-
-        it "defaults to http" do
+        it "uses the specified host, defaults protocol to http, defaults port to 80 (leaving it blank)" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
         end
         
         it "does not override protocol when specified in route" do
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
         end
+
+        it "does not override host when specified in route" do
+          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
+        end
+
+        it "does not override port when specified in route" do
+          expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{routes.portals_path}")
+        end
       end
 
-      context "when default protocol is specified" do
+      context "when default host and protocol are specified" do
         let(:_options) { { :url_links => true, :default_url_options => {:host => "example.com", :protocol => "ftp"} } }
 
-        it "is used as the protocol" do
+        it "uses the specified protocol and host, defaults port to 80 (leaving it blank)" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("ftp://example.com#{routes.inbox_path(1)}")
         end
         
         it "does not override protocol when specified in route" do
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
         end
-      end
 
-      context "when default port is not specified" do
-        let(:_options) { { :url_links => true, :default_url_options => {:host => "example.com"} } }
-
-        it "defaults to port 80 (leaving the port blank)" do
-          expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
+        it "does not override host, protocol, or port when host is specified in route" do
+          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
         end
-        
+
         it "does not override port when specified in route" do
           expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{routes.portals_path}")
         end
       end
 
-      context "when default port is specified" do
+      context "when default host and port are specified" do
         let(:_options) { { :url_links => true, :default_url_options => {:host => "example.com", :port => 3000} } }
 
-        it "is used as the port" do
+        it "uses the specified host and port, defaults protocol to http" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com:3000#{routes.inbox_path(1)}")
+        end
+
+        it "does not override protocol when specified in route" do
+          expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
+        end
+        
+        it "does not override host, protocol, or port when host is specified in route" do
+          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
         end
         
         it "does not override port when specified in route" do
           expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{routes.portals_path}")
-        end
-        
-        it "does not override port when host is specified in route" do
-          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
         end
       end
 
       context "with camel_case option" do
         let(:_options) { { :camel_case => true, :url_links => true, :default_url_options => {:host => "example.com"} } }
         it "should generate path and url links" do
-          expect(evaljs("Routes.inboxUrl")).not_to be_nil
           expect(evaljs("Routes.inboxUrl(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
           expect(evaljs("Routes.newSessionUrl()")).to eq("https://example.com#{routes.new_session_path}")
           expect(evaljs("Routes.ssoUrl()")).to eq(routes.sso_url)
@@ -368,7 +357,6 @@ describe JsRoutes, "options" do
       context "with prefix option" do
         let(:_options) { { :prefix => "/api", :url_links => true, :default_url_options => {:host => 'example.com'} } }
         it "should generate path and url links" do
-          expect(evaljs("Routes.inbox_url")).not_to be_nil
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com/api#{routes.inbox_path(1)}")
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com/api#{routes.new_session_path}")
           expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com/api#{routes.sso_path}")
@@ -379,7 +367,6 @@ describe JsRoutes, "options" do
       context "with compact option" do
         let(:_options) { { :compact => true, :url_links => true, :default_url_options => {:host => 'example.com'} } }
         it "does not affect url helpers" do
-          expect(evaljs("Routes.inbox_url")).not_to be_nil
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
           expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
