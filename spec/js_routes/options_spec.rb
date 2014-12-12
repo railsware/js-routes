@@ -315,12 +315,12 @@ describe JsRoutes, "options" do
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
         end
 
-        it "does not override host, protocol, or port when host is specified in route" do
-          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
+        it "does not override host when host is specified in route" do
+          expect(evaljs("Routes.sso_url()")).to eq("ftp://sso.example.com#{routes.sso_path}")
         end
 
         it "does not override port when specified in route" do
-          expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{routes.portals_path}")
+          expect(evaljs("Routes.portals_url()")).to eq("ftp://example.com:8080#{routes.portals_path}")
         end
       end
 
@@ -332,7 +332,7 @@ describe JsRoutes, "options" do
         end
 
         it "does not override protocol when specified in route" do
-          expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
+          expect(evaljs("Routes.new_session_url()")).to eq("https://example.com:3000#{routes.new_session_path}")
         end
         
         it "does not override host, protocol, or port when host is specified in route" do
