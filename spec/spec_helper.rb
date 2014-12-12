@@ -120,6 +120,7 @@ end
 
 # prevent warning
 Rails.configuration.active_support.deprecation = :log
+ActiveSupport::Deprecation.silenced = true
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
