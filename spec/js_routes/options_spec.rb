@@ -239,6 +239,12 @@ describe JsRoutes, "options" do
     end
 
     context 'with deprecated, non-boolean config value' do
+      around(:each) do |example|
+        ActiveSupport::Deprecation.silence do
+          example.run
+        end
+      end
+
       context "with host" do
         let(:_options) { { :url_links => "http://localhost" } }
         it "should generate path and url links" do
@@ -386,6 +392,12 @@ describe JsRoutes, "options" do
 
     context "with url_links option" do
       context "with deprecated url_links config value" do
+        around(:each) do |example|
+          ActiveSupport::Deprecation.silence do
+            example.run
+          end
+        end
+        
         let(:_options) { { :compact => true, :url_links => "http://localhost" } }
         it "should not strip urls" do
           expect(evaljs("Routes.inbox(1)")).to eq(routes.inbox_path(1))
