@@ -1,5 +1,5 @@
 # JsRoutes
-[![Build Status](https://travis-ci.org/railsware/js-routes.png)](https://travis-ci.org/railsware/js-routes)
+[![Build Status](https://travis-ci.org/railsware/js-routes.svg?branch=master)](https://travis-ci.org/railsware/js-routes)
 
 Generates javascript file that defines all Rails named routes as javascript helpers
 
@@ -132,6 +132,29 @@ In order to make routes helpers available globally:
 
 ``` js
 jQuery.extend(window, Routes)
+```
+
+## Get spec of routes and required params
+
+Possible to get `spec` of route by function `toString`:
+
+```js
+Routes.users_path.toString() // => "/users(.:format)"
+Routes.user_path.toString() // => "/users/:id(.:format)"
+```
+
+This function allow to get the same `spec` for route, if you will get string representation of the route function:
+
+```js
+'' + Routes.users_path // => "/users(.:format)", a string representation of the object
+'' + Routes.user_path // => "/users/:id(.:format)"
+```
+
+Route function also contain inside attribute `required_params` required param names as array:
+
+```js
+Routes.users_path.required_params // => []
+Routes.user_path.required_params // => ['id']
 ```
 
 ## What about security?

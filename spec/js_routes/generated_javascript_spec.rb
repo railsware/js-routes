@@ -9,14 +9,24 @@ describe JsRoutes do
 
   describe "generated js" do
     subject { JsRoutes.generate }
+    it "should call route function for each route" do
+      is_expected.to include("inboxes_path: Utils.route(")
+    end
     it "should have correct function without arguments signature" do
-      is_expected.to include("inboxes_path: function(options)")
+      is_expected.to include("inboxes_path: Utils.route([]")
     end
     it "should have correct function with arguments signature" do
-      is_expected.to include("inbox_message_path: function(_inbox_id, _id, options)")
+      is_expected.to include("inbox_message_path: Utils.route([\"inbox_id\",\"id\"]")
     end
     it "should have correct function signature with unordered hash" do
-      is_expected.to include("inbox_message_attachment_path: function(_inbox_id, _message_id, _id, options)")
+      is_expected.to include("inbox_message_attachment_path: Utils.route([\"inbox_id\",\"message_id\",\"id\"]")
+    end
+
+    it "should have correct function comment with options argument" do
+      is_expected.to include("// function(options)\n  inboxes_path: Utils.route")
+    end
+    it "should have correct function comment with arguments" do
+      is_expected.to include("// function(inbox_id, message_id, options)\n  new_inbox_message_attachment_path: Utils.route")
     end
 
     it "routes should be sorted in alphabetical order" do
@@ -51,7 +61,7 @@ describe JsRoutes do
   describe "compiled javascript asset" do
     subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }
     it "should have js routes code" do
-      is_expected.to include("inbox_message_path: function(_inbox_id, _id, options)")
+      is_expected.to include("inbox_message_path: Utils.route([\"inbox_id\",\"id\"]")
     end
   end
 end

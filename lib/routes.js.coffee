@@ -168,6 +168,29 @@ Utils =
         throw new Error("Unknown Rails node type")
 
   #
+  # This method build spec for route
+  #
+  build_path_spec: (route, wildcard=false) ->
+    [type, left, right] = route
+    switch type
+      when NodeTypes.GROUP
+        "(#{@build_path_spec(left)})"
+      when NodeTypes.CAT
+        "#{@build_path_spec(left)}#{@build_path_spec(right)}"
+      when NodeTypes.STAR
+        @build_path_spec(left, true)
+      when NodeTypes.SYMBOL
+        if wildcard is true
+          "#{if left[0] is '*' then '' else '*'}#{left}"
+        else
+          ":#{left}"
+      when NodeTypes.SLASH, NodeTypes.DOT, NodeTypes.LITERAL
+        left
+      # Not sure about this one
+      # when NodeTypes.OR
+      else throw new Error("Unknown Rails node type")
+
+  #
   # This method convert value for globbing in right value for rails route
   #
   visit_globbing: (route, parameters, optional) ->
@@ -190,6 +213,15 @@ Utils =
     prefix = defaults.prefix
     prefix = (if prefix.match("/$") then prefix else "#{prefix}/") if prefix isnt ""
     prefix
+
+  #
+  # route function: create route path function and add spec to it
+  #
+  route: (required_parts, optional_parts, route_spec) ->
+    path_fn = -> Utils.build_path(required_parts, optional_parts, route_spec, arguments)
+    path_fn.required_params = required_parts
+    path_fn.toString = -> Utils.build_path_spec(route_spec)
+    path_fn
 
   #
   # This is helper method to define object type.
