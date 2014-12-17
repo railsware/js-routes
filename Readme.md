@@ -143,7 +143,7 @@ Routes.users_path.toString() // => "/users(.:format)"
 Routes.user_path.toString() // => "/users/:id(.:format)"
 ```
 
-This function also allow to get the same `spec` for route, if you will get string representation of the route function:
+This function allow to get the same `spec` for route, if you will get string representation of the route function:
 
 ```js
 '' + Routes.users_path // => "/users(.:format)", a string representation of the object
