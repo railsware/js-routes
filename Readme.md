@@ -111,13 +111,7 @@ JsRoutes.generate!("#{path}/api_routes.js", :namespace => "ApiRoutes", :include 
 Configuration above will create a nice javascript file with `Routes` object that has all the rails routes available:
 
 ``` js
-'' + Routes.users_path // => "/users(.:format)", a string representation of the object
-Routes.users_path.toString() // => "/users(.:format)"
-Routes.users_path.required_params // => []
 Routes.users_path() // => "/users"
-'' + Routes.user_path // => "/users/:id(.:format)"
-Routes.user_path.toString() // => "/users/:id(.:format)"
-Routes.user_path.required_params // => ['id']
 Routes.user_path(1) // => "/users/1"
 Routes.user_path(1, {format: 'json'}) // => "/users/1.json"
 Routes.new_user_project_path(1, {format: 'json'}) // => "/users/1/projects/new.json"
@@ -138,6 +132,29 @@ In order to make routes helpers available globally:
 
 ``` js
 jQuery.extend(window, Routes)
+```
+
+## Get spec of routes and required params
+
+Possible to get `spec` of route by function `toString`:
+
+```js
+Routes.users_path.toString() // => "/users(.:format)"
+Routes.user_path.toString() // => "/users/:id(.:format)"
+```
+
+This function also allow to get the same `spec` for route, if you will get string representation of the route function:
+
+```js
+'' + Routes.users_path // => "/users(.:format)", a string representation of the object
+'' + Routes.user_path // => "/users/:id(.:format)"
+```
+
+Route function also contain inside attribute `required_params` required param names as array:
+
+```js
+Routes.users_path.required_params // => []
+Routes.user_path.required_params // => ['id']
 ```
 
 ## What about security?
