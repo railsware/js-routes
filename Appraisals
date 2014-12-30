@@ -12,3 +12,8 @@ appraise "rails41" do
   gem "railties", "~> 4.1.1"
   gem "minitest", ">= 4.0"
 end
+
+appraise "rails42" do
+  gem "railties", "~> 4.2.0"
+  gem "minitest", ">= 4.0"
+end
