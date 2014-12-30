@@ -184,7 +184,7 @@ class JsRoutes
     # preserve and deprecate previous behavior
     unless @options[:url_links] == true
       ActiveSupport::Deprecation.warn('js-routes url_links config value must be a boolean. Use default_url_options for specifying a default host.')
-      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
+      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::Parser.new.make_regexp(%w(http https))).nil?
       return "#{@options[:url_links].inspect}"
     else
       protocol = route.defaults[:protocol] || @options[:default_url_options][:protocol] || 'http'
