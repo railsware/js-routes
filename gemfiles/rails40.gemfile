@@ -5,4 +5,4 @@ source "http://rubygems.org"
 gem "railties", "~> 4.0.5"
 gem "minitest", "~> 4.0"
 
-gemspec :path=>"../"
+gemspec :path => "../"

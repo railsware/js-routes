@@ -125,8 +125,15 @@ class JsRoutes
 
   def js_routes
     js_routes = Rails.application.routes.named_routes.routes.sort_by(&:to_s).map do |_, route|
-      if route.app.respond_to?(:superclass) && route.app.superclass == Rails::Engine && !route.path.anchored
-        route.app.routes.named_routes.map do |_, engine_route|
+      # rails engine for rails 4.2 change to route.app.app
+      rails_engine_route = if route.app.respond_to?(:app) && route.app.app.respond_to?(:superclass)
+        route.app.app
+      else
+        route.app
+      end
+      # rails engine route
+      if rails_engine_route.respond_to?(:superclass) && rails_engine_route.superclass == Rails::Engine && !route.path.anchored
+        rails_engine_route.routes.named_routes.map do |_, engine_route|
           build_route_if_match(engine_route, route)
         end
       else
