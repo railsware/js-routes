@@ -10,6 +10,11 @@ rvm:
   - ruby-head
   - jruby-head
 
+jdk:
+  - oraclejdk7
+  - openjdk7
+  - oraclejdk8
+
 gemfile:
   - gemfiles/rails32.gemfile
   - gemfiles/rails40.gemfile
