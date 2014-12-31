@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/railsware/js-routes}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.0}
   s.summary = %q{Brings Rails named routes to javascript}
 
   s.add_runtime_dependency(%q<railties>, [">= 3.2"])

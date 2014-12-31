@@ -3,6 +3,7 @@
  * Add the compact mode [#125](https://github.com/railsware/js-routes/pull/125)
  * Add support for host, protocol, and port configuration [#137](https://github.com/railsware/js-routes/pull/137)
  * Routes path specs [#135](https://github.com/railsware/js-routes/pull/135)
+ * Support Rails 4.2 and Ruby 2.2 [#140](https://github.com/railsware/js-routes/pull/140)
 
 ## v0.9.9
 

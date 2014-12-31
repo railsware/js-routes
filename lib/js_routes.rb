@@ -125,8 +125,9 @@ class JsRoutes
 
   def js_routes
     js_routes = Rails.application.routes.named_routes.routes.sort_by(&:to_s).map do |_, route|
-      if route.app.respond_to?(:superclass) && route.app.superclass == Rails::Engine && !route.path.anchored
-        route.app.routes.named_routes.map do |_, engine_route|
+      rails_engine_app = get_app_from_route(route)
+      if rails_engine_app.respond_to?(:superclass) && rails_engine_app.superclass == Rails::Engine && !route.path.anchored
+        rails_engine_app.routes.named_routes.map do |_, engine_route|
           build_route_if_match(engine_route, route)
         end
       else
@@ -135,6 +136,15 @@ class JsRoutes
     end.flatten.compact
 
     "{\n" + js_routes.join(",\n") + "}\n"
+  end
+
+  def get_app_from_route(route)
+    # rails engine in Rails 4.2 use additional ActionDispatch::Routing::Mapper::Constraints, which contain app
+    if route.app.respond_to?(:app) && route.app.respond_to?(:constraints)
+      route.app.app
+    else
+      route.app
+    end
   end
 
   def build_route_if_match(route, parent_route=nil)
@@ -177,7 +187,7 @@ class JsRoutes
     # preserve and deprecate previous behavior
     unless @options[:url_links] == true
       ActiveSupport::Deprecation.warn('js-routes url_links config value must be a boolean. Use default_url_options for specifying a default host.')
-      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::regexp(%w(http https))).nil?
+      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::Parser.new.make_regexp(%w(http https))).nil?
       return "#{@options[:url_links].inspect}"
     else
       protocol = route.defaults[:protocol] || @options[:default_url_options][:protocol] || 'http'
