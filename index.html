@@ -31,58 +31,56 @@
       </header>
       <section>
         <h1>
-<a name="jsroutes" class="anchor" href="#jsroutes"><span class="octicon octicon-link"></span></a>JsRoutes</h1>
+<a id="jsroutes" class="anchor" href="#jsroutes" aria-hidden="true"><span class="octicon octicon-link"></span></a>JsRoutes</h1>
 
-<p><a href="https://travis-ci.org/railsware/js-routes"><img src="https://travis-ci.org/railsware/js-routes.png" alt="Build Status"></a></p>
+<p><a href="https://travis-ci.org/railsware/js-routes"><img src="https://travis-ci.org/railsware/js-routes.svg?branch=master" alt="Build Status"></a></p>
 
 <p>Generates javascript file that defines all Rails named routes as javascript helpers</p>
 
 <h2>
-<a name="intallation" class="anchor" href="#intallation"><span class="octicon octicon-link"></span></a>Intallation</h2>
+<a id="intallation" class="anchor" href="#intallation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intallation</h2>
 
 <p>Your Rails Gemfile:</p>
 
-<div class="highlight highlight-ruby"><pre><span class="n">gem</span> <span class="s2">"js-routes"</span>
-</pre></div>
+<div class="highlight highlight-ruby"><pre><span class="pl-k">gem</span> <span class="pl-s1"><span class="pl-pds">"</span>js-routes<span class="pl-pds">"</span></span></pre></div>
 
 <h3>
-<a name="basic-setup-asset-pipeline" class="anchor" href="#basic-setup-asset-pipeline"><span class="octicon octicon-link"></span></a>Basic Setup (Asset Pipeline)</h3>
+<a id="basic-setup-asset-pipeline" class="anchor" href="#basic-setup-asset-pipeline" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic Setup (Asset Pipeline)</h3>
 
 <p>Require js routes file in <code>application.js</code> or other bundle</p>
 
-<div class="highlight highlight-js"><pre><span class="cm">/*</span>
-<span class="cm">= require js-routes</span>
-<span class="cm">*/</span>
-</pre></div>
+<div class="highlight highlight-js"><pre><span class="pl-c">/*</span>
+<span class="pl-c">= require js-routes</span>
+<span class="pl-c">*/</span></pre></div>
 
 <p>Also in order to flush asset pipeline cache sometimes you might need to run:</p>
 
-<div class="highlight highlight-sh"><pre>rake tmp:cache:clear
-</pre></div>
+<div class="highlight highlight-sh"><pre>rake tmp:cache:clear</pre></div>
 
 <p>This cache is not flushed on server restart in development environment.</p>
 
 <p><strong>Important:</strong> If routes.js file is not updated after some configuration change you need to run this rake task again.</p>
 
 <h3>
-<a name="advanced-setup" class="anchor" href="#advanced-setup"><span class="octicon octicon-link"></span></a>Advanced Setup</h3>
+<a id="advanced-setup" class="anchor" href="#advanced-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advanced Setup</h3>
 
 <p>If you need to customize routes file create initializer, like <code>config/initializers/jsroutes.rb</code>:</p>
 
-<div class="highlight highlight-ruby"><pre><span class="no">JsRoutes</span><span class="o">.</span><span class="n">setup</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
-  <span class="n">config</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="n">value</span>
-<span class="k">end</span>
-</pre></div>
+<div class="highlight highlight-ruby"><pre><span class="pl-s3">JsRoutes</span>.setup <span class="pl-k">do </span>|<span class="pl-vo">config</span>|
+  config.option <span class="pl-k">=</span> value
+<span class="pl-k">end</span></pre></div>
 
 <p>Available options:</p>
 
 <ul>
 <li>
-<code>default_url_options</code> - default parameters to be used to generate url
+<code>default_url_options</code> - default parameters used when generating URLs
 
 <ul>
-<li>Note that currently only optional parameters (like <code>:format</code> or <code>:trailing_slash</code>) can be defaulted.</li>
-<li>Example: {:format =&gt; "json", :trailing_slash =&gt; true}</li>
+<li>Note that only specific options are supported at this time.</li>
+<li>Supported options: <code>:format</code>, <code>:trailing_slash</code>, <code>:protocol</code>, <code>:host</code>, <code>:port</code>
+</li>
+<li>Example: {:format =&gt; "json", :trailing_slash =&gt; true, :protocol =&gt; "https", :host =&gt; "example.com", :port =&gt; 3000}</li>
 <li>Default: {}</li>
 </ul>
 </li>
@@ -130,15 +128,27 @@
 </ul>
 </li>
 <li>
-<code>url_links</code> (version &gt;= 0.8.9) - Generate <code>*_url</code> links (in addition to default <code>*_path</code>), where url_links value is beginning of url routes
+<code>url_links</code> (version &gt;= 0.8.9) - Generate <code>*_url</code> helpers (in addition to the default <code>*_path</code> helpers).
 
 <ul>
-<li>Example: http[s]://example.com</li>
+<li>Example: true</li>
 <li>Default: false</li>
+<li>Be sure to specify a default host in <code>default_url_options</code>. Routes which specify a specific host, protocol, or port will be used instead of their corresponding default.</li>
 </ul>
 </li>
-</ul><h3>
-<a name="very-advanced-setup" class="anchor" href="#very-advanced-setup"><span class="octicon octicon-link"></span></a>Very Advanced Setup</h3>
+<li>
+<code>compact</code> (version &gt; 0.9.9) - Remove <code>_path</code> suffix in path routes(<code>*_url</code> routes stay untouched if they were enabled)
+
+<ul>
+<li>Default: false</li>
+<li>Sample route call when option is set to true: Routes.users() =&gt; <code>/users</code>
+</li>
+</ul>
+</li>
+</ul>
+
+<h3>
+<a id="very-advanced-setup" class="anchor" href="#very-advanced-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Very Advanced Setup</h3>
 
 <p>In case you need multiple route files for different parts of your application, you have to create the files manually.
 If your application has an <code>admin</code> and an <code>application</code> namespace for example:</p>
@@ -159,72 +169,83 @@ If your application has an <code>admin</code> and an <code>application</code> na
 
 <p>In order to generate the routes to a string:</p>
 
-<div class="highlight highlight-ruby"><pre><span class="n">routes_js</span> <span class="o">=</span> <span class="no">JsRoutes</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
-</pre></div>
+<div class="highlight highlight-ruby"><pre>routes_js <span class="pl-k">=</span> <span class="pl-s3">JsRoutes</span>.generate(options)</pre></div>
 
 <p>If you want to generate the routes files outside of the asset pipeline, you can use <code>JsRoutes.generate!</code>:</p>
 
-<div class="highlight highlight-ruby"><pre><span class="n">path</span> <span class="o">=</span> <span class="s2">"app/assets/javascripts"</span>
-<span class="no">JsRoutes</span><span class="o">.</span><span class="n">generate!</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="n">path</span><span class="si">}</span><span class="s2">/app_routes.js"</span><span class="p">,</span> <span class="ss">:namespace</span> <span class="o">=&gt;</span> <span class="s2">"AppRoutes"</span><span class="p">,</span> <span class="ss">:exclude</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="sr">/^admin_/</span><span class="p">,</span> <span class="sr">/^api_/</span><span class="o">]</span><span class="p">)</span>
-<span class="no">JsRoutes</span><span class="o">.</span><span class="n">generate!</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="n">path</span><span class="si">}</span><span class="s2">/adm_routes.js"</span><span class="p">,</span> <span class="ss">:namespace</span> <span class="o">=&gt;</span> <span class="s2">"AdmRoutes"</span><span class="p">,</span> <span class="ss">:include</span> <span class="o">=&gt;</span> <span class="sr">/^admin_/</span><span class="p">)</span>
-<span class="no">JsRoutes</span><span class="o">.</span><span class="n">generate!</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="n">path</span><span class="si">}</span><span class="s2">/api_routes.js"</span><span class="p">,</span> <span class="ss">:namespace</span> <span class="o">=&gt;</span> <span class="s2">"ApiRoutes"</span><span class="p">,</span> <span class="ss">:include</span> <span class="o">=&gt;</span> <span class="sr">/^api_/</span><span class="p">,</span> <span class="ss">:default_url_options</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:format</span> <span class="o">=&gt;</span> <span class="s2">"json"</span><span class="p">})</span>
-</pre></div>
+<div class="highlight highlight-ruby"><pre>path <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>app/assets/javascripts<span class="pl-pds">"</span></span>
+<span class="pl-s3">JsRoutes</span>.generate!(<span class="pl-s1"><span class="pl-pds">"</span><span class="pl-pse">#{</span><span class="pl-s2">path</span><span class="pl-pse"><span class="pl-s2">}</span></span>/app_routes.js<span class="pl-pds">"</span></span>, <span class="pl-c1">:namespace</span> =&gt; <span class="pl-s1"><span class="pl-pds">"</span>AppRoutes<span class="pl-pds">"</span></span>, <span class="pl-c1">:exclude</span> =&gt; [<span class="pl-sr"><span class="pl-pds">/</span>^admin_<span class="pl-pds">/</span></span>, <span class="pl-sr"><span class="pl-pds">/</span>^api_<span class="pl-pds">/</span></span>])
+<span class="pl-s3">JsRoutes</span>.generate!(<span class="pl-s1"><span class="pl-pds">"</span><span class="pl-pse">#{</span><span class="pl-s2">path</span><span class="pl-pse"><span class="pl-s2">}</span></span>/adm_routes.js<span class="pl-pds">"</span></span>, <span class="pl-c1">:namespace</span> =&gt; <span class="pl-s1"><span class="pl-pds">"</span>AdmRoutes<span class="pl-pds">"</span></span>, <span class="pl-c1">:include</span> =&gt; <span class="pl-sr"><span class="pl-pds">/</span>^admin_<span class="pl-pds">/</span></span>)
+<span class="pl-s3">JsRoutes</span>.generate!(<span class="pl-s1"><span class="pl-pds">"</span><span class="pl-pse">#{</span><span class="pl-s2">path</span><span class="pl-pse"><span class="pl-s2">}</span></span>/api_routes.js<span class="pl-pds">"</span></span>, <span class="pl-c1">:namespace</span> =&gt; <span class="pl-s1"><span class="pl-pds">"</span>ApiRoutes<span class="pl-pds">"</span></span>, <span class="pl-c1">:include</span> =&gt; <span class="pl-sr"><span class="pl-pds">/</span>^api_<span class="pl-pds">/</span></span>, <span class="pl-c1">:default_url_options</span> =&gt; {<span class="pl-c1">:format</span> =&gt; <span class="pl-s1"><span class="pl-pds">"</span>json<span class="pl-pds">"</span></span>})</pre></div>
 
 <h2>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <p>Configuration above will create a nice javascript file with <code>Routes</code> object that has all the rails routes available:</p>
 
-<div class="highlight highlight-js"><pre><span class="nx">Routes</span><span class="p">.</span><span class="nx">users_path</span><span class="p">()</span> <span class="c1">// =&gt; "/users"</span>
-<span class="nx">Routes</span><span class="p">.</span><span class="nx">user_path</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">// =&gt; "/users/1"</span>
-<span class="nx">Routes</span><span class="p">.</span><span class="nx">user_path</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="nx">format</span><span class="o">:</span> <span class="s1">'json'</span><span class="p">})</span> <span class="c1">// =&gt; "/users/1.json"</span>
-<span class="nx">Routes</span><span class="p">.</span><span class="nx">new_user_project_path</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="nx">format</span><span class="o">:</span> <span class="s1">'json'</span><span class="p">})</span> <span class="c1">// =&gt; "/users/1/projects/new.json"</span>
-<span class="nx">Routes</span><span class="p">.</span><span class="nx">user_project_path</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="p">{</span><span class="nx">q</span><span class="o">:</span> <span class="s1">'hello'</span><span class="p">,</span> <span class="nx">custom</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span> <span class="c1">// =&gt; "/users/1/projects/2?q=hello&amp;custom=true"</span>
-<span class="nx">Routes</span><span class="p">.</span><span class="nx">user_project_path</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="p">{</span><span class="nx">hello</span><span class="o">:</span> <span class="p">[</span><span class="s1">'world'</span><span class="p">,</span> <span class="s1">'mars'</span><span class="p">]})</span> <span class="c1">// =&gt; "/users/1/projects/2?hello%5B%5D=world&amp;hello%5B%5D=mars"</span>
-</pre></div>
+<div class="highlight highlight-js"><pre>Routes.users_path() <span class="pl-c">// =&gt; "/users"</span>
+Routes.user_path(<span class="pl-c1">1</span>) <span class="pl-c">// =&gt; "/users/1"</span>
+Routes.user_path(<span class="pl-c1">1</span>, {format<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>json<span class="pl-pds">'</span></span>}) <span class="pl-c">// =&gt; "/users/1.json"</span>
+Routes.new_user_project_path(<span class="pl-c1">1</span>, {format<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>json<span class="pl-pds">'</span></span>}) <span class="pl-c">// =&gt; "/users/1/projects/new.json"</span>
+Routes.user_project_path(<span class="pl-c1">1</span>,<span class="pl-c1">2</span>, {q<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>hello<span class="pl-pds">'</span></span>, custom<span class="pl-k">:</span> <span class="pl-c1">true</span>}) <span class="pl-c">// =&gt; "/users/1/projects/2?q=hello&amp;custom=true"</span>
+Routes.user_project_path(<span class="pl-c1">1</span>,<span class="pl-c1">2</span>, {hello<span class="pl-k">:</span> [<span class="pl-s1"><span class="pl-pds">'</span>world<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>mars<span class="pl-pds">'</span></span>]}) <span class="pl-c">// =&gt; "/users/1/projects/2?hello%5B%5D=world&amp;hello%5B%5D=mars"</span></pre></div>
 
 <p>Using serialized object as route function arguments:</p>
 
-<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">google</span> <span class="o">=</span> <span class="p">{</span><span class="nx">id</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"Google"</span><span class="p">};</span>
-<span class="nx">Routes</span><span class="p">.</span><span class="nx">company_path</span><span class="p">(</span><span class="nx">google</span><span class="p">)</span> <span class="c1">// =&gt; "/companies/1"</span>
-<span class="kd">var</span> <span class="nx">google</span> <span class="o">=</span> <span class="p">{</span><span class="nx">id</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"Google"</span><span class="p">,</span> <span class="nx">to_param</span><span class="o">:</span> <span class="s2">"google"</span><span class="p">};</span>
-<span class="nx">Routes</span><span class="p">.</span><span class="nx">company_path</span><span class="p">(</span><span class="nx">google</span><span class="p">)</span> <span class="c1">// =&gt; "/companies/google"</span>
-</pre></div>
+<div class="highlight highlight-js"><pre><span class="pl-s">var</span> google <span class="pl-k">=</span> {id<span class="pl-k">:</span> <span class="pl-c1">1</span>, name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>Google<span class="pl-pds">"</span></span>};
+Routes.company_path(google) <span class="pl-c">// =&gt; "/companies/1"</span>
+<span class="pl-s">var</span> google <span class="pl-k">=</span> {id<span class="pl-k">:</span> <span class="pl-c1">1</span>, name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>Google<span class="pl-pds">"</span></span>, to_param<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>google<span class="pl-pds">"</span></span>};
+Routes.company_path(google) <span class="pl-c">// =&gt; "/companies/google"</span></pre></div>
 
 <p>In order to make routes helpers available globally:</p>
 
-<div class="highlight highlight-js"><pre><span class="nx">jQuery</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nb">window</span><span class="p">,</span> <span class="nx">Routes</span><span class="p">)</span>
-</pre></div>
+<div class="highlight highlight-js"><pre>jQuery.extend(<span class="pl-s3">window</span>, Routes)</pre></div>
 
 <h2>
-<a name="what-about-security" class="anchor" href="#what-about-security"><span class="octicon octicon-link"></span></a>What about security?</h2>
+<a id="get-spec-of-routes-and-required-params" class="anchor" href="#get-spec-of-routes-and-required-params" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get spec of routes and required params</h2>
+
+<p>Possible to get <code>spec</code> of route by function <code>toString</code>:</p>
+
+<div class="highlight highlight-js"><pre>Routes.users_path.<span class="pl-s3">toString</span>() <span class="pl-c">// =&gt; "/users(.:format)"</span>
+Routes.user_path.<span class="pl-s3">toString</span>() <span class="pl-c">// =&gt; "/users/:id(.:format)"</span></pre></div>
+
+<p>This function allow to get the same <code>spec</code> for route, if you will get string representation of the route function:</p>
+
+<div class="highlight highlight-js"><pre><span class="pl-s1"><span class="pl-pds">'</span><span class="pl-pds">'</span></span> <span class="pl-k">+</span> Routes.users_path <span class="pl-c">// =&gt; "/users(.:format)", a string representation of the object</span>
+<span class="pl-s1"><span class="pl-pds">'</span><span class="pl-pds">'</span></span> <span class="pl-k">+</span> Routes.user_path <span class="pl-c">// =&gt; "/users/:id(.:format)"</span></pre></div>
+
+<p>Route function also contain inside attribute <code>required_params</code> required param names as array:</p>
+
+<div class="highlight highlight-js"><pre>Routes.users_path.required_params <span class="pl-c">// =&gt; []</span>
+Routes.user_path.required_params <span class="pl-c">// =&gt; ['id']</span></pre></div>
+
+<h2>
+<a id="what-about-security" class="anchor" href="#what-about-security" aria-hidden="true"><span class="octicon octicon-link"></span></a>What about security?</h2>
 
 <p>js-routes itself do not have security holes. It makes URLs
 without access protection more reachable by potential attacker.
 In order to prevent this use <code>:exclude</code> option for sensitive urls like <code>/admin_/</code></p>
 
 <h2>
-<a name="spork" class="anchor" href="#spork"><span class="octicon octicon-link"></span></a>Spork</h2>
+<a id="spork" class="anchor" href="#spork" aria-hidden="true"><span class="octicon octicon-link"></span></a>Spork</h2>
 
 <p>When using Spork and <code>Spork.trap_method(Rails::Application::RoutesReloader, :reload!)</code> you should also do:</p>
 
-<div class="highlight highlight-ruby"><pre><span class="no">Spork</span><span class="o">.</span><span class="n">trap_method</span><span class="p">(</span><span class="no">JsRoutes</span><span class="p">,</span> <span class="ss">:generate!</span><span class="p">)</span>
-</pre></div>
+<div class="highlight highlight-ruby"><pre><span class="pl-s3">Spork</span>.trap_method(<span class="pl-vo">JsRoutes</span>, <span class="pl-c1">:generate!</span>)</pre></div>
 
 <h2>
-<a name="js-routes-and-heroku" class="anchor" href="#js-routes-and-heroku"><span class="octicon octicon-link"></span></a>JS-Routes and heroku</h2>
+<a id="js-routes-and-heroku" class="anchor" href="#js-routes-and-heroku" aria-hidden="true"><span class="octicon octicon-link"></span></a>JS-Routes and heroku</h2>
 
-<p>Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environtment. You should use "Very Advanced Setup" schema in this case. </p>
+<p>Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environment. You should use "Very Advanced Setup" schema in this case.</p>
 
 <p>For example create routes.js.erb in assets folder with needed content:</p>
 
-<div class="highlight highlight-erb"><pre><span class="cp">&lt;%=</span> <span class="no">JsRoutes</span><span class="o">.</span><span class="n">generate</span><span class="p">({</span> <span class="n">options</span> <span class="p">})</span> <span class="cp">%&gt;</span><span class="x"></span>
-</pre></div>
+<div class="highlight highlight-erb"><pre><span class="pl-pse">&lt;%=</span><span class="pl-s2"> <span class="pl-s3">JsRoutes</span>.generate({ options }) </span><span class="pl-pse"><span class="pl-s2">%</span>&gt;</span></pre></div>
 
 <p>This should just work.</p>
 
 <h2>
-<a name="advantages-over-alternatives" class="anchor" href="#advantages-over-alternatives"><span class="octicon octicon-link"></span></a>Advantages over alternatives</h2>
+<a id="advantages-over-alternatives" class="anchor" href="#advantages-over-alternatives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advantages over alternatives</h2>
 
 <p>There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept.
 Advantages of this one are:</p>
@@ -234,12 +255,14 @@ Advantages of this one are:</p>
 <li>Rich options set</li>
 <li>Support Rails <code>#to_param</code> convention for seo optimized paths</li>
 <li>Well tested</li>
-</ul><h4>
-<a name="thanks-to-contributors" class="anchor" href="#thanks-to-contributors"><span class="octicon octicon-link"></span></a>Thanks to <a href="https://github.com/railsware/js-routes/contributors">Contributors</a>
+</ul>
+
+<h4>
+<a id="thanks-to-contributors" class="anchor" href="#thanks-to-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Thanks to <a href="https://github.com/railsware/js-routes/contributors">Contributors</a>
 </h4>
 
 <h4>
-<a name="have-fun" class="anchor" href="#have-fun"><span class="octicon octicon-link"></span></a>Have fun</h4>
+<a id="have-fun" class="anchor" href="#have-fun" aria-hidden="true"><span class="octicon octicon-link"></span></a>Have fun</h4>
       </section>
       <footer>
         <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
