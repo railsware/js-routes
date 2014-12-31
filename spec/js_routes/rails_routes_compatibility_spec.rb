@@ -206,13 +206,15 @@ describe JsRoutes, "compatibility with Rails"  do
 
       # Fail for rails 4.2. Reason: https://github.com/rails/rails/issues/12178
       it "should treat undefined as non-given optional part" do
-        pending("This tests is invalid for rails 4.2. Reason: https://github.com/rails/rails/issues/12178") if [4, 2] == [Rails::VERSION::MAJOR, Rails::VERSION::MINOR]
+        # TODO: remove me after release of rails 4.2.1 (change Appraisals to "~> 4.2.1")
+        pending("This tests is invalid for rails 4.2. Reason: https://github.com/rails/rails/issues/12178") if [4, 2, 0] == [Rails::VERSION::MAJOR, Rails::VERSION::MINOR, Rails::VERSION::TINY]
         expect(evaljs("Routes.thing_path(5, {optional_id: undefined})")).to eq(routes.thing_path(5, :optional_id => nil))
       end
 
       # Fail for rails 4.2. Reason: https://github.com/rails/rails/issues/12178
       it "should treat null as non-given optional part" do
-        pending("This tests is invalid for rails 4.2. Reason: https://github.com/rails/rails/issues/12178") if [4, 2] == [Rails::VERSION::MAJOR, Rails::VERSION::MINOR]
+        # TODO: remove me after release of rails 4.2.1 (change Appraisals to "~> 4.2.1")
+        pending("This tests is invalid for rails 4.2. Reason: https://github.com/rails/rails/issues/12178") if [4, 2, 0] == [Rails::VERSION::MAJOR, Rails::VERSION::MINOR, Rails::VERSION::TINY]
         expect(evaljs("Routes.thing_path(5, {optional_id: null})")).to eq(routes.thing_path(5, :optional_id => nil))
       end
     end

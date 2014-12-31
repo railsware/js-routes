@@ -125,15 +125,9 @@ class JsRoutes
 
   def js_routes
     js_routes = Rails.application.routes.named_routes.routes.sort_by(&:to_s).map do |_, route|
-      # rails engine for rails 4.2 change to route.app.app
-      rails_engine_route = if route.app.respond_to?(:app) && route.app.app.respond_to?(:superclass)
-        route.app.app
-      else
-        route.app
-      end
-      # rails engine route
-      if rails_engine_route.respond_to?(:superclass) && rails_engine_route.superclass == Rails::Engine && !route.path.anchored
-        rails_engine_route.routes.named_routes.map do |_, engine_route|
+      rails_engine_app = get_app_from_route(route)
+      if rails_engine_app.respond_to?(:superclass) && rails_engine_app.superclass == Rails::Engine && !route.path.anchored
+        rails_engine_app.routes.named_routes.map do |_, engine_route|
           build_route_if_match(engine_route, route)
         end
       else
@@ -142,6 +136,15 @@ class JsRoutes
     end.flatten.compact
 
     "{\n" + js_routes.join(",\n") + "}\n"
+  end
+
+  def get_app_from_route(route)
+    # rails engine in Rails 4.2 use additional ActionDispatch::Routing::Mapper::Constraints, which contain app
+    if route.app.respond_to?(:app) && route.app.respond_to?(:constraints)
+      route.app.app
+    else
+      route.app
+    end
   end
 
   def build_route_if_match(route, parent_route=nil)
