@@ -1,5 +1,7 @@
 ## master
 
+## v1.0.0
+
  * Add the compact mode [#125](https://github.com/railsware/js-routes/pull/125)
  * Add support for host, protocol, and port configuration [#137](https://github.com/railsware/js-routes/pull/137)
  * Routes path specs [#135](https://github.com/railsware/js-routes/pull/135)
