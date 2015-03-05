@@ -43,7 +43,7 @@ describe "after Rails initialization" do
 
     context "the preprocessor" do
       before(:each) do
-        expect(ctx).to receive(:depend_on).with(Rails.root.join('config','routes.rb'))
+        expect(ctx).to receive(:depend_on).with(Rails.root.join('spec', 'config','routes.rb'))
       end
       let!(:ctx) do
         Sprockets::Context.new(Rails.application.assets,
