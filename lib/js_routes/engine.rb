@@ -4,11 +4,7 @@ class JsRoutes
 
     initializer 'js-routes.dependent_on_routes', after: "sprockets.environment" do
       if Rails.application.assets.respond_to?(:register_preprocessor)
-        if Rails::VERSION::MAJOR == 3
-          route_paths = Rails.application.paths['config/routes'].to_a
-        else
-          route_paths = Rails.application.paths['config/routes.rb'].to_a
-        end
+        route_paths = Rails.application.paths["config/routes#{3 == Rails::VERSION::MAJOR ? '' : '.rb'}"].to_a
 
         route_paths.each do |path|
           Rails.application.assets.register_preprocessor 'application/javascript', :'js-routes_dependent_on_routes' do |ctx,data|
