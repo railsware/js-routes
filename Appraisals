@@ -3,14 +3,14 @@ appraise "rails32" do
   gem 'tzinfo'
 end
 
-appraise "rails40" do
-  gem "railties", "~> 4.0.5"
-end
+{rails40: '4.0.5', rails41: '4.1.1', rails42: '4.2.0'}.each do |rails, version|
+  appraise "#{rails}" do
+    gem "railties", "~> #{version}"
+    gem "sprockets", "< 3"
+  end
 
-appraise "rails41" do
-  gem "railties", "~> 4.1.1"
-end
-
-appraise "rails42" do
-  gem "railties", "~> 4.2.0"
+  appraise "#{rails}-sprockets3" do
+    gem "railties", "~> #{version}"
+    gem "sprockets", "~> 3.0"
+  end
 end

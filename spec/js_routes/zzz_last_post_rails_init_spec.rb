@@ -6,17 +6,37 @@ require 'spec_helper'
 require "fileutils"
 
 describe "after Rails initialization" do
-  NAME = "#{File.dirname(__FILE__)}/../routes.js"
+  NAME = Rails.root.join('app', 'assets', 'javascripts', 'routes.js').to_s
 
-  before(:all) do
-    FileUtils.rm_f(NAME)
-    JsRoutes.generate!(NAME)
-    Rails.configuration.eager_load = false
-    Rails.application.initialize!
+  def sprockets_v3?
+    Sprockets::VERSION.to_i >= 3
   end
 
-  after(:all) do
-    FileUtils.rm_f(NAME)
+  def sprockets_context(environment, name, filename)
+    if sprockets_v3?
+      Sprockets::Context.new(environment: environment, name: name, filename: filename.to_s, metadata: {})
+    else
+      Sprockets::Context.new(environment, name, filename)
+    end
+  end
+
+  def evaluate(ctx, file)
+    if sprockets_v3?
+      ctx.load(ctx.environment.find_asset(file, pipeline: :default).uri).to_s
+    else
+      ctx.evaluate(file)
+    end
+  end
+
+  before(:each) do
+    FileUtils.rm_rf Rails.root.join('tmp/cache')
+    FileUtils.rm_f NAME
+    JsRoutes.generate!(NAME)
+  end
+
+  before(:all) do
+    Rails.configuration.eager_load = false
+    Rails.application.initialize!
   end
 
   it "should generate routes file" do
@@ -38,21 +58,25 @@ describe "after Rails initialization" do
     it "should have registered a preprocessor" do
       pps = Rails.application.assets.preprocessors
       js_pps = pps['application/javascript']
-      expect(js_pps.map(&:name)).to include('Sprockets::Processor (js-routes_dependent_on_routes)')
+      klass = sprockets_v3? ? 'LegacyProcProcessor' : 'Processor'
+      expect(js_pps.map(&:to_s)).to include("Sprockets::#{klass} (js-routes_dependent_on_routes)")
     end
 
     context "the preprocessor" do
       before(:each) do
-        expect(ctx).to receive(:depend_on).with(Rails.root.join('config','routes.rb'))
+        if sprockets_v3?
+          expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(Rails.root.join('config','routes.rb').to_s)
+        else
+          expect(ctx).to receive(:depend_on).with(Rails.root.join('config','routes.rb').to_s)
+        end
       end
       let!(:ctx) do
-        Sprockets::Context.new(Rails.application.assets,
-                               'js-routes.js',
-                               Pathname.new('js-routes.js'))
-
+        sprockets_context(Rails.application.assets,
+                         'js-routes.js',
+                         Pathname.new('js-routes.js'))
       end
-      context "when dealing with js-routes.js" do
 
+      context "when dealing with js-routes.js" do
 
         context "with Rails" do
           context "and initialize on precompile" do
@@ -60,7 +84,7 @@ describe "after Rails initialization" do
               Rails.application.config.assets.initialize_on_precompile = true
             end
             it "should render some javascript" do
-              expect(ctx.evaluate('js-routes.js')).to match(/root\.Routes/)
+              expect(evaluate(ctx, 'js-routes.js')).to match(/root\.Routes/)
             end
           end
           context "and not initialize on precompile" do
@@ -69,9 +93,9 @@ describe "after Rails initialization" do
             end
             it "should raise an exception if 3 version" do
               if 3 == Rails::VERSION::MAJOR
-                expect { ctx.evaluate('js-routes.js') }.to raise_error(/Cannot precompile/)
+                expect { evaluate(ctx, 'js-routes.js') }.to raise_error(/Cannot precompile/)
               else
-                expect(ctx.evaluate('js-routes.js')).to match(/root\.Routes/)
+                expect(evaluate(ctx, 'js-routes.js')).to match(/root\.Routes/)
               end
             end
           end
@@ -83,11 +107,11 @@ describe "after Rails initialization" do
     end
     context "when not dealing with js-routes.js" do
       it "should not depend on routes.rb" do
-        ctx = Sprockets::Context.new(Rails.application.assets,
-                                     'test.js',
-                                     TEST_ASSET_PATH)
+        ctx = sprockets_context(Rails.application.assets,
+                                'test.js',
+                                TEST_ASSET_PATH)
         expect(ctx).not_to receive(:depend_on)
-        ctx.evaluate('test.js')
+        evaluate(ctx, 'test.js')
       end
     end
   end

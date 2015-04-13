@@ -62,6 +62,8 @@ class App < Rails::Application
   else
     config.paths['config/routes.rb'] << 'spec/config/routes.rb'
   end
+
+  config.root = File.expand_path('../dummy', __FILE__)
 end
 
 def draw_routes
