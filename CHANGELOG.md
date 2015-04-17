@@ -1,5 +1,10 @@
 ## master
 
+## v1.0.1
+
+* Support sprockets-3
+* Performance optimization of include/exclude options
+
 ## v1.0.0
 
  * Add the compact mode [#125](https://github.com/railsware/js-routes/pull/125)
