@@ -3,5 +3,6 @@
 source "http://rubygems.org"
 
 gem "railties", "~> 4.2.0"
+gem "sprockets", "< 3"
 
 gemspec :path => "../"

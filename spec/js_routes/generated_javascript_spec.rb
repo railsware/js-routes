@@ -36,11 +36,15 @@ describe JsRoutes do
 
   describe ".generate!" do
 
-    let(:name) { "#{File.dirname(__FILE__)}/../routes.js" }
+    let(:name) { Rails.root.join('app', 'assets', 'javascripts', 'routes.js') }
 
     before(:each) do
       FileUtils.rm_f(name)
       JsRoutes.generate!({:file => name})
+    end
+
+    after(:each) do
+      FileUtils.rm_f(name)
     end
 
     after(:all) do
