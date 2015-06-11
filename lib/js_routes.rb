@@ -57,6 +57,11 @@ class JsRoutes
     end
 
     def generate(opts = {})
+      # Ensure routes are loaded. If they're not, load them.
+      if Rails.application.routes.named_routes.routes.keys.empty?
+        Rails.application.reload_routes!
+      end
+
       new(opts).generate
     end
 
