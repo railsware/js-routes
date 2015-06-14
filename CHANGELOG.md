@@ -1,5 +1,7 @@
 ## master
 
+* Ensure routes are loaded, prior to generating them [#148](https://github.com/railsware/js-routes/pull/148)
+
 ## v1.0.1
 
 * Support sprockets-3
