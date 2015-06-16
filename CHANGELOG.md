@@ -1,6 +1,7 @@
 ## master
 
 * Ensure routes are loaded, prior to generating them [#148](https://github.com/railsware/js-routes/pull/148)
+* Use `flat_map` rather than `map{...}.flatten` [#149](https://github.com/railsware/js-routes/pull/149)
 
 ## v1.0.1
 
