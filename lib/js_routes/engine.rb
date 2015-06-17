@@ -14,7 +14,7 @@ class JsRoutes
 
       # only sprockets >= 3.0
       if  Rails.application.assets.respond_to?(:depend_on)
-        Rails.application.assets.depend_on "file-digest://#{routes}"
+        Rails.application.assets.depend_on Rack::Utils.escape("file-digest://#{routes}")
       end
     end
   end
