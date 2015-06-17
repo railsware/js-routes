@@ -2,6 +2,7 @@
 
 * Ensure routes are loaded, prior to generating them [#148](https://github.com/railsware/js-routes/pull/148)
 * Use `flat_map` rather than `map{...}.flatten` [#149](https://github.com/railsware/js-routes/pull/149)
+* URL escape routes.rb url to fix bad URI(is not URI?) error [#150](https://github.com/railsware/js-routes/pull/150)
 
 ## v1.0.1
 
