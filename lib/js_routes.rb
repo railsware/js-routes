@@ -162,7 +162,7 @@ class JsRoutes
 
   def any_match?(route, parent_route, matchers)
     full_route = [parent_route.try(:name), route.name].compact.join('_')
-    
+
     matchers = Array(matchers)
     matchers.any? {|regex| full_route =~ regex}
   end
@@ -170,7 +170,7 @@ class JsRoutes
   def build_js(route, parent_route)
     name = [parent_route.try(:name), route.name].compact
     parent_spec = parent_route.try(:path).try(:spec)
-    required_parts, optional_parts = route.required_parts.clone, route.optional_parts.clone
+    required_parts, optional_parts = route.required_parts.clone, (route.parts-route.required_parts)
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     route_name = generate_route_name(name, (:path unless @options[:compact]))
     url_link = generate_url_link(name, route_name, required_parts, route)
