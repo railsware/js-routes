@@ -3,6 +3,7 @@
 * Ensure routes are loaded, prior to generating them [#148](https://github.com/railsware/js-routes/pull/148)
 * Use `flat_map` rather than `map{...}.flatten` [#149](https://github.com/railsware/js-routes/pull/149)
 * URL escape routes.rb url to fix bad URI(is not URI?) error [#150](https://github.com/railsware/js-routes/pull/150)
+* Fix for rails 5 - test rails-edge on travis allowing failure [#151](https://github.com/railsware/js-routes/pull/151)
 
 ## v1.0.1
 
