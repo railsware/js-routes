@@ -98,6 +98,8 @@ class JsRoutes
 
   def generate
     js = File.read(File.dirname(__FILE__) + "/routes.js")
+    js.gsub!("GEM_VERSION", JsRoutes::VERSION)
+    js.gsub!("APP_CLASS", Rails.application.class.to_s)
     js.gsub!("NAMESPACE", @options[:namespace])
     js.gsub!("DEFAULT_URL_OPTIONS", json(@options[:default_url_options].merge(deprecated_default_format)))
     js.gsub!("PREFIX", @options[:prefix] || "")
