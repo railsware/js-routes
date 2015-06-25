@@ -18,7 +18,6 @@ gemfile:
   - gemfiles/rails41_sprockets3.gemfile
   - gemfiles/rails42.gemfile
   - gemfiles/rails42_sprockets3.gemfile
-  - gemfiles/rails_edge.gemfile
 
 sudo: false
 
