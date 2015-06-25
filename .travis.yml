@@ -13,11 +13,12 @@ rvm:
 gemfile:
   - gemfiles/rails32.gemfile
   - gemfiles/rails40.gemfile
-  - gemfiles/rails41.gemfile
-  - gemfiles/rails42.gemfile
   - gemfiles/rails40_sprockets3.gemfile
+  - gemfiles/rails41.gemfile
   - gemfiles/rails41_sprockets3.gemfile
+  - gemfiles/rails42.gemfile
   - gemfiles/rails42_sprockets3.gemfile
+  - gemfiles/rails_edge.gemfile
 
 sudo: false
 
