@@ -135,7 +135,9 @@ RSpec.configure do |config|
   config.before(:all) do
     # compile all js files begin
     Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))}/**/*.coffee"].each do |coffee|
-      File.open(coffee.gsub(/\.coffee$/, ""), 'w') {|f| f.write(CoffeeScript.compile(File.read(coffee))) }
+      File.open(coffee.gsub(/\.coffee$/, ""), 'w') do |f|
+        f.write(CoffeeScript.compile(File.read(coffee)).lstrip)
+      end
     end
     # compile all js files end
     draw_routes
