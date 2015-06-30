@@ -19,7 +19,8 @@ class JsRoutes
     url_links: nil,
     camel_case: false,
     default_url_options: {},
-    compact: false
+    compact: false,
+    serializer: nil
   }
 
   NODE_TYPES = {
@@ -104,6 +105,7 @@ class JsRoutes
     js.gsub!("DEFAULT_URL_OPTIONS", json(@options[:default_url_options].merge(deprecated_default_format)))
     js.gsub!("PREFIX", @options[:prefix] || "")
     js.gsub!("NODE_TYPES", json(NODE_TYPES))
+    js.gsub!("SERIALIZER", @options[:serializer] || "null")
     js.gsub!("ROUTES", js_routes)
   end
 
