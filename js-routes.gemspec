@@ -8,20 +8,20 @@ Gem::Specification.new do |s|
   s.version = JsRoutes::VERSION
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Bogdan Gusiev"]
-  s.description = %q{Generates javascript file that defines all Rails named routes as javascript helpers}
-  s.email = %q{agresso@gmail.com}
+  s.authors = ["Bogdan Gusiev", "Tomas Hromada"]
+  s.description = %q{Generates javascript file that defines all Rails named routes as javascript helpers, with support for default url parameters}
   s.extra_rdoc_files = [
     "LICENSE.txt"
   ]
   s.files = `git ls-files`.split("\n")
-  s.homepage = %q{http://github.com/railsware/js-routes}
+  s.homepage = %q{http://github.com/gyfis/js-routes}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.summary = %q{Brings Rails named routes to javascript}
 
   s.add_runtime_dependency(%q<railties>, [">= 3.2"])
   s.add_runtime_dependency(%q<sprockets-rails>)
+  s.add_runtime_dependency(%q<gon>)
   s.add_development_dependency(%q<rspec>, [">= 3.0.0"])
   s.add_development_dependency(%q<bundler>, [">= 1.1.0"])
   s.add_development_dependency(%q<guard>, [">= 0"])
