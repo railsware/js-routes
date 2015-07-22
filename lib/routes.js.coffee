@@ -113,6 +113,8 @@ Utils =
     if args.length > required_parameters.length
       throw new Error("Too many parameters provided for path")
     parameters = @prepare_parameters(required_parameters, args, opts)
+    if cfg.default_url_params
+      parameters[key] = cfg.default_url_params[key] for key in cfg.default_url_params
     @set_default_url_options optional_parts, parameters
     # options
     anchor = @extract_anchor(parameters)
