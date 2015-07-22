@@ -11,7 +11,7 @@ class JsRoutes
   DEFAULT_PATH = File.join('app','assets','javascripts','routes.js')
 
   DEFAULTS = {
-    namespace: "Routes",
+    namespace: "Paths",
     exclude: [],
     include: //,
     file: DEFAULT_PATH,
