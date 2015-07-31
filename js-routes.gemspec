@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<guard>, [">= 0"])
   s.add_development_dependency(%q<guard-coffeescript>, [">= 0"])
   s.add_development_dependency(%q<appraisal>, [">= 0.5.2"])
+  s.add_development_dependency(%q<byebug>)
   if defined?(JRUBY_VERSION)
     s.add_development_dependency(%q<therubyrhino>, [">= 2.0.4"])
   else

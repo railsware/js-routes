@@ -280,6 +280,8 @@ createGlobalJsRoutesObject = ->
   namespace(root, "NAMESPACE")
   root.NAMESPACE = ROUTES
   root.NAMESPACE.options = defaults
+  root.NAMESPACE.default_serializer = (object, prefix) ->
+    Utils.default_serializer(object, prefix)
   root.NAMESPACE
 # Set up Routes appropriately for the environment.
 if typeof define is "function" and define.amd
