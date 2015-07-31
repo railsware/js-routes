@@ -69,6 +69,10 @@ Available options:
 * `compact` (version > 0.9.9) - Remove `_path` suffix in path routes(`*_url` routes stay untouched if they were enabled)
   * Default: false
   * Sample route call when option is set to true: Routes.users() => `/users`
+* `serializer` (version >= 1.1.0) - Puts a JS function here that serializes a Javascript Hash object into URL paramters: `{a: 1, b: 2} => "a=1&b=2"`.
+  * Default: `nil`. Uses built-in serializer
+  * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
+  * Example: `MyApp.custom_serialize` - use completely custom serializer of your application.
 
 ### Very Advanced Setup
 
@@ -91,7 +95,7 @@ If your application has an `admin` and an `application` namespace for example:
 #= require application/routes
 ```
 
-In order to generate the routes to a string:
+In order to generate the routes JS code to a string:
 
 ```ruby
 routes_js = JsRoutes.generate(options)
