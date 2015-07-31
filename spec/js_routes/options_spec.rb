@@ -13,6 +13,21 @@ describe JsRoutes, "options" do
   let(:_options) { {} }
   let(:_warnings) { true }
 
+  context "when serializer is specified" do
+    let(:_options) { {:serializer => "myCustomSerializer"} }
+
+    it "should set configurable serializer" do
+      # define custom serializer
+      # this is a nonsense serializer, which always returns foo=bar
+      # for all inputs
+      evaljs(%q(function myCustomSerializer(object, prefix) { return "foo=bar"; }))
+
+      # expect the nonsense serializer above to have appened foo=bar
+      # to the end of the path
+      expect(evaljs(%q(Routes.inboxes_path()))).to eql("/inboxes?foo=bar")
+    end
+  end
+
   context "when exclude is specified" do
 
     let(:_options) { {:exclude => /^admin_/} }
@@ -292,11 +307,11 @@ describe JsRoutes, "options" do
 
       context "when only host option is specified" do
         let(:_options) { { :url_links => true, :default_url_options => {:host => "example.com"} } }
-        
+
         it "uses the specified host, defaults protocol to http, defaults port to 80 (leaving it blank)" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{routes.inbox_path(1)}")
         end
-        
+
         it "does not override protocol when specified in route" do
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
         end
@@ -316,7 +331,7 @@ describe JsRoutes, "options" do
         it "uses the specified protocol and host, defaults port to 80 (leaving it blank)" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("ftp://example.com#{routes.inbox_path(1)}")
         end
-        
+
         it "does not override protocol when specified in route" do
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
         end
@@ -340,11 +355,11 @@ describe JsRoutes, "options" do
         it "does not override protocol when specified in route" do
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com:3000#{routes.new_session_path}")
         end
-        
+
         it "does not override host, protocol, or port when host is specified in route" do
           expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
         end
-        
+
         it "does not override port when specified in route" do
           expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{routes.portals_path}")
         end
@@ -397,7 +412,7 @@ describe JsRoutes, "options" do
             example.run
           end
         end
-        
+
         let(:_options) { { :compact => true, :url_links => "http://localhost" } }
         it "should not strip urls" do
           expect(evaljs("Routes.inbox(1)")).to eq(routes.inbox_path(1))

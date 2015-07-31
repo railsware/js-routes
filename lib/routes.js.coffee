@@ -15,30 +15,33 @@ NodeTypes = NODE_TYPES
 
 Utils =
 
-  serialize: (object, prefix = null) ->
+  default_serializer: (object, prefix = null) ->
     return ""  unless object
     if !prefix and !(@get_object_type(object) is "object")
       throw new Error("Url parameters should be a javascript hash")
-
-    if root.jQuery
-      result = root.jQuery.param(object)
-      return (if not result then "" else result)
 
     s = []
     switch @get_object_type(object)
       when "array"
         for element, i in object
-          s.push @serialize(element, prefix + "[]")
+          s.push @default_serializer(element, prefix + "[]")
       when "object"
         for own key, prop of object when prop?
           key = "#{prefix}[#{key}]" if prefix?
-          s.push @serialize(prop, key)
+          s.push @default_serializer(prop, key)
       else
         if object
           s.push "#{encodeURIComponent(prefix.toString())}=#{encodeURIComponent(object.toString())}"
 
     return "" unless s.length
     s.join("&")
+
+  serialize: (object) ->
+    custom_serializer = SERIALIZER
+    if custom_serializer
+      custom_serializer(object)
+    else
+      @default_serializer(object)
 
   clean_path: (path) ->
     path = path.split("://")
