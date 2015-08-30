@@ -36,10 +36,10 @@ Utils =
     return "" unless s.length
     s.join("&")
 
+  custom_serializer: SERIALIZER
   serialize: (object) ->
-    custom_serializer = SERIALIZER
-    if custom_serializer
-      custom_serializer(object)
+    if @custom_serializer? and @get_object_type(@custom_serializer) is "function"
+      @custom_serializer(object)
     else
       @default_serializer(object)
 

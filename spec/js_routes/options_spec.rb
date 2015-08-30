@@ -14,17 +14,26 @@ describe JsRoutes, "options" do
   let(:_warnings) { true }
 
   context "when serializer is specified" do
+    # define custom serializer
+    # this is a nonsense serializer, which always returns foo=bar
+    # for all inputs
+    let(:_presetup){ %q(function myCustomSerializer(object, prefix) { return "foo=bar"; }) }
     let(:_options) { {:serializer => "myCustomSerializer"} }
 
     it "should set configurable serializer" do
-      # define custom serializer
-      # this is a nonsense serializer, which always returns foo=bar
-      # for all inputs
-      evaljs(%q(function myCustomSerializer(object, prefix) { return "foo=bar"; }))
-
       # expect the nonsense serializer above to have appened foo=bar
       # to the end of the path
       expect(evaljs(%q(Routes.inboxes_path()))).to eql("/inboxes?foo=bar")
+    end
+  end
+
+  context "when serializer is specified, but not function" do
+    let(:_presetup){ %q(var myCustomSerializer = 1) }
+    let(:_options) { {:serializer => "myCustomSerializer"} }
+
+    it "should set configurable serializer" do
+      # expect to use default
+      expect(evaljs(%q(Routes.inboxes_path({a: 1})))).to eql("/inboxes?a=1")
     end
   end
 
