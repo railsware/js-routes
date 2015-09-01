@@ -308,12 +308,6 @@ describe JsRoutes, "options" do
     end
 
     context "when configuring with default_url_options" do
-      context "when default host is not specified" do
-        it "raises an error" do
-          expect { JsRoutes.generate({ :url_links => true }) }.to raise_error RuntimeError
-        end
-      end
-
       context "when only host option is specified" do
         let(:_options) { { :url_links => true, :default_url_options => {:host => "example.com"} } }
 
@@ -401,6 +395,42 @@ describe JsRoutes, "options" do
           expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{routes.new_session_path}")
           expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
           expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{routes.portals_path}")
+        end
+      end
+    end
+
+    context 'when window.location is present' do
+      let(:current_protocol) { 'http:' } # window.location.protocol includes the colon character
+      let(:current_hostname) { 'current.example.com' }
+      let(:current_port){ '' } # an empty string means port 80
+      let(:current_host) do
+        host = "#{current_hostname}"
+        host += ":#{current_port}" unless current_port == ''
+        host
+      end
+
+      before do
+        jscontext['window'] = {
+          :location => {
+            :protocol => current_protocol,
+            :hostname => current_hostname,
+            :port => current_port,
+            :host => current_host
+          }
+        }
+      end
+
+      context "without specifying a default host" do
+        let(:_options) { { :url_links => true } }
+
+        it "uses the current host" do
+          expect { JsRoutes.generate(_options) }.not_to raise_error
+          expect(evaljs("Routes.inbox_path")).not_to be_nil
+          expect(evaljs("Routes.inbox_url")).not_to be_nil
+          expect(evaljs("Routes.inbox_url(1)")).to eq("http://current.example.com#{routes.inbox_path(1)}")
+          expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://current.example.com#{routes.inbox_path(1, :test_key => "test_val")}")
+          expect(evaljs("Routes.new_session_url()")).to eq("https://current.example.com#{routes.new_session_path}")
+          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
         end
       end
     end

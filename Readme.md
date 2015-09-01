@@ -65,7 +65,7 @@ Available options:
 * `url_links` (version >= 0.8.9) - Generate `*_url` helpers (in addition to the default `*_path` helpers).
   * Example: true
   * Default: false
-  * Be sure to specify a default host in `default_url_options`. Routes which specify a specific host, protocol, or port will be used instead of their corresponding default.
+  * Note: generated URLs will first use the protocol, host, and port options specified in the route definition. Otherwise, the URL will be based on the option specified in the `default_url_options` config. If no default option has been set, then the URL will fallback to the current URL based on `window.location`.
 * `compact` (version > 0.9.9) - Remove `_path` suffix in path routes(`*_url` routes stay untouched if they were enabled)
   * Default: false
   * Sample route call when option is set to true: Routes.users() => `/users`
