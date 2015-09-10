@@ -74,6 +74,10 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.json_only_path({format: 'json'})")).to eq(routes.json_only_path(:format => 'json'))
   end
 
+  it "should serialize object with empty string value" do
+    expect(evaljs("Routes.inboxes_path({a: '', b: 1})")).to eq(routes.inboxes_path(:a => '', :b => 1))
+  end
+
   it "should support utf-8 route" do
     expect(evaljs("Routes.hello_path()")).to eq(routes.hello_path)
   end

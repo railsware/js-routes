@@ -16,7 +16,7 @@ NodeTypes = NODE_TYPES
 Utils =
 
   default_serializer: (object, prefix = null) ->
-    return ""  unless object
+    return "" unless object?
     if !prefix and !(@get_object_type(object) is "object")
       throw new Error("Url parameters should be a javascript hash")
 
@@ -30,7 +30,7 @@ Utils =
           key = "#{prefix}[#{key}]" if prefix?
           s.push @default_serializer(prop, key)
       else
-        if object
+        if object?
           s.push "#{encodeURIComponent(prefix.toString())}=#{encodeURIComponent(object.toString())}"
 
     return "" unless s.length
