@@ -1,5 +1,9 @@
 ## master
 
+## v1.1.1
+
+* Bugfix regression in serialisation on blank strings caused by [#155](https://github.com/railsware/js-routes/pull/155/files)
+
 ## v1.1.0
 
 * Ensure routes are loaded, prior to generating them [#148](https://github.com/railsware/js-routes/pull/148)
