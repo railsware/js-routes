@@ -26,9 +26,13 @@ Utils =
         for element, i in object
           s.push @default_serializer(element, prefix + "[]")
       when "object"
-        for own key, prop of object when prop?
-          key = "#{prefix}[#{key}]" if prefix?
-          s.push @default_serializer(prop, key)
+        for own key, prop of object
+          if !prop? and prefix?
+            prop = ""
+
+          if prop?
+            key = "#{prefix}[#{key}]" if prefix?
+            s.push @default_serializer(prop, key)
       else
         if object?
           s.push "#{encodeURIComponent(prefix.toString())}=#{encodeURIComponent(object.toString())}"
