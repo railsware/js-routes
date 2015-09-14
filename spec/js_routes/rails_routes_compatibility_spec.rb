@@ -145,9 +145,8 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.search_path({q: 'hello'})")).to eq(routes.search_path(:q => 'hello'))
     end
 
-    it "should ignore null parameters" do
-      pending
-      expect(evaljs("Routes.inboxes_path({hello: {world: null}})")).to eq(routes.inboxes_path(:hello => {world: nil}))
+    it "should support nested object null parameters" do
+      expect(evaljs("Routes.inboxes_path({hello: {world: null}})")).to eq(routes.inboxes_path(:hello => {:world => nil}))
     end
   end
 
