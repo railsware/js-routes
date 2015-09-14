@@ -1,5 +1,11 @@
 ## master
 
+
+## v1.1.2
+
+* Bugfix support nested object null parameters #164
+* Bugfix support for nested optional parameters #162 #163
+
 ## v1.1.1
 
 * Bugfix regression in serialisation on blank strings caused by [#155](https://github.com/railsware/js-routes/pull/155/files)
