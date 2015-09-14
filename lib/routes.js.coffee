@@ -159,7 +159,8 @@ Utils =
       when NodeTypes.CAT
         left_part = @visit(left, parameters, optional)
         right_part = @visit(right, parameters, optional)
-        return "" if optional and not (left_part and right_part)
+        return "" if optional and (((left[0]  == NodeTypes.SYMBOL or left[0]  == NodeTypes.CAT) and not left_part) or
+                                   ((right[0] == NodeTypes.SYMBOL or right[0] == NodeTypes.CAT) and not right_part))
         "#{left_part}#{right_part}"
       when NodeTypes.SYMBOL
         value = parameters[left]

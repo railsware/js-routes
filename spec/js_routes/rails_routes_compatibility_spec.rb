@@ -182,6 +182,11 @@ describe JsRoutes, "compatibility with Rails"  do
         expect(evaljs("Routes.things_path({optional_id: 5})")).to eq(routes.things_path(:optional_id => 5))
       end
 
+      context "on nested optional parts" do
+        it "should include everything that is not optional" do
+          expect(evaljs("Routes.classic_path({controller: 'classic', action: 'edit'})")).to eq(routes.classic_path(controller: :classic, action: :edit))
+        end
+      end
     end
   end
 
