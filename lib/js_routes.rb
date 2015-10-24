@@ -178,10 +178,11 @@ class JsRoutes
     optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     route_name = generate_route_name(name, (:path unless @options[:compact]))
     url_link = generate_url_link(name, route_name, required_parts, route)
+    route_arguments = [json(required_parts), json(optional_parts), json(serialize(route.path.spec, parent_spec)), "arguments"].join(", ")
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   // function(#{[required_parts, LAST_OPTIONS_KEY].flatten.join(', ')})
-  #{route_name}: Utils.route(#{json(required_parts)}, #{json(optional_parts)}, #{json(serialize(route.path.spec, parent_spec))}, arguments)#{",\n" + url_link if url_link.length > 0}
+  #{route_name}: Utils.route(#{route_arguments})#{",\n" + url_link if url_link.length > 0}
   JS
   end
 
