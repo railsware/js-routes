@@ -16,7 +16,7 @@ class JsRoutes
     include: //,
     file: DEFAULT_PATH,
     prefix: nil,
-    url_links: nil,
+    url_links: false,
     camel_case: false,
     default_url_options: {},
     compact: false,
