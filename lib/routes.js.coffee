@@ -239,9 +239,6 @@ Utils =
     port = route_defaults.port || (default_url_options.port unless route_defaults.host)
     port = ":#{port}" if port
 
-    if protocol && hostname && port
-      return "#{protocol}://#{hostname}#{port}"
-    
     base_url_js = protocol + "://"
 
     if hostname && port
