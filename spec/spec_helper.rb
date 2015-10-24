@@ -97,6 +97,8 @@ def draw_routes
       resources :things
     end
 
+    get "/:controller(/:action(/:id))" => "classic#classic", :as => :classic
+
     get "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
 
     get 'books/*section/:title' => 'books#show', :as => :book

@@ -16,7 +16,7 @@ NodeTypes = NODE_TYPES
 Utils =
 
   default_serializer: (object, prefix = null) ->
-    return ""  unless object
+    return "" unless object?
     if !prefix and !(@get_object_type(object) is "object")
       throw new Error("Url parameters should be a javascript hash")
 
@@ -26,11 +26,15 @@ Utils =
         for element, i in object
           s.push @default_serializer(element, prefix + "[]")
       when "object"
-        for own key, prop of object when prop?
-          key = "#{prefix}[#{key}]" if prefix?
-          s.push @default_serializer(prop, key)
+        for own key, prop of object
+          if !prop? and prefix?
+            prop = ""
+
+          if prop?
+            key = "#{prefix}[#{key}]" if prefix?
+            s.push @default_serializer(prop, key)
       else
-        if object
+        if object?
           s.push "#{encodeURIComponent(prefix.toString())}=#{encodeURIComponent(object.toString())}"
 
     return "" unless s.length
@@ -155,7 +159,8 @@ Utils =
       when NodeTypes.CAT
         left_part = @visit(left, parameters, optional)
         right_part = @visit(right, parameters, optional)
-        return "" if optional and not (left_part and right_part)
+        return "" if optional and (((left[0]  == NodeTypes.SYMBOL or left[0]  == NodeTypes.CAT) and not left_part) or
+                                   ((right[0] == NodeTypes.SYMBOL or right[0] == NodeTypes.CAT) and not right_part))
         "#{left_part}#{right_part}"
       when NodeTypes.SYMBOL
         value = parameters[left]

@@ -74,6 +74,10 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.json_only_path({format: 'json'})")).to eq(routes.json_only_path(:format => 'json'))
   end
 
+  it "should serialize object with empty string value" do
+    expect(evaljs("Routes.inboxes_path({a: '', b: 1})")).to eq(routes.inboxes_path(:a => '', :b => 1))
+  end
+
   it "should support utf-8 route" do
     expect(evaljs("Routes.hello_path()")).to eq(routes.hello_path)
   end
@@ -141,9 +145,8 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.search_path({q: 'hello'})")).to eq(routes.search_path(:q => 'hello'))
     end
 
-    it "should ignore null parameters" do
-      pending
-      expect(evaljs("Routes.inboxes_path({hello: {world: null}})")).to eq(routes.inboxes_path(:hello => {world: nil}))
+    it "should support nested object null parameters" do
+      expect(evaljs("Routes.inboxes_path({hello: {world: null}})")).to eq(routes.inboxes_path(:hello => {:world => nil}))
     end
   end
 
@@ -179,6 +182,11 @@ describe JsRoutes, "compatibility with Rails"  do
         expect(evaljs("Routes.things_path({optional_id: 5})")).to eq(routes.things_path(:optional_id => 5))
       end
 
+      context "on nested optional parts" do
+        it "should include everything that is not optional" do
+          expect(evaljs("Routes.classic_path({controller: 'classic', action: 'edit'})")).to eq(routes.classic_path(controller: :classic, action: :edit))
+        end
+      end
     end
   end
 
