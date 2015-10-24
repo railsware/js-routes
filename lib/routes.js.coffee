@@ -237,13 +237,9 @@ Utils =
     protocol = route_defaults.protocol || default_url_options.protocol || Utils.current_protocol_js()
     hostname = route_defaults.host || default_url_options.host || window.location.hostname
     port = route_defaults.port || (default_url_options.port ||  Utils.current_port_js() unless route_defaults.host)
-    port = ":#{port}" if port
+    port = if port then ":#{port}" else ''
 
-    base_url_js = protocol + "://"
-    base_url_js += hostname
-    if port
-      base_url_js += port
-    base_url_js
+    protocol + "://" + hostname + port
 
   current_protocol_js: () ->
     if typeof window != 'undefined' && typeof window.location != 'undefined' && window.location.protocol != ''
