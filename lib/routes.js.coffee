@@ -230,6 +230,50 @@ Utils =
     path_fn.toString = -> Utils.build_path_spec(route_spec)
     path_fn
 
+
+  route_url: (route_defaults) ->
+    return route_defaults if typeof route_defaults == 'string'
+    default_url_options = defaults.default_url_options
+    protocol = route_defaults.protocol || default_url_options.protocol
+    hostname = route_defaults.host || default_url_options.host
+    port = route_defaults.port || (default_url_options.port unless route_defaults.host)
+    port = ":#{port}" if port
+
+    if protocol && hostname && port
+      return "#{protocol}://#{hostname}#{port}"
+
+    if protocol
+      base_url_js = protocol + "://"
+    else
+      base_url_js = Utils.current_protocol_js()
+
+    if hostname && port
+      base_url_js += hostname + port
+    else if hostname
+      if route_defaults.host
+        base_url_js += hostname
+      else
+        base_url_js += hostname + Utils.current_port_js()
+    else if port
+      base_url_js += window.location.hostname + port
+    else
+      base_url_js += window.location.host
+
+    base_url_js
+
+  current_protocol_js: () ->
+    if typeof window != 'undefined' && typeof window.location != 'undefined' && window.location.protocol != ''
+      # location.protocol includes the colon character
+      window.location.protocol + '//'
+    else
+      'http://'
+
+  current_port_js: () ->
+    if typeof window != 'undefined' && typeof window.location != 'undefined' && window.location.port != ''
+      ':' + window.location.port
+    else
+      ''
+
   #
   # This is helper method to define object type.
   # The typeof operator is probably the biggest design flaw of JavaScript, simply because it's basically completely broken.
