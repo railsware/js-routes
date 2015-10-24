@@ -239,21 +239,21 @@ Utils =
   route_url: (route_defaults) ->
     return route_defaults if typeof route_defaults == 'string'
     default_url_options = defaults.default_url_options
-    protocol = route_defaults.protocol || default_url_options.protocol || Utils.current_protocol_js()
+    protocol = route_defaults.protocol || default_url_options.protocol || Utils.current_protocol()
     hostname = route_defaults.host || default_url_options.host || window.location.hostname
-    port = route_defaults.port || (default_url_options.port ||  Utils.current_port_js() unless route_defaults.host)
+    port = route_defaults.port || (default_url_options.port ||  Utils.current_port() unless route_defaults.host)
     port = if port then ":#{port}" else ''
 
     protocol + "://" + hostname + port
 
-  current_protocol_js: () ->
+  current_protocol: () ->
     if typeof window != 'undefined' && typeof window.location != 'undefined' && window.location.protocol != ''
       # location.protocol includes the colon character
       window.location.protocol.replace(/:$/, '')
     else
       'http'
 
-  current_port_js: () ->
+  current_port: () ->
     if typeof window != 'undefined' && typeof window.location != 'undefined' && window.location.port != ''
       window.location.port
     else
