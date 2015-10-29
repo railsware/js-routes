@@ -424,13 +424,18 @@ describe JsRoutes, "options" do
         let(:_options) { { :url_links => true } }
 
         it "uses the current host" do
-          expect { JsRoutes.generate(_options) }.not_to raise_error
           expect(evaljs("Routes.inbox_path")).not_to be_nil
           expect(evaljs("Routes.inbox_url")).not_to be_nil
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://current.example.com#{routes.inbox_path(1)}")
           expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://current.example.com#{routes.inbox_path(1, :test_key => "test_val")}")
           expect(evaljs("Routes.new_session_url()")).to eq("https://current.example.com#{routes.new_session_path}")
           expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{routes.sso_path}")
+
+        end
+
+        it "uses host option as an argument" do
+          pending
+          expect(evaljs("Routes.portals_url({host: 'another.com'})")).to eq(routes.portals_url(host: 'another.com'))
         end
       end
     end
