@@ -118,6 +118,7 @@ Configuration above will create a nice javascript file with `Routes` object that
 Routes.users_path() // => "/users"
 Routes.user_path(1) // => "/users/1"
 Routes.user_path(1, {format: 'json'}) // => "/users/1.json"
+Routes.user_path(1, {anchor: 'profile'}) // => "/users/1#profile"
 Routes.new_user_project_path(1, {format: 'json'}) // => "/users/1/projects/new.json"
 Routes.user_project_path(1,2, {q: 'hello', custom: true}) // => "/users/1/projects/2?q=hello&custom=true"
 Routes.user_project_path(1,2, {hello: ['world', 'mars']}) // => "/users/1/projects/2?hello%5B%5D=world&hello%5B%5D=mars"
