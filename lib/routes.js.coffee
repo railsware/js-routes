@@ -13,6 +13,11 @@ defaults =
 
 NodeTypes = NODE_TYPES
 
+ReservedOptions = [
+  'anchor'
+  'trailing_slash'
+]
+
 Utils =
 
   default_serializer: (object, prefix = null) ->
@@ -57,26 +62,10 @@ Utils =
     for part, i in optional_parts when (not options.hasOwnProperty(part) and defaults.default_url_options.hasOwnProperty(part))
       options[part] = defaults.default_url_options[part]
 
-  extract_anchor: (options) ->
-    anchor = ""
-    if options.hasOwnProperty("anchor")
-      anchor = "##{options.anchor}"
-      delete options.anchor
-    anchor
-
-  extract_trailing_slash: (options) ->
-    trailing_slash = false
-    if defaults.default_url_options.hasOwnProperty("trailing_slash")
-      trailing_slash = defaults.default_url_options.trailing_slash
-    if options.hasOwnProperty("trailing_slash")
-      trailing_slash = options.trailing_slash
-      delete options.trailing_slash
-    trailing_slash
-
   extract_options: (number_of_params, args) ->
     last_el = args[args.length - 1]
-    if args.length > number_of_params or (last_el? and "object" is @get_object_type(last_el) and !@looks_like_serialized_model(last_el))
-      args.pop()
+    if (args.length > number_of_params and last_el == undefined) or(last_el? and "object" is @get_object_type(last_el) and !@looks_like_serialized_model(last_el))
+      args.pop() || {}
     else
       {}
 
@@ -107,33 +96,38 @@ Utils =
     copy[key] = attr for own key, attr of obj
     copy
 
-  prepare_parameters: (required_parameters, actual_parameters, options) ->
-    result = @clone(options) or {}
-    for val, i in required_parameters when i < actual_parameters.length
-      result[val] = actual_parameters[i]
+  normalize_options: (required_parameters, optional_parts, actual_parameters) ->
+    options = @extract_options(required_parameters.length, actual_parameters)
+    if actual_parameters.length > required_parameters.length
+      throw new Error("Too many parameters provided for path")
+    result = defaults.default_url_options
+    result['url_parameters'] = {}
+    for own key, value of options
+      if ReservedOptions.indexOf(key) >= 0
+        result[key] = value
+      else
+        result['url_parameters'][key] = value
+    for value, i in required_parameters when i < actual_parameters.length
+      result['url_parameters'][value] = actual_parameters[i]
+    @set_default_url_options optional_parts, result['url_parameters']
     result
 
   build_path: (required_parameters, optional_parts, route, args) ->
     args = Array::slice.call(args)
-    opts = @extract_options(required_parameters.length, args)
 
-    if args.length > required_parameters.length
-      throw new Error("Too many parameters provided for path")
-    parameters = @prepare_parameters(required_parameters, args, opts)
-    @set_default_url_options optional_parts, parameters
-    # options
-    anchor = @extract_anchor(parameters)
-    trailing_slash = @extract_trailing_slash(parameters)
+    options = @normalize_options(required_parameters, optional_parts, args)
+    parameters = options['url_parameters']
+
     # path
     result = "#{@get_prefix()}#{@visit(route, parameters)}"
     url = Utils.clean_path("#{result}")
     # set trailing_slash
-    url = url.replace(/(.*?)[\/]?$/, "$1/") if trailing_slash is true
+    url = url.replace(/(.*?)[\/]?$/, "$1/") if options['trailing_slash'] is true
     # set additional url params
     if (url_params = @serialize(parameters)).length
       url += "?#{url_params}"
     # set anchor
-    url += anchor
+    url += if options.anchor then "##{options.anchor}" else ""
     url
 
   #
@@ -230,7 +224,8 @@ Utils =
   # route function: create route path function and add spec to it
   #
   route: (required_parts, optional_parts, route_spec) ->
-    path_fn = -> Utils.build_path(required_parts, optional_parts, route_spec, arguments)
+    path_fn = -> 
+      Utils.build_path(required_parts, optional_parts, route_spec, arguments)
     path_fn.required_params = required_parts
     path_fn.toString = -> Utils.build_path_spec(route_spec)
     path_fn
