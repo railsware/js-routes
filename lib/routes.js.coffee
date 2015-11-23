@@ -75,12 +75,12 @@ Utils =
 
   extract_options: (number_of_params, args) ->
     last_el = args[args.length - 1]
-    if args.length > number_of_params or (last_el? and "object" is @get_object_type(last_el) and !@look_like_serialized_model(last_el))
+    if args.length > number_of_params or (last_el? and "object" is @get_object_type(last_el) and !@looks_like_serialized_model(last_el))
       args.pop()
     else
       {}
 
-  look_like_serialized_model: (object) ->
+  looks_like_serialized_model: (object) ->
     # consider object a model if it have a path identifier properties like id and to_param
     "id" of object or "to_param" of object
 
