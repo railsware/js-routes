@@ -147,6 +147,8 @@ RSpec.configure do |config|
 
   config.before :each do
     evaljs("var window = this;", true)
-    jscontext[:log] = lambda {|context, value| puts value.inspect}
+    jscontext[:log] = lambda do |context, value|
+      puts value.to_json
+    end
   end
 end
