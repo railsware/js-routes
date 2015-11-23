@@ -45,8 +45,7 @@ Available options:
 
 * `default_url_options` - default parameters used when generating URLs
   * Note that only specific options are supported at this time.
-  * Supported options: `:format`, `:trailing_slash`, `:protocol`, `:host`, `:port`
-  * Example: {:format => "json", :trailing_slash => true, :protocol => "https", :host => "example.com", :port => 3000}
+  * Example: {:format => "json", :trailing\_slash => true, :protocol => "https", :host => "example.com", :port => 3000}
   * Default: {}
 * `exclude` - Array of regexps to exclude from js routes.
   * Default: []

@@ -138,13 +138,15 @@ describe JsRoutes, "options" do
       expect(evaljs("Routes.inbox_path(1, {format: null})")).to eq(routes.inbox_path(1))
     end
 
-    it "shouldn't include the format when {:format => false} is specified" do
-      expect(evaljs("Routes.no_format_path()")).to eq(routes.no_format_path)
-    end
 
     it "shouldn't require the format" do
       expect(evaljs("Routes.json_only_path()")).to eq(routes.json_only_path(:format => 'json'))
     end
+  end
+
+  it "shouldn't include the format when {:format => false} is specified" do
+    expect(evaljs("Routes.no_format_path()")).to eq(routes.no_format_path())
+    expect(evaljs("Routes.no_format_path({format: 'json'})")).to eq(routes.no_format_path(format: 'json'))
   end
 
   describe "when namespace option is specified" do
@@ -192,7 +194,6 @@ describe JsRoutes, "options" do
     context "with required route parts" do
       let(:_options) { {:default_url_options => {:inbox_id => "12"}} }
       it "should use this opions to fill optional parameters" do
-        pending
         expect(evaljs("Routes.inbox_messages_path()")).to eq(routes.inbox_messages_path(:inbox_id => 12))
       end
     end

@@ -16,6 +16,9 @@ NodeTypes = NODE_TYPES
 ReservedOptions = [
   'anchor'
   'trailing_slash'
+  'host'
+  'port'
+  'protocol'
 ]
 
 Utils =
@@ -58,10 +61,6 @@ Utils =
     path[last_index] = path[last_index].replace(/\/+/g, "/")
     path.join "://"
 
-  set_default_url_options: (optional_parts, options) ->
-    for part, i in optional_parts when (not options.hasOwnProperty(part) and defaults.default_url_options.hasOwnProperty(part))
-      options[part] = defaults.default_url_options[part]
-
   extract_options: (number_of_params, args) ->
     last_el = args[args.length - 1]
     if (args.length > number_of_params and last_el == undefined) or(last_el? and "object" is @get_object_type(last_el) and !@looks_like_serialized_model(last_el))
@@ -96,20 +95,27 @@ Utils =
     copy[key] = attr for own key, attr of obj
     copy
 
+  merge: (xs...) ->
+    tap = (o, fn) -> fn(o); o
+    if xs?.length > 0
+      tap {}, (m) -> m[k] = v for k, v of x for x in xs
+
   normalize_options: (required_parameters, optional_parts, actual_parameters) ->
     options = @extract_options(required_parameters.length, actual_parameters)
     if actual_parameters.length > required_parameters.length
       throw new Error("Too many parameters provided for path")
-    result = defaults.default_url_options
-    result['url_parameters'] = {}
+    options = @merge(defaults.default_url_options, options)
+    result = {}
+    url_parameters = {}
+    result['url_parameters'] = url_parameters
     for own key, value of options
       if ReservedOptions.indexOf(key) >= 0
         result[key] = value
       else
-        result['url_parameters'][key] = value
+        url_parameters[key] = value
+
     for value, i in required_parameters when i < actual_parameters.length
-      result['url_parameters'][value] = actual_parameters[i]
-    @set_default_url_options optional_parts, result['url_parameters']
+      url_parameters[value] = actual_parameters[i]
     result
 
   build_path: (required_parameters, optional_parts, route, args) ->
