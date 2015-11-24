@@ -181,7 +181,7 @@ class JsRoutes
     route_arguments = [json(required_parts), json(optional_parts), json(serialize(route.path.spec, parent_spec))].join(", ")
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
-  // function(#{[required_parts, LAST_OPTIONS_KEY].flatten.join(', ')})
+  // function(#{build_params(required_parts, true)})
   #{route_name}: Utils.route(#{route_arguments})#{",\n" + url_link if url_link.length > 0}
   JS
   end
@@ -212,11 +212,11 @@ class JsRoutes
     self.class.json(string)
   end
 
-  def build_params(required_parts)
+  def build_params(required_parts, unprotected = false)
     params = required_parts.map do |name|
       # prepending each parameter name with underscore
       # to prevent conflict with JS reserved words
-      "_#{name}"
+      unprotected ? name : "_#{name}"
     end << LAST_OPTIONS_KEY
     params.join(", ")
   end

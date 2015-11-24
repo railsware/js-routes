@@ -230,7 +230,7 @@ Utils =
   # route function: create route path function and add spec to it
   #
   route: (required_parts, optional_parts, route_spec) ->
-    path_fn = -> 
+    path_fn = ->
       Utils.build_path(required_parts, optional_parts, route_spec, arguments)
     path_fn.required_params = required_parts
     path_fn.toString = -> Utils.build_path_spec(route_spec)
