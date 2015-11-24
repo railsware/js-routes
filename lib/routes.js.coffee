@@ -118,7 +118,7 @@ Utils =
       url_parameters[value] = actual_parameters[i]
     result
 
-  build_path: (required_parameters, optional_parts, route, url_defaults, args) ->
+  build_route: (required_parameters, optional_parts, route, url_defaults, args) ->
     args = Array::slice.call(args)
 
     options = @normalize_options(required_parameters, optional_parts, args)
@@ -233,7 +233,7 @@ Utils =
   #
   route: (required_parts, optional_parts, route_spec, url_defaults) ->
     path_fn = ->
-      Utils.build_path(required_parts, optional_parts, route_spec, url_defaults, arguments)
+      Utils.build_route(required_parts, optional_parts, route_spec, url_defaults, arguments)
     path_fn.required_params = required_parts
     path_fn.toString = -> Utils.build_path_spec(route_spec)
     path_fn
