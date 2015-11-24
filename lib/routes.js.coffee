@@ -118,7 +118,7 @@ Utils =
       url_parameters[value] = actual_parameters[i]
     result
 
-  build_path: (required_parameters, optional_parts, route, args) ->
+  build_path: (required_parameters, optional_parts, route, url_defaults, args) ->
     args = Array::slice.call(args)
 
     options = @normalize_options(required_parameters, optional_parts, args)
@@ -134,6 +134,8 @@ Utils =
       url += "?#{url_params}"
     # set anchor
     url += if options.anchor then "##{options.anchor}" else ""
+    if url_defaults
+      url = @route_url(url_defaults) + url
     url
 
   #
@@ -229,9 +231,9 @@ Utils =
   #
   # route function: create route path function and add spec to it
   #
-  route: (required_parts, optional_parts, route_spec) ->
+  route: (required_parts, optional_parts, route_spec, url_defaults) ->
     path_fn = ->
-      Utils.build_path(required_parts, optional_parts, route_spec, arguments)
+      Utils.build_path(required_parts, optional_parts, route_spec, url_defaults, arguments)
     path_fn.required_params = required_parts
     path_fn.toString = -> Utils.build_path_spec(route_spec)
     path_fn

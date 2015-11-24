@@ -173,26 +173,28 @@ class JsRoutes
 
   def build_js(route, parent_route)
     name = [parent_route.try(:name), route.name].compact
-    parent_spec = parent_route.try(:path).try(:spec)
-    required_parts, optional_parts = route.required_parts.clone, (route.parts-route.required_parts)
-    optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     route_name = generate_route_name(name, (:path unless @options[:compact]))
-    url_link = generate_url_link(name, route_name, required_parts, route)
-    route_arguments = [json(required_parts), json(optional_parts), json(serialize(route.path.spec, parent_spec))].join(", ")
+    parent_spec = parent_route.try(:path).try(:spec)
+    route_arguments = route_js_arguments(route, parent_spec)
+    url_link = generate_url_link(name, route_name, route_arguments, route)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
-  // function(#{build_params(required_parts, true)})
+  // function(#{build_params(route.required_parts, true)})
   #{route_name}: Utils.route(#{route_arguments})#{",\n" + url_link if url_link.length > 0}
   JS
   end
 
-  def generate_url_link(name, route_name, required_parts, route)
+  def route_js_arguments(route, parent_spec)
+    required_parts, optional_parts = route.required_parts.clone, (route.parts-route.required_parts)
+    optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
+    [json(required_parts), json(optional_parts), json(serialize(route.path.spec, parent_spec))].join(", ")
+  end
+
+  def generate_url_link(name, route_name, route_arguments, route)
     return "" unless @options[:url_links]
     defaults = @options[:url_links] == true ? route.defaults.slice(:host, :port, :protocol) : deprecated_base_url
     _ = <<-JS.strip!
-    #{generate_route_name(name, :url)}: function(#{build_params(required_parts)}) {
-      return Utils.route_url(#{json(defaults)}) + this.#{route_name}(#{build_params(required_parts)});
-    }
+    #{generate_route_name(name, :url)}: Utils.route(#{route_arguments}, #{json(defaults)})
     JS
   end
 
