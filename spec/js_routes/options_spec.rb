@@ -361,7 +361,7 @@ describe JsRoutes, "options" do
         end
 
         it "does not override host, protocol, or port when host is specified in route" do
-          expect(evaljs("Routes.sso_url()")).to eq(routes.sso_url)
+          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com:3000" + routes.sso_path)
         end
 
         it "does not override port when specified in route" do
@@ -435,8 +435,15 @@ describe JsRoutes, "options" do
         end
 
         it "uses host option as an argument" do
-          pending
           expect(evaljs("Routes.portals_url({host: 'another.com'})")).to eq(routes.portals_url(host: 'another.com'))
+        end
+
+        it "uses port option as an argument" do
+          expect(evaljs("Routes.portals_url({host: 'localhost', port: 8080})")).to eq(routes.portals_url(host: 'localhost', port: 8080))
+        end
+
+        it "uses protocol option as an argument" do
+          expect(evaljs("Routes.portals_url({host: 'localhost', protocol: 'https'})")).to eq(routes.portals_url(protocol: 'https', host: 'localhost'))
         end
       end
     end

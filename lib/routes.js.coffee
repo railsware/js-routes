@@ -100,11 +100,11 @@ Utils =
     if xs?.length > 0
       tap {}, (m) -> m[k] = v for k, v of x for x in xs
 
-  normalize_options: (required_parameters, optional_parts, actual_parameters) ->
+  normalize_options: (url_defaults, required_parameters, optional_parts, actual_parameters) ->
     options = @extract_options(required_parameters.length, actual_parameters)
     if actual_parameters.length > required_parameters.length
       throw new Error("Too many parameters provided for path")
-    options = @merge(defaults.default_url_options, options)
+    options = @merge(defaults.default_url_options, url_defaults, options)
     result = {}
     url_parameters = {}
     result['url_parameters'] = url_parameters
@@ -121,7 +121,7 @@ Utils =
   build_route: (required_parameters, optional_parts, route, url_defaults, args) ->
     args = Array::slice.call(args)
 
-    options = @normalize_options(required_parameters, optional_parts, args)
+    options = @normalize_options(url_defaults, required_parameters, optional_parts, args)
     parameters = options['url_parameters']
 
     # path
@@ -135,7 +135,7 @@ Utils =
     # set anchor
     url += if options.anchor then "##{options.anchor}" else ""
     if url_defaults
-      url = @route_url(url_defaults) + url
+      url = @route_url(options) + url
     url
 
   #
@@ -241,23 +241,29 @@ Utils =
 
   route_url: (route_defaults) ->
     return route_defaults if typeof route_defaults == 'string'
-    default_url_options = defaults.default_url_options
-    protocol = route_defaults.protocol || default_url_options.protocol || Utils.current_protocol()
-    hostname = route_defaults.host || default_url_options.host || window.location.hostname
-    port = route_defaults.port || (default_url_options.port ||  Utils.current_port() unless route_defaults.host)
+    protocol = route_defaults.protocol || Utils.current_protocol()
+    hostname = route_defaults.host || window.location.hostname
+    port = route_defaults.port || (Utils.current_port() unless route_defaults.host)
     port = if port then ":#{port}" else ''
 
     protocol + "://" + hostname + port
 
+
+  has_location: ->
+    typeof window != 'undefined' && typeof window.location != 'undefined'
+
+  current_host: ->
+    @has_location() && window.location.hostname
+
   current_protocol: () ->
-    if typeof window != 'undefined' && typeof window.location != 'undefined' && window.location.protocol != ''
+    if @has_location() && window.location.protocol != ''
       # location.protocol includes the colon character
       window.location.protocol.replace(/:$/, '')
     else
       'http'
 
   current_port: () ->
-    if typeof window != 'undefined' && typeof window.location != 'undefined' && window.location.port != ''
+    if @has_location() && window.location.port != ''
       window.location.port
     else
       ''

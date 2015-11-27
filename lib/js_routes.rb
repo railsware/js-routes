@@ -193,15 +193,24 @@ class JsRoutes
   def generate_url_link(name, route_name, route_arguments, route)
     return "" unless @options[:url_links]
     defaults = @options[:url_links] == true ? route.defaults.slice(:host, :port, :protocol) : deprecated_base_url
-    _ = <<-JS.strip!
+    <<-JS.strip!
     #{generate_route_name(name, :url)}: Utils.route(#{route_arguments}, #{json(defaults)})
     JS
   end
 
   def deprecated_base_url
     ActiveSupport::Deprecation.warn('js-routes url_links config value must be a boolean. Use default_url_options for specifying a default host.')
+
+    
     raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::Parser.new.make_regexp(%w(http https))).nil?
-    return @options[:url_links].to_s
+    uri = URI.parse(@options[:url_links])
+    default_port = uri.scheme == "https" ? 443 : 80
+    port = uri.port == default_port ? nil : uri.port
+    {
+      host: uri.host,
+      port: port,
+      protocol: uri.scheme,
+    }
   end
 
   def generate_route_name(name, suffix)
