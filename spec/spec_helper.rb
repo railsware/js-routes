@@ -147,8 +147,22 @@ RSpec.configure do |config|
 
   config.before :each do
     evaljs("var window = this;", true)
+
+    def inspectify(value)
+      case value
+      when V8::Object
+        value.to_h.map do |k,v|
+          [k, inspectify(v)]
+        end.to_h
+      when String, nil
+        value
+      else
+        raise "wtf #{value.class}?"
+      end
+
+    end
     jscontext[:log] = lambda do |context, value|
-      puts value.to_json
+      puts inspectify(value).to_json
     end
   end
 end
