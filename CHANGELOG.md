@@ -1,5 +1,10 @@
 ## master
 
+## v1.2.0
+
+* Support host, port and protocol inline parameters
+* Support host, port and protocol parameters given to a route explicitly
+* Remove all incompatibilities between actiondispatch and js-routes in handling route URLs
 
 ## v1.1.2
 
