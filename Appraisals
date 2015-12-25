@@ -14,8 +14,3 @@ end
     gem "sprockets", "~> 3.0"
   end
 end
-
-appraise "rails-edge" do
-  gem "railties", github: 'rails/rails'
-  gem "sprockets", "~> 3.0"
-end
