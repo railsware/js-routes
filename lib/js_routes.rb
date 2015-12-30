@@ -98,15 +98,18 @@ class JsRoutes
   end
 
   def generate
-    js = File.read(File.dirname(__FILE__) + "/routes.js")
-    js.gsub!("GEM_VERSION", JsRoutes::VERSION)
-    js.gsub!("APP_CLASS", Rails.application.class.to_s)
-    js.gsub!("NAMESPACE", @options[:namespace])
-    js.gsub!("DEFAULT_URL_OPTIONS", json(@options[:default_url_options].merge(deprecated_default_format)))
-    js.gsub!("PREFIX", @options[:prefix] || "")
-    js.gsub!("NODE_TYPES", json(NODE_TYPES))
-    js.gsub!("SERIALIZER", @options[:serializer] || "null")
-    js.gsub!("ROUTES", js_routes)
+    {
+      "GEM_VERSION"         => JsRoutes::VERSION,
+      "APP_CLASS"           => Rails.application.class.to_s,
+      "NAMESPACE"           => @options[:namespace],
+      "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecated_default_format)),
+      "PREFIX"              => @options[:prefix] || "",
+      "NODE_TYPES"          => json(NODE_TYPES),
+      "SERIALIZER"          => @options[:serializer] || "null",
+      "ROUTES"              => js_routes,
+    }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
+      js.gsub!(key, value)
+    end
   end
 
   def deprecated_default_format
