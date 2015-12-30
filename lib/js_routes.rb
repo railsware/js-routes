@@ -186,7 +186,6 @@ class JsRoutes
 
   def route_js_arguments(route, parent_spec)
     required_parts, optional_parts = route.required_parts.clone, (route.parts-route.required_parts)
-    optional_parts.push(required_parts.delete :format) if required_parts.include?(:format)
     [json(required_parts), json(optional_parts), json(serialize(route.path.spec, parent_spec))].join(", ")
   end
 
@@ -201,7 +200,7 @@ class JsRoutes
   def deprecated_base_url
     ActiveSupport::Deprecation.warn('js-routes url_links config value must be a boolean. Use default_url_options for specifying a default host.')
 
-    
+
     raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::Parser.new.make_regexp(%w(http https))).nil?
     uri = URI.parse(@options[:url_links])
     default_port = uri.scheme == "https" ? 443 : 80
