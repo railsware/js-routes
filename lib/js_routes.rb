@@ -185,8 +185,11 @@ class JsRoutes
   end
 
   def route_js_arguments(route, parent_spec)
-    required_parts, optional_parts = route.required_parts.clone, (route.parts-route.required_parts)
-    [json(required_parts), json(optional_parts), json(serialize(route.path.spec, parent_spec))].join(", ")
+    required_parts = route.required_parts.clone
+    optional_parts = route.parts - required_parts
+    [required_parts, optional_parts, serialize(route.path.spec, parent_spec)].map do |argument|
+      json(argument)
+    end.join(", ")
   end
 
   def generate_url_link(name, route_name, route_arguments, route)
