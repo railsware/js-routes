@@ -11,7 +11,7 @@ Your Rails Gemfile:
 gem "js-routes"
 ```
 
-### Basic Setup (Asset Pipeline)
+### Basic Setup
 
 Require js routes file in `application.js` or other bundle
 

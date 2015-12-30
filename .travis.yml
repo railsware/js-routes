@@ -30,12 +30,7 @@ branches:
     - master
 
 matrix:
-  include:
-    - gemfile: gemfiles/rails_edge.gemfile
-      rvm: 2.2
   allow_failures:
     - rvm: jruby-19mode
     - rvm: ruby-head
     - rvm: jruby-head
-    - gemfile: gemfiles/rails_edge.gemfile
-      rvm: 2.2
