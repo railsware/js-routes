@@ -1,5 +1,9 @@
 ## master
 
+## v1.2.1
+
+* Fixes for Rails 5
+
 ## v1.2.0
 
 * Support host, port and protocol inline parameters

@@ -192,8 +192,9 @@ This should just work.
 There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept.
 Advantages of this one are:
 
-* Rails3 & Rails4 support
+* Rails 3-5 support
 * Rich options set
+* Full rails compatibility
 * Support Rails `#to_param` convention for seo optimized paths
 * Well tested
 
