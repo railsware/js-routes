@@ -42,6 +42,10 @@ def blog_routes
   BlogEngine::Engine.routes.url_helpers
 end
 
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.irregular "budgie", "budgies"
+end
+
 
 module BlogEngine
   class Engine < Rails::Engine
@@ -118,6 +122,11 @@ def draw_routes
     get '/' => 'sso#login', host: 'sso.example.com', as: :sso
 
     resources :portals, :port => 8080
+
+    resources :budgies do
+      get "descendents"
+    end
+
   end
 
 end

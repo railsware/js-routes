@@ -54,6 +54,13 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.inbox_path(1, {expanded: true, anchor: 'hello'})")).to eq(routes.inbox_path(1, :expanded => true, :anchor => "hello"))
   end
 
+  it "should use irregular ActiveSupport pluralizations" do
+    expect(evaljs("Routes.budgies_path()")).to eq(routes.budgies_path)
+    expect(evaljs("Routes.budgie_path(1)")).to eq(routes.budgie_path(1))
+    expect(evaljs("Routes.budgy_path")).to eq(nil)
+    expect(evaljs("Routes.budgie_descendents_path(1)")).to eq(routes.budgie_descendents_path(1))
+  end
+
   context "with rails engines" do
     it "should support simple route" do
       expect(evaljs("Routes.blog_app_posts_path()")).to eq(blog_routes.posts_path())
@@ -284,7 +291,7 @@ describe JsRoutes, "compatibility with Rails"  do
     end
   end
 
-  context "when params" do
+  describe "required_params" do
     it "should show inbox spec" do
       expect(evaljs("Routes.inbox_path.required_params").to_a).to eq(["id"])
     end
@@ -293,4 +300,6 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.inbox_message_path.required_params").to_a).to eq(["inbox_id", "id"])
     end
   end
+
+
 end
