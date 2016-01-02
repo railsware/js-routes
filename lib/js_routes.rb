@@ -35,6 +35,7 @@ class JsRoutes
   }
 
   LAST_OPTIONS_KEY = "options".freeze
+  FILTERED_DEFAULT_PARTS = [:controller, :action]
 
   class Options < Struct.new(*DEFAULTS.keys)
     def to_hash
@@ -102,7 +103,7 @@ class JsRoutes
       "GEM_VERSION"         => JsRoutes::VERSION,
       "APP_CLASS"           => Rails.application.class.to_s,
       "NAMESPACE"           => @options[:namespace],
-      "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecated_default_format)),
+      "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecate_url_options)),
       "PREFIX"              => @options[:prefix] || "",
       "NODE_TYPES"          => json(NODE_TYPES),
       "SERIALIZER"          => @options[:serializer] || "null",
@@ -112,13 +113,26 @@ class JsRoutes
     end
   end
 
-  def deprecated_default_format
+  def deprecate_url_options
+    result = {}
     if @options.key?(:default_format)
       warn("default_format option is deprecated. Use default_url_options = { format: <format> } instead")
-      { format: @options[:default_format] }
-    else
-      {}
+      result.merge!(  format: @options[:default_format]  )
     end
+    if @options[:url_links].is_a?(String)
+      ActiveSupport::Deprecation.warn('js-routes url_links config value must be a boolean. Use default_url_options for specifying a default host.')
+
+      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::Parser.new.make_regexp(%w(http https))).nil?
+      uri = URI.parse(@options[:url_links])
+      default_port = uri.scheme == "https" ? 443 : 80
+      port = uri.port == default_port ? nil : uri.port
+      result.merge!(
+        host: uri.host,
+        port: port,
+        protocol: uri.scheme,
+      )
+    end
+    result
   end
 
   def generate!(file_name = nil)
@@ -190,32 +204,21 @@ class JsRoutes
   def route_js_arguments(route, parent_spec)
     required_parts = route.required_parts.clone
     optional_parts = route.parts - required_parts
-    [required_parts, optional_parts, serialize(route.path.spec, parent_spec)].map do |argument|
+    default_parts = route.defaults.reject do |part, _|
+      FILTERED_DEFAULT_PARTS.include?(part)
+    end
+    [
+      required_parts, optional_parts, serialize(route.path.spec, parent_spec), default_parts
+    ].map do |argument|
       json(argument)
     end.join(", ")
   end
 
   def generate_url_link(name, route_name, route_arguments, route)
     return "" unless @options[:url_links]
-    defaults = @options[:url_links] == true ? route.defaults.slice(:host, :port, :protocol) : deprecated_base_url
     <<-JS.strip!
-    #{generate_route_name(name, :url)}: Utils.route(#{route_arguments}, #{json(defaults)})
+    #{generate_route_name(name, :url)}: Utils.route(#{route_arguments}, true)
     JS
-  end
-
-  def deprecated_base_url
-    ActiveSupport::Deprecation.warn('js-routes url_links config value must be a boolean. Use default_url_options for specifying a default host.')
-
-
-    raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::Parser.new.make_regexp(%w(http https))).nil?
-    uri = URI.parse(@options[:url_links])
-    default_port = uri.scheme == "https" ? 443 : 80
-    port = uri.port == default_port ? nil : uri.port
-    {
-      host: uri.host,
-      port: port,
-      protocol: uri.scheme,
-    }
   end
 
   def generate_route_name(name, suffix)

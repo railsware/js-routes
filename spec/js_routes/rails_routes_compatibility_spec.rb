@@ -61,6 +61,16 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.budgie_descendents_path(1)")).to eq(routes.budgie_descendents_path(1))
   end
 
+  describe "when route has defaults" do
+    it "should support route default format" do
+      expect(evaljs("Routes.api_purchases_path()")).to eq(routes.api_purchases_path)
+    end
+
+    it "should support default format override" do
+      expect(evaljs("Routes.api_purchases_path({format: 'xml'})")).to eq(routes.api_purchases_path(format: 'xml'))
+    end
+  end
+
   context "with rails engines" do
     it "should support simple route" do
       expect(evaljs("Routes.blog_app_posts_path()")).to eq(blog_routes.posts_path())

@@ -116,12 +116,16 @@ def draw_routes
 
     get '/привет' => "foo#foo", :as => :hello
     get '(/o/:organization)/search/:q' => "foo#foo", as: :search
-
+      
     resources :sessions, :only => [:new, :create, :destroy], :protocol => 'https'
 
     get '/' => 'sso#login', host: 'sso.example.com', as: :sso
 
     resources :portals, :port => 8080
+
+    namespace :api, format: true, defaults: {format: 'json'} do
+      get "/purchases" => "purchases#index"
+    end
 
     resources :budgies do
       get "descendents"

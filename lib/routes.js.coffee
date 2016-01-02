@@ -100,11 +100,11 @@ Utils =
     if xs?.length > 0
       tap {}, (m) -> m[k] = v for k, v of x for x in xs
 
-  normalize_options: (url_defaults, required_parameters, optional_parts, actual_parameters) ->
+  normalize_options: (default_parts, required_parameters, optional_parts, actual_parameters) ->
     options = @extract_options(required_parameters.length, actual_parameters)
     if actual_parameters.length > required_parameters.length
       throw new Error("Too many parameters provided for path")
-    options = @merge(defaults.default_url_options, url_defaults, options)
+    options = @merge(defaults.default_url_options, default_parts, options)
     result = {}
     url_parameters = {}
     result['url_parameters'] = url_parameters
@@ -118,10 +118,10 @@ Utils =
       url_parameters[value] = actual_parameters[i]
     result
 
-  build_route: (required_parameters, optional_parts, route, url_defaults, args) ->
+  build_route: (required_parameters, optional_parts, route, default_parts, full_url, args) ->
     args = Array::slice.call(args)
 
-    options = @normalize_options(url_defaults, required_parameters, optional_parts, args)
+    options = @normalize_options(default_parts, required_parameters, optional_parts, args)
     parameters = options['url_parameters']
 
     # path
@@ -134,7 +134,7 @@ Utils =
       url += "?#{url_params}"
     # set anchor
     url += if options.anchor then "##{options.anchor}" else ""
-    if url_defaults
+    if full_url
       url = @route_url(options) + url
     url
 
@@ -231,9 +231,10 @@ Utils =
   #
   # route function: create route path function and add spec to it
   #
-  route: (required_parts, optional_parts, route_spec, url_defaults) ->
-    path_fn = ->
-      Utils.build_route(required_parts, optional_parts, route_spec, url_defaults, arguments)
+  route: (required_parts, optional_parts, route_spec, default_parts, full_url) ->
+    path_fn = -> Utils.build_route(
+      required_parts, optional_parts, route_spec, default_parts, full_url, arguments
+    )
     path_fn.required_params = required_parts
     path_fn.toString = -> Utils.build_path_spec(route_spec)
     path_fn
@@ -253,7 +254,7 @@ Utils =
     typeof window != 'undefined' && typeof window.location != 'undefined'
 
   current_host: ->
-    @has_location() && window.location.hostname
+    if @has_location() then window.location.hostname else null
 
   current_protocol: () ->
     if @has_location() && window.location.protocol != ''
