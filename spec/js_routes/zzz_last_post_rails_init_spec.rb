@@ -55,20 +55,11 @@ describe "after Rails initialization" do
       FileUtils.rm_f(TEST_ASSET_PATH)
     end
 
-    it "should have registered a preprocessor" do
-      pps = Rails.application.assets.preprocessors
-      js_pps = pps['application/javascript']
-      klass = sprockets_v3? ? 'LegacyProcProcessor' : 'Processor'
-      expect(js_pps.map(&:to_s)).to include("Sprockets::#{klass} (js-routes_dependent_on_routes)")
-    end
-
     context "the preprocessor" do
       before(:each) do
-        if sprockets_v3?
-          expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(Rails.root.join('config','routes.rb').to_s)
-        else
-          expect(ctx).to receive(:depend_on).with(Rails.root.join('config','routes.rb').to_s)
-        end
+        path = "file://#{Rails.root.join('config','routes.rb')}"
+        expect_any_instance_of(Sprockets::DirectiveProcessor).
+          to receive(:process_depend_on_directive).with(path)
       end
       let!(:ctx) do
         sprockets_context(Rails.application.assets,
