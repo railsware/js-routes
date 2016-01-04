@@ -58,8 +58,11 @@ describe "after Rails initialization" do
     context "the preprocessor" do
       before(:each) do
         path = "file://#{Rails.root.join('config','routes.rb')}"
-        expect_any_instance_of(Sprockets::DirectiveProcessor).
-          to receive(:process_depend_on_directive).with(path)
+        if sprockets_v3?
+          expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(path)
+        else
+          expect(ctx).to receive(:depend_on).with(path)
+        end
       end
       let!(:ctx) do
         sprockets_context(Rails.application.assets,
