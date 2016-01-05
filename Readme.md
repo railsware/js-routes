@@ -182,7 +182,7 @@ Heroku environment has a specific problems with setup. It is impossible to use a
 For example create routes.js.erb in assets folder with needed content:
 
 ``` erb
-<%= JsRoutes.generate({ options }) %>
+<%= JsRoutes.generate(options) %>
 ```
 
 This should just work.
