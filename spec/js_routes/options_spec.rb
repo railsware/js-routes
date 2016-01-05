@@ -140,6 +140,7 @@ describe JsRoutes, "options" do
 
 
     it "shouldn't require the format" do
+      pending if Rails.version < "4.0"
       expect(evaljs("Routes.json_only_path()")).to eq(routes.json_only_path(:format => 'json'))
     end
   end
