@@ -75,6 +75,10 @@ describe JsRoutes do
   end
 
   describe "compiled javascript asset" do
+    if JsRoutes::SPROCKETS3
+      let(:routes_path){ "file://#{Rails.root.join 'config', 'routes.rb'}" }
+      before { expect(self).to receive(:depend_on).with routes_path }
+    end
     subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }
     it "should have js routes code" do
       is_expected.to include("inbox_message_path: Utils.route([\"inbox_id\",\"id\"]")
