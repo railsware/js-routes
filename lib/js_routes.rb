@@ -196,7 +196,7 @@ class JsRoutes
     url_link = generate_url_link(name, route_name, route_arguments, route)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
-  // function(#{build_params(route.required_parts, true)})
+  // function(#{build_params(route.required_parts)})
   #{route_name}: Utils.route(#{route_arguments})#{",\n" + url_link if url_link.length > 0}
   JS
   end
@@ -231,12 +231,8 @@ class JsRoutes
     self.class.json(string)
   end
 
-  def build_params(required_parts, unprotected = false)
-    params = required_parts.map do |name|
-      # prepending each parameter name with underscore
-      # to prevent conflict with JS reserved words
-      unprotected ? name : "_#{name}"
-    end << LAST_OPTIONS_KEY
+  def build_params(required_parts)
+    params = required_parts + [LAST_OPTIONS_KEY]
     params.join(", ")
   end
 
