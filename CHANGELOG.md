@@ -3,6 +3,7 @@
 ## v1.2.2
 
 * Sprockets ~= 3.0 support
+* Support default parameters specified in route.rb file
 
 ## v1.2.1
 
