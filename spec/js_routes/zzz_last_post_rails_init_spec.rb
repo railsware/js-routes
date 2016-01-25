@@ -57,8 +57,7 @@ describe "after Rails initialization" do
 
     context "the preprocessor" do
       before(:each) do
-        path = Rails.root.join('config','routes.rb').to_s
-        path = "file://#{path}" if JsRoutes::SPROCKETS3
+        path = Rails.root.join('config','routes.rb')
         if sprockets_v3?
           expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(path)
         else
