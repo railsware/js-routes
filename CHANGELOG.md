@@ -1,5 +1,9 @@
 ## master
 
+## v1.2.3
+
+* Sprockets ~= 3.0 support
+
 ## v1.2.2
 
 * Sprockets ~= 3.0 support
