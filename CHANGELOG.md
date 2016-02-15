@@ -1,5 +1,9 @@
 ## master
 
+## v1.2.4
+
+* Additional bugfixes to support all versions of Sprockets: 2.x and 3.x
+
 ## v1.2.3
 
 * Sprockets ~= 3.0 support
