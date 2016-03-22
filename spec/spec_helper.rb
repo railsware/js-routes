@@ -131,10 +131,8 @@ def draw_routes
       get "descendents"
     end
 
-    constraints subdomain: 'backend' do
-      namespace :backend, path: '' do
-        root 'backend#index'
-      end
+    namespace :backend, path: '', constraints: {subdomain: 'backend'} do
+      root to: 'backend#index'
     end
 
   end
