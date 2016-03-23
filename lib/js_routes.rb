@@ -150,7 +150,7 @@ class JsRoutes
   protected
 
   def js_routes
-    js_routes = Rails.application.routes.named_routes.to_a.sort_by(&:to_s).flat_map do |_, route|
+    js_routes = Rails.application.routes.named_routes.to_a.sort_by(&:first).flat_map do |_, route|
       rails_engine_app = get_app_from_route(route)
       if rails_engine_app.respond_to?(:superclass) && rails_engine_app.superclass == Rails::Engine && !route.path.anchored
         rails_engine_app.routes.named_routes.map do |_, engine_route|
