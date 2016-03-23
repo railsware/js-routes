@@ -66,6 +66,10 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.api_purchases_path()")).to eq(routes.api_purchases_path)
     end
 
+    it 'should support route default subdomain' do
+      expect(evaljs("Routes.backend_root_path()")).to eq(routes.backend_root_path)
+    end
+
     it "should support default format override" do
       expect(evaljs("Routes.api_purchases_path({format: 'xml'})")).to eq(routes.api_purchases_path(format: 'xml'))
     end

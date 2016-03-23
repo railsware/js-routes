@@ -35,7 +35,7 @@ class JsRoutes
   }
 
   LAST_OPTIONS_KEY = "options".freeze
-  FILTERED_DEFAULT_PARTS = [:controller, :action]
+  FILTERED_DEFAULT_PARTS = [:controller, :action, :subdomain]
 
   class Options < Struct.new(*DEFAULTS.keys)
     def to_hash
