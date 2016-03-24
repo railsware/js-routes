@@ -1,5 +1,10 @@
 ## master
 
+## v1.2.5
+
+* Bugfix subdomain default parameter in routes #184
+* Bugfix infinite recursion in some specific route sets #183
+
 ## v1.2.4
 
 * Additional bugfixes to support all versions of Sprockets: 2.x and 3.x
