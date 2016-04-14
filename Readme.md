@@ -73,6 +73,12 @@ Available options:
   * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
   * Example: `MyApp.custom_serialize` - use completely custom serializer of your application.
 
+**Important:** If you've installed your application in a sub-path or sub-URI of your server instead of at the root, you need to create an initializer and set `config.prefix` to either the value of `Rails.application.config.relative_url_path` or a string literal containing the correct path prefix. If assets are precompiled, as in the production environment, you will need to set the `RAILS_RELATIVE_URL_ROOT` environment variable to the correct path prefix for your application. Eg., if your application's base URL is "https://appl.example.com/Application1", the command to precompile assets would be:
+
+```
+RAILS_RELATIVE_URL_ROOT=/Application1 RAILS_ENV=production bundle exec rake assets:precompile
+```
+
 ### Very Advanced Setup
 
 In case you need multiple route files for different parts of your application, you have to create the files manually.
