@@ -104,7 +104,7 @@ class JsRoutes
       "APP_CLASS"           => Rails.application.class.to_s,
       "NAMESPACE"           => @options[:namespace],
       "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecate_url_options)),
-      "PREFIX"              => @options[:prefix] || Rails.application.config.relative_url_root,
+      "PREFIX"              => @options[:prefix] || Rails.application.config.relative_url_root || "",
       "NODE_TYPES"          => json(NODE_TYPES),
       "SERIALIZER"          => @options[:serializer] || "null",
       "ROUTES"              => js_routes,
