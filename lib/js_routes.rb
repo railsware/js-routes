@@ -15,7 +15,7 @@ class JsRoutes
     exclude: [],
     include: //,
     file: DEFAULT_PATH,
-    prefix: nil,
+    prefix: Rails.application.config.relative_url_root,
     url_links: false,
     camel_case: false,
     default_url_options: {},
