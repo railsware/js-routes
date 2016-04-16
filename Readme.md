@@ -58,7 +58,7 @@ Available options:
   * Default: `Routes`
 * `prefix` - String representing a url path to prepend to all paths.
   * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only.
-  * Default: blank
+  * Default: Rails.application.config.relative_url_root
 * `camel_case` (version >= 0.8.8) - Generate camel case route names.
   * Default: false
 * `url_links` (version >= 0.8.9) - Generate `*_url` helpers (in addition to the default `*_path` helpers).
@@ -108,6 +108,15 @@ JsRoutes.generate!("#{path}/app_routes.js", :namespace => "AppRoutes", :exclude 
 JsRoutes.generate!("#{path}/adm_routes.js", :namespace => "AdmRoutes", :include => /^admin_/)
 JsRoutes.generate!("#{path}/api_routes.js", :namespace => "ApiRoutes", :include => /^api_/, :default_url_options => {:format => "json"})
 ```
+
+### Rails relative URL root
+
+If you've installed your application in a sub-path or sub-URI of your server instead of at the root, you need to set the `RAILS_RELATIVE_URL_ROOT` environment variable to the correct path prefix for your application when you precompile assets. Eg., if your application's base URL is "https://appl.example.com/Application1", the command to precompile assets would be:
+```
+RAILS_RELATIVE_URL_ROOT=/Application1 RAILS_ENV=production bundle exec rake assets:precompile
+```
+The environment variable is only needed for precompilation of assets, at any other time (eg. when assets are compiled on-the-fly as in the development environment) Rails will set the relative URL root correctly on it's own.
+
 
 ## Usage
 
