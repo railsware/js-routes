@@ -5,7 +5,7 @@ $:.unshift(File.dirname(__FILE__))
 require 'rspec'
 require 'rails/all'
 require 'js-routes'
-require "active_support/core_ext/hash/slice"
+require 'active_support/core_ext/hash/slice'
 require 'coffee-script'
 # fix ends_with? error for rails 3.2
 require 'active_support/core_ext/string/starts_ends_with' if 3 == Rails::VERSION::MAJOR
