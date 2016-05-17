@@ -104,6 +104,7 @@ def draw_routes
     get "/:controller(/:action(/:id))" => "classic#classic", :as => :classic
 
     get "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
+    get '/other_optional(/*optional_id)' => 'foo#foo', :as => :foo_all
 
     get 'books/*section/:title' => 'books#show', :as => :book
     get 'books/:title/*section' => 'books#show', :as => :book_title

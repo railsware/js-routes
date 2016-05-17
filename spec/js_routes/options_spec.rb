@@ -186,9 +186,18 @@ describe JsRoutes, "options" do
 
   describe "default_url_options" do
     context "with optional route parts" do
-      let(:_options) { {:default_url_options => {:optional_id => "12", :format => "json"}}}
-      it "should use this opions to fill optional parameters" do
-        expect(evaljs("Routes.things_path()")).to eq(routes.things_path(:optional_id => 12, :format => "json"))
+      context "provided" do
+        let(:_options) { { :default_url_options => { :optional_id => "12", :format => "json" } } }
+        it "should use this opions to fill optional parameters" do
+          expect(evaljs("Routes.things_path()")).to eq(routes.things_path(:optional_id => 12, :format => "json"))
+        end
+      end
+
+      context "not provided" do
+        let(:_options) { { :default_url_options => { :format => "json" } } }
+        it "breaks" do
+          expect(evaljs("Routes.foo_all_path()")).to eq(routes.foo_all_path(:format => "json"))
+        end
       end
     end
 
