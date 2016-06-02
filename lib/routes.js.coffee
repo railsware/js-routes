@@ -126,7 +126,7 @@ Utils =
 
     # path
     result = "#{@get_prefix()}#{@visit(route, parameters)}"
-    url = Utils.clean_path("#{result}")
+    url = Utils.clean_path(result)
     # set trailing_slash
     url = url.replace(/(.*?)[\/]?$/, "$1/") if options['trailing_slash'] is true
     # set additional url params
