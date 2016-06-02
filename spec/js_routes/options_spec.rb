@@ -421,14 +421,7 @@ describe JsRoutes, "options" do
       end
 
       before do
-        jscontext['window'] = {
-          :location => {
-            :protocol => current_protocol,
-            :hostname => current_hostname,
-            :port => current_port,
-            :host => current_host
-          }
-        }
+        jscontext.eval("window = {'location': {'protocol': '#{current_protocol}', 'hostname': '#{current_hostname}', 'port': '#{current_port}', 'host': '#{current_host}'}}")
       end
 
       context "without specifying a default host" do

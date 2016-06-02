@@ -14,7 +14,7 @@ if defined?(JRUBY_VERSION)
   require 'rhino'
   JS_LIB_CLASS = Rhino
 else
-  require "v8"
+  require 'v8'
   JS_LIB_CLASS = V8
 end
 

@@ -1,5 +1,8 @@
 ## master
 
+* Drop support 1.9.3
+* Add helper for indexOf, if no native implementation in JS engine
+
 ## v1.2.6
 
 * Use default prefix from `Rails.application.config.relative_url_root` #186

@@ -29,9 +29,7 @@ Gem::Specification.new do |s|
   if defined?(JRUBY_VERSION)
     s.add_development_dependency(%q<therubyrhino>, [">= 2.0.4"])
   else
-    if RUBY_VERSION >= "2.0.0"
-      s.add_development_dependency(%q<byebug>)
-    end
+    s.add_development_dependency(%q<byebug>)
     s.add_development_dependency(%q<therubyracer>, [">= 0.12.1"])
   end
 end
