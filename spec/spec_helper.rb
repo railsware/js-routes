@@ -168,11 +168,16 @@ RSpec.configure do |config|
 
     def inspectify(value)
       case value
+      when V8::Array
+        value.map do |v|
+          inspectify(v)
+        end
       when V8::Object
+        require 'byebug'; byebug
         value.to_h.map do |k,v|
           [k, inspectify(v)]
         end.to_h
-      when String, nil
+      when String, nil, Fixnum, FalseClass, TrueClass
         value
       else
         raise "wtf #{value.class}?"
