@@ -1,5 +1,10 @@
 ## master
 
+## v1.2.6
+
+* Use default prefix from `Rails.application.config.relative_url_root` #186
+* Bugfix route globbing with optional fragments bug #191
+
 ## v1.2.5
 
 * Bugfix subdomain default parameter in routes #184
