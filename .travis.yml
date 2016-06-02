@@ -1,8 +1,10 @@
 language: ruby
 cache: bundler
 
+before_install:
+  - gem install bundler # need for jruby and ruby-head
+
 rvm:
-  - 1.9.3
   - 2.0
   - 2.1
   - 2.2

@@ -109,7 +109,7 @@ Utils =
     url_parameters = {}
     result['url_parameters'] = url_parameters
     for own key, value of options
-      if ReservedOptions.indexOf(key) >= 0
+      if @indexOf(ReservedOptions, key) >= 0
         result[key] = value
       else
         url_parameters[key] = value
@@ -183,8 +183,7 @@ Utils =
         throw new Error("Unknown Rails node type")
 
 
-  is_optional_node: (node) ->
-    node == NodeTypes.STAR or node == NodeTypes.SYMBOL or node == NodeTypes.CAT
+  is_optional_node: (node) -> @indexOf([NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT], node) >= 0
 
   #
   # This method build spec for route
@@ -310,6 +309,13 @@ Utils =
     return root.jQuery.type(obj) if root.jQuery and root.jQuery.type?
     return "#{obj}" unless obj?
     (if typeof obj is "object" or typeof obj is "function" then @_classToType()[Object::toString.call(obj)] or "object" else typeof obj)
+
+  # indexOf helper
+  indexOf: (array, element) -> if Array::indexOf then array.indexOf(element) else @indexOfImplementation(array, element)
+  indexOfImplementation: (array, element) ->
+    result = -1
+    (result = i for el, i in array when el is element)
+    result
 
 # globalJsObject
 createGlobalJsRoutesObject = ->
