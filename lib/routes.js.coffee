@@ -161,8 +161,9 @@ Utils =
       when NodeTypes.CAT
         left_part = @visit(left, parameters, optional)
         right_part = @visit(right, parameters, optional)
-        return "" if optional and (((left[0]  == NodeTypes.SYMBOL or left[0]  == NodeTypes.CAT) and not left_part) or
-                                   ((right[0] == NodeTypes.SYMBOL or right[0] == NodeTypes.CAT) and not right_part))
+        if optional and ((@is_optional_node(left[0]) and not left_part) or
+                                     ((@is_optional_node(right[0])) and not right_part))
+          return ""
         "#{left_part}#{right_part}"
       when NodeTypes.SYMBOL
         value = parameters[left]
@@ -180,6 +181,10 @@ Utils =
       # when NodeTypes.OR:
       else
         throw new Error("Unknown Rails node type")
+
+
+  is_optional_node: (node) ->
+    node == NodeTypes.STAR or node == NodeTypes.SYMBOL or node == NodeTypes.CAT
 
   #
   # This method build spec for route
