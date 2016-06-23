@@ -151,17 +151,20 @@ class JsRoutes
 
   def js_routes
     js_routes = Rails.application.routes.named_routes.to_a.sort_by(&:first).flat_map do |_, route|
-      rails_engine_app = get_app_from_route(route)
-      if rails_engine_app.respond_to?(:superclass) && rails_engine_app.superclass == Rails::Engine && !route.path.anchored
-        rails_engine_app.routes.named_routes.map do |_, engine_route|
-          build_route_if_match(engine_route, route)
-        end
-      else
-        build_route_if_match(route)
-      end
+      [build_route_if_match(route)] + mounted_app_routes(route)
     end.compact
-
     "{\n" + js_routes.join(",\n") + "}\n"
+  end
+
+  def mounted_app_routes(route)
+    rails_engine_app = get_app_from_route(route)
+    if rails_engine_app.respond_to?(:superclass) && rails_engine_app.superclass == Rails::Engine && !route.path.anchored
+      rails_engine_app.routes.named_routes.map do |_, engine_route|
+        build_route_if_match(engine_route, route)
+      end
+    else
+      []
+    end
   end
 
   def get_app_from_route(route)

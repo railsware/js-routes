@@ -80,6 +80,10 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.blog_app_posts_path()")).to eq(blog_routes.posts_path())
     end
 
+    it "should support root route" do
+      expect(evaljs("Routes.blog_app_path()")).to eq(routes.blog_app_path())
+    end
+
     it "should support route with parameters" do
       expect(evaljs("Routes.blog_app_post_path(1)")).to eq(blog_routes.post_path(1))
     end
