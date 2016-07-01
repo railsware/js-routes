@@ -2,6 +2,7 @@
 
 * Drop support 1.9.3
 * Add helper for indexOf, if no native implementation in JS engine
+* Add sprockets3 compatibility
 
 ## v1.2.6
 
