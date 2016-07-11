@@ -36,6 +36,7 @@ class JsRoutes
 
   LAST_OPTIONS_KEY = "options".freeze
   FILTERED_DEFAULT_PARTS = [:controller, :action, :subdomain]
+  URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain]
 
   class Options < Struct.new(*DEFAULTS.keys)
     def to_hash
@@ -207,8 +208,8 @@ class JsRoutes
   def route_js_arguments(route, parent_spec)
     required_parts = route.required_parts.clone
     optional_parts = route.parts - required_parts
-    default_parts = route.defaults.reject do |part, _|
-      FILTERED_DEFAULT_PARTS.include?(part)
+    default_parts = route.defaults.select do |part, _|
+      FILTERED_DEFAULT_PARTS.exclude?(part) && URL_OPTIONS.include?(part) || required_parts.include?(part)
     end
     [
       required_parts, optional_parts, serialize(route.path.spec, parent_spec), default_parts
