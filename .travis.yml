@@ -7,7 +7,7 @@ before_install:
 rvm:
   - 2.0
   - 2.1
-  - 2.2
+  - 2.2.5
   - 2.3.1
   - jruby-19mode
   - ruby-head
@@ -21,6 +21,8 @@ gemfile:
   - gemfiles/rails41_sprockets3.gemfile
   - gemfiles/rails42.gemfile
   - gemfiles/rails42_sprockets3.gemfile
+  - gemfiles/rails50.gemfile
+  - gemfiles/rails50_sprockets3.gemfile
 
 sudo: false
 
@@ -37,3 +39,13 @@ matrix:
     - rvm: jruby-19mode
     - rvm: ruby-head
     - rvm: jruby-head
+    - gemfile: gemfiles/rails50.gemfile
+  exclude:
+    - rvm: 2.0
+      gemfile: gemfiles/rails50.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/rails50_sprockets3.gemfile
+    - rvm: 2.1
+      gemfile: gemfiles/rails50.gemfile
+    - rvm: 2.1
+      gemfile: gemfiles/rails50_sprockets3.gemfile
