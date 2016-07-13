@@ -73,6 +73,10 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should support default format override" do
       expect(evaljs("Routes.api_purchases_path({format: 'xml'})")).to eq(routes.api_purchases_path(format: 'xml'))
     end
+
+    it "doesn't apply defaults to path" do
+      expect(evaljs("Routes.with_defaults_path()")).to eq(routes.with_defaults_path)
+    end
   end
 
   context "with rails engines" do

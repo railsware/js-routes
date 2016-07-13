@@ -124,6 +124,8 @@ def draw_routes
 
     resources :portals, :port => 8080
 
+    get '/with_defaults' => 'foo#foo', defaults: { bar: 'tested', format: :json }, format: :true
+
     namespace :api, format: true, defaults: {format: 'json'} do
       get "/purchases" => "purchases#index"
     end
