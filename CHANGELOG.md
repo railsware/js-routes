@@ -1,8 +1,11 @@
 ## master
 
+## v1.2.7
+
 * Drop support 1.9.3
 * Add helper for indexOf, if no native implementation in JS engine
 * Add sprockets3 compatibility
+* Bugfix domain defaults to path #197
 
 ## v1.2.6
 
