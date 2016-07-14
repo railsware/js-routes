@@ -16,9 +16,7 @@ gem "js-routes"
 Require js routes file in `application.js` or other bundle
 
 ``` js
-/*
-= require js-routes
-*/
+//= require js-routes
 ```
 
 Also in order to flush asset pipeline cache sometimes you might need to run:
