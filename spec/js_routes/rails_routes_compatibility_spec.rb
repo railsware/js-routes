@@ -67,6 +67,9 @@ describe JsRoutes, "compatibility with Rails"  do
     end
 
     it 'should support route default subdomain' do
+      # root inside namespace is broken
+      # https://github.com/rails/rails/pull/23235
+      pending if Rails.version == '5.0.0'
       expect(evaljs("Routes.backend_root_path()")).to eq(routes.backend_root_path)
     end
 
