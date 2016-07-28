@@ -1,30 +1,31 @@
-require 'sprockets/version'
+class JsRoutesSprocketsExtension
+  def initialize(filename, &block)
+    @filename = filename
+    @source   = block.call
+  end
 
-class JsRoutes
-  SPROCKETS3 = Gem::Version.new(Sprockets::VERSION) >= Gem::Version.new('3.0.0')
-  class Engine < ::Rails::Engine
+  def render(context, empty_hash_wtf)
+    self.class.run(@filename, @source, context)
+  end
 
-    if SPROCKETS3
-      initializer 'js-routes.dependent_on_routes', after: :engines_blank_point, before: :finisher_hook do
-        Rails.application.config.assets.configure do |config|
-          routes = Rails.root.join('config', 'routes.rb').to_s
-          config.register_preprocessor 'application/javascript', :'js-routes_dependent_on_routes' do |ctx,data|
-            ctx.depend_on(routes) if ctx.logical_path == 'js-routes'
-            data
-          end
-        end
-      end
-    else
-      initializer 'js-routes.dependent_on_routes', after: "sprockets.environment" do
+  def self.run(filename, source, context)
+    routes = Rails.root.join('config', 'routes.rb').to_s
+    context.depend_on(routes) if context.logical_path == 'js-routes'
+    source
+  end
 
-        if Rails.application.assets.respond_to?(:register_preprocessor)
-          routes = Rails.root.join('config', 'routes.rb').to_s
-          Rails.application.assets.register_preprocessor 'application/javascript', :'js-routes_dependent_on_routes' do |ctx,data|
-            ctx.depend_on(routes) if ctx.logical_path == 'js-routes'
-            data
-          end
-        end
-      end
-    end
+  def self.call(input)
+    filename = input[:filename]
+    source   = input[:data]
+    context  = input[:environment].context_class.new(input)
+
+    result = run(filename, source, context)
+    { data: result }
+  end
+end
+
+class Engine < ::Rails::Engine
+  initializer 'js-routes.dependent_on_routes', after: :engines_blank_point, before: :finisher_hook do
+    Rails.application.config.assets.register_preprocessor 'application/javascript', JsRoutesSprocketsExtension
   end
 end
