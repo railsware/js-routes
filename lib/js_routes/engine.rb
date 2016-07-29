@@ -28,6 +28,7 @@ end
 
 
 class Engine < ::Rails::Engine
+  require 'sprockets/version'
   sprockets3       = Gem::Version.new(Sprockets::VERSION) >= Gem::Version.new('3.0.0')
   initializer_args = if sprockets3
                        { after: :engines_blank_point, before: :finisher_hook }
@@ -36,6 +37,11 @@ class Engine < ::Rails::Engine
                      end
 
   initializer 'js-routes.dependent_on_routes', initializer_args do
-    Sprockets.register_preprocessor 'application/javascript', JsRoutesSprocketsExtension
+    env = if sprockets3
+            Sprockets
+          else
+            Rails.application.assets
+          end
+    env.register_preprocessor 'application/javascript', JsRoutesSprocketsExtension
   end
 end
