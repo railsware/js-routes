@@ -1,5 +1,9 @@
 ## master
 
+## v1.2.8
+
+* Bugfix warning on Sprockets 4.0 #202
+
 ## v1.2.7
 
 * Drop support 1.9.3
