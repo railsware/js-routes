@@ -30,13 +30,13 @@ end
 class Engine < ::Rails::Engine
   require 'sprockets/version'
   v2                = Gem::Dependency.new('', ' ~> 2')
-  v3                = Gem::Dependency.new('', ' ~> 3')
-  v4                = Gem::Dependency.new('', ' >= 4')
+  v3                = Gem::Dependency.new('', ' >= 2' ,' < 3.7')
+  v37                = Gem::Dependency.new('', ' >= 3.7')
   sprockets_version = Gem::Version.new(Sprockets::VERSION).release
   initializer_args  = case sprockets_version
                         when -> (v) { v2.match?('', v) }
                           { after: "sprockets.environment" }
-                        when -> (v) { v3.match?('', v) || v4.match?('', v) }
+                        when -> (v) { v3.match?('', v) || v37.match?('', v) }
                           { after: :engines_blank_point, before: :finisher_hook }
                         else
                           raise StandardError, "Sprockets version #{sprockets_version} is not supported"
@@ -60,7 +60,7 @@ class Engine < ::Rails::Engine
             data
           end
         end
-      when -> (v) { v4.match?('', v) }
+      when -> (v) { v37.match?('', v) }
         Sprockets.register_preprocessor 'application/javascript', JsRoutesSprocketsExtension
       else
         raise StandardError, "Sprockets version #{sprockets_version} is not supported"
