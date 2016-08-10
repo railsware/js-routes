@@ -30,7 +30,7 @@ end
 class Engine < ::Rails::Engine
   require 'sprockets/version'
   v2                = Gem::Dependency.new('', ' ~> 2')
-  v3                = Gem::Dependency.new('', ' >= 2' ,' < 3.7')
+  v3                = Gem::Dependency.new('', ' >= 3' ,' < 3.7')
   v37                = Gem::Dependency.new('', ' >= 3.7')
   sprockets_version = Gem::Version.new(Sprockets::VERSION).release
   initializer_args  = case sprockets_version
