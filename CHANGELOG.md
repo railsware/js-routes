@@ -1,5 +1,9 @@
 ## master
 
+## v1.2.9
+
+* Fixed deprecation varning on Sprockets 3.7
+
 ## v1.2.8
 
 * Bugfix warning on Sprockets 4.0 #202
