@@ -476,4 +476,14 @@ describe JsRoutes, "options" do
       end
     end
   end
+
+  describe "special_options_key" do
+    let(:_options) { { special_options_key: :__options__ } }
+    it "can be redefined" do
+      expect {
+        expect(evaljs("Routes.inbox_message_path({inbox_id: 1, id: 2, _options: true})")).to eq("")
+      }.to raise_error(js_error_class)
+      expect(evaljs("Routes.inbox_message_path({inbox_id: 1, id: 2, __options__: true})")).to eq(routes.inbox_message_path(inbox_id: 1, id: 2))
+    end
+  end
 end

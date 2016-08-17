@@ -20,7 +20,8 @@ class JsRoutes
     camel_case: false,
     default_url_options: {},
     compact: false,
-    serializer: nil
+    serializer: nil,
+    special_options_key: "_options",
   }
 
   NODE_TYPES = {
@@ -107,8 +108,9 @@ class JsRoutes
       "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecate_url_options)),
       "PREFIX"              => @options[:prefix] || Rails.application.config.relative_url_root || "",
       "NODE_TYPES"          => json(NODE_TYPES),
-      "SERIALIZER"          => @options[:serializer] || "null",
+      "SERIALIZER"          => @options[:serializer] || json(nil),
       "ROUTES"              => js_routes,
+      "SPECIAL_OPTIONS_KEY" => @options[:special_options_key].to_s
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
       js.gsub!(key, value)
     end

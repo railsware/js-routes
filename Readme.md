@@ -71,6 +71,10 @@ Available options:
   * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
   * Example: `MyApp.custom_serialize` - use completely custom serializer of your application.
 
+* `special_options_key` - a special key that helps js-routes to destinguish serialized model from options hash
+  * This options is required because JS doesn't provide a difference between an object and a hash
+  * Default: `_options`
+
 ### Very Advanced Setup
 
 In case you need multiple route files for different parts of your application, you have to create the files manually.
@@ -167,6 +171,22 @@ Route function also contain inside attribute `required_params` required param na
 Routes.users_path.required_params // => []
 Routes.user_path.required_params // => ['id']
 ```
+
+
+## Rails Compatibilities
+
+JsRoutes ties to be as close as possible to rails behaviour in all aspects of routing API.
+Please make and issue in case of any incomtibilities found outside of described below.
+
+### Object and Hash distinction issue
+
+Sometimes the destinction between JS Hash and Object can not be found by js-routes.
+In this case you would need to pass a special key to help:
+
+``` js
+Routes.company_project_path({company_id: 1, id: 2, _options: true}) // => "/companies/1/projects/2"
+```
+
 
 ## What about security?
 

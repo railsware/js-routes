@@ -12,6 +12,7 @@ defaults =
   default_url_options: DEFAULT_URL_OPTIONS
 
 NodeTypes = NODE_TYPES
+SpecialOptionsKey = "SPECIAL_OPTIONS_KEY"
 
 ReservedOptions = [
   'anchor'
@@ -64,13 +65,14 @@ Utils =
   extract_options: (number_of_params, args) ->
     last_el = args[args.length - 1]
     if (args.length > number_of_params and last_el == undefined) or(last_el? and "object" is @get_object_type(last_el) and !@looks_like_serialized_model(last_el))
-      args.pop() || {}
+      options = args.pop() || {}
+      delete options[SpecialOptionsKey]
+      options
     else
       {}
 
   looks_like_serialized_model: (object) ->
-    # consider object a model if it have a path identifier properties like id and to_param
-    "id" of object or "to_param" of object
+    !object[SpecialOptionsKey] and ("id" of object or "to_param" of object)
 
 
   path_identifier: (object) ->

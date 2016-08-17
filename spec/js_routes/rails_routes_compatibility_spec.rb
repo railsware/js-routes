@@ -18,14 +18,6 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.inbox_path(0)")).to eq(routes.inbox_path(0))
   end
 
-  it "should support 0 as a to_param option" do
-    expect(evaljs("Routes.inbox_path({to_param: 0})")).to eq(routes.inbox_path(0))
-  end
-
-  it "should support 0 as an id option" do
-    expect(evaljs("Routes.inbox_path({id: 0})")).to eq(routes.inbox_path(0))
-  end
-
   it "should generate nested routing with one parameter" do
     expect(evaljs("Routes.inbox_messages_path(1)")).to eq(routes.inbox_messages_path(1))
   end
@@ -253,7 +245,27 @@ describe JsRoutes, "compatibility with Rails"  do
 
   context "when arguments are objects" do
 
-    let(:inbox) {Struct.new(:id, :to_param).new(1,"my")}
+    let(:klass) { Struct.new(:id, :to_param) }
+    let(:inbox) { klass.new(1,"my") }
+
+    it "should support 0 as a to_param option" do
+      expect(evaljs("Routes.inbox_path({to_param: 0})")).to eq(routes.inbox_path(0))
+    end
+
+    it "should check for options special key" do
+      expect(evaljs("Routes.inbox_path({id: 7, q: 'hello', _options: true})")).to eq(routes.inbox_path(id: 7, q: 'hello'))
+      expect {
+        evaljs("Routes.inbox_path({to_param: 7, _options: true})")
+      }.to raise_error(js_error_class)
+      expect(evaljs("Routes.inbox_message_path(5, {id: 7, q: 'hello', _options: true})")).to eq(routes.inbox_message_path(5, id: 7, q: 'hello'))
+    end
+
+    it "should check for options special key" do
+    end
+
+    it "should support 0 as an id option" do
+      expect(evaljs("Routes.inbox_path({id: 0})")).to eq(routes.inbox_path(0))
+    end
 
     it "should use id property of the object in path" do
       expect(evaljs("Routes.inbox_path({id: 1})")).to eq(routes.inbox_path(1))
