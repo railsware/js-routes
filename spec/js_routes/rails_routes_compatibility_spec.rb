@@ -61,7 +61,7 @@ describe JsRoutes, "compatibility with Rails"  do
     it 'should support route default subdomain' do
       # root inside namespace is broken
       # https://github.com/rails/rails/pull/23235
-      pending if Rails.version == '5.0.0'
+      pending if Rails.version >= '5.0.0' && Rails.version <= "5.0.1"
       expect(evaljs("Routes.backend_root_path()")).to eq(routes.backend_root_path)
     end
 
@@ -207,8 +207,11 @@ describe JsRoutes, "compatibility with Rails"  do
       end
 
       context "on nested optional parts" do
-        it "should include everything that is not optional" do
-          expect(evaljs("Routes.classic_path({controller: 'classic', action: 'edit'})")).to eq(routes.classic_path(controller: :classic, action: :edit))
+        if Rails.version <= "5.0.0"
+          # this type of routing is deprecated
+          it "should include everything that is not optional" do
+            expect(evaljs("Routes.classic_path({controller: 'classic', action: 'edit'})")).to eq(routes.classic_path(controller: :classic, action: :edit))
+          end
         end
       end
     end

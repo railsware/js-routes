@@ -29,7 +29,9 @@ def draw_routes
       resources :things
     end
 
-    get "/:controller(/:action(/:id))" => "classic#classic", :as => :classic
+    if Rails.version < "5.0.0"
+      get "/:controller(/:action(/:id))" => "classic#classic", :as => :classic
+    end
 
     get "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
     get '/other_optional(/*optional_id)' => 'foo#foo', :as => :foo_all
