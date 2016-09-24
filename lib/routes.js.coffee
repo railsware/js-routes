@@ -64,7 +64,7 @@ Utils =
 
   extract_options: (number_of_params, args) ->
     last_el = args[args.length - 1]
-    if (args.length > number_of_params and last_el == undefined) or(last_el? and "object" is @get_object_type(last_el) and !@looks_like_serialized_model(last_el))
+    if (args.length > number_of_params and last_el == undefined) or (last_el? and "object" is @get_object_type(last_el) and !@looks_like_serialized_model(last_el))
       options = args.pop() || {}
       delete options[SpecialOptionsKey]
       options
@@ -82,8 +82,10 @@ Utils =
     property = object
     if @get_object_type(object) is "object"
       if "to_param" of object
+        throw new ParameterMissing("Route parameter missing: to_param") unless object.to_param?
         property = object.to_param
       else if "id" of object
+        throw new ParameterMissing("Route parameter missing: id") unless object.id?
         property = object.id
       else
         property = object

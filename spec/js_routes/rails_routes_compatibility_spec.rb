@@ -235,6 +235,18 @@ describe JsRoutes, "compatibility with Rails"  do
         evaljs("Routes.inbox_path(1,2)")
       }.to raise_error(js_error_class)
     end
+
+    it "should throw Exceptions if when pass id with null" do
+      expect {
+        evaljs("Routes.inbox_path({id: null})")
+      }.to raise_error(js_error_class)
+    end
+
+    it "should throw Exceptions if when pass to_param with null" do
+      expect {
+        evaljs("Routes.inbox_path({to_param: null})")
+      }.to raise_error(js_error_class)
+    end
   end
 
   context "when javascript engine without Array#indexOf is used" do
