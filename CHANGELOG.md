@@ -1,5 +1,9 @@
 ## master
 
+## v1.3.0
+
+* Introduce the special _options key. Fixes #86
+
 ## v1.2.9
 
 * Fixed deprecation varning on Sprockets 3.7
