@@ -44,24 +44,15 @@ class Engine < ::Rails::Engine
 
   initializer 'js-routes.dependent_on_routes', initializer_args do
     case sprockets_version
-      when -> (v) { v2.match?('', v) }
-        if Rails.application.assets.respond_to?(:register_preprocessor)
-          routes = Rails.root.join('config', 'routes.rb').to_s
-          Rails.application.assets.register_preprocessor 'application/javascript', :'js-routes_dependent_on_routes' do |ctx, data|
-            ctx.depend_on(routes) if ctx.logical_path == 'js-routes'
-            data
-          end
-        end
-      when -> (v) { v3.match?('', v) }
+      when  -> (v) { v2.match?('', v) },
+            -> (v) { v3.match?('', v) },
+            -> (v) { v37.match?('', v) }
         Rails.application.config.assets.configure do |config|
-          routes = Rails.root.join('config', 'routes.rb').to_s
-          config.register_preprocessor 'application/javascript', :'js-routes_dependent_on_routes' do |ctx, data|
-            ctx.depend_on(routes) if ctx.logical_path == 'js-routes'
-            data
-          end
+          config.register_preprocessor(
+            "application/javascript",
+            JsRoutesSprocketsExtension,
+          )
         end
-      when -> (v) { v37.match?('', v) }
-        Sprockets.register_preprocessor 'application/javascript', JsRoutesSprocketsExtension
       else
         raise StandardError, "Sprockets version #{sprockets_version} is not supported"
     end
