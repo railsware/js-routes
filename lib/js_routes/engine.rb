@@ -42,19 +42,34 @@ class Engine < ::Rails::Engine
                           raise StandardError, "Sprockets version #{sprockets_version} is not supported"
                       end
 
+  is_running_rails = defined?(Rails) && Rails.respond_to?(:version)
+  is_running_rails_32 = is_running_rails && Rails.version.match(/3\.2/)
+
   initializer 'js-routes.dependent_on_routes', initializer_args do
     case sprockets_version
       when  -> (v) { v2.match?('', v) },
             -> (v) { v3.match?('', v) },
             -> (v) { v37.match?('', v) }
+
+      # It seems rails 3.2 is not working if
+      # `Rails.application.config.assets.configure` is used for
+      # registering preprocessor
+      if is_running_rails_32
+        Rails.application.assets.register_preprocessor(
+          "application/javascript",
+          JsRoutesSprocketsExtension,
+        )
+      else
+        # Other rails version, assumed newer
         Rails.application.config.assets.configure do |config|
           config.register_preprocessor(
             "application/javascript",
             JsRoutesSprocketsExtension,
           )
         end
-      else
-        raise StandardError, "Sprockets version #{sprockets_version} is not supported"
+      end
+    else
+      raise StandardError, "Sprockets version #{sprockets_version} is not supported"
     end
   end
 end
