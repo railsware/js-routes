@@ -486,4 +486,12 @@ describe JsRoutes, "options" do
       expect(evaljs("Routes.inbox_message_path({inbox_id: 1, id: 2, __options__: true})")).to eq(routes.inbox_message_path(inbox_id: 1, id: 2))
     end
   end
+
+  describe "when application is specified" do
+    let(:_options) { {:application => BlogEngine::Engine} }
+
+    it "should include specified engine route" do
+      expect(evaljs("Routes.posts_path()")).not_to be_nil
+    end
+  end
 end
