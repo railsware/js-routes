@@ -103,7 +103,7 @@ class JsRoutes
   def generate
     {
       "GEM_VERSION"         => JsRoutes::VERSION,
-      "APP_CLASS"           => Rails.application.class.to_s,
+      "APP_CLASS"           => application.class.to_s,
       "NAMESPACE"           => @options[:namespace],
       "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecate_url_options)),
       "PREFIX"              => @options[:prefix] || Rails.application.config.relative_url_root || "",
@@ -152,8 +152,12 @@ class JsRoutes
 
   protected
 
+  def application
+    @options[:application] || Rails.application
+  end
+
   def js_routes
-    js_routes = Rails.application.routes.named_routes.to_a.sort_by(&:first).flat_map do |_, route|
+    js_routes = application.routes.named_routes.to_a.sort_by(&:first).flat_map do |_, route|
       [build_route_if_match(route)] + mounted_app_routes(route)
     end.compact
     "{\n" + js_routes.join(",\n") + "}\n"
