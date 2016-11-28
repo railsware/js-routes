@@ -61,11 +61,6 @@ class JsRoutes
     end
 
     def generate(opts = {})
-      # Ensure routes are loaded. If they're not, load them.
-      if Rails.application.routes.named_routes.to_a.empty?
-        Rails.application.reload_routes!
-      end
-
       new(opts).generate
     end
 
@@ -101,6 +96,11 @@ class JsRoutes
   end
 
   def generate
+    # Ensure routes are loaded. If they're not, load them.
+    if named_routes.to_a.empty? && application.respond_to?(:reload_routes!)
+      application.reload_routes!
+    end
+
     {
       "GEM_VERSION"         => JsRoutes::VERSION,
       "APP_CLASS"           => application.class.to_s,
@@ -156,8 +156,12 @@ class JsRoutes
     @options[:application] || Rails.application
   end
 
+  def named_routes
+    application.routes.named_routes.to_a
+  end
+
   def js_routes
-    js_routes = application.routes.named_routes.to_a.sort_by(&:first).flat_map do |_, route|
+    js_routes = named_routes.sort_by(&:first).flat_map do |_, route|
       [build_route_if_match(route)] + mounted_app_routes(route)
     end.compact
     "{\n" + js_routes.join(",\n") + "}\n"

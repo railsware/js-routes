@@ -72,8 +72,11 @@ Available options:
   * Example: `MyApp.custom_serialize` - use completely custom serializer of your application.
 
 * `special_options_key` - a special key that helps js-routes to destinguish serialized model from options hash
-  * This options is required because JS doesn't provide a difference between an object and a hash
+  * This option is required because JS doesn't provide a difference between an object and a hash
   * Default: `_options`
+* `application` - a key to specify which rails engine you want to generate routes too.
+  * This option allows to only generate routes for a specific rails engine, that is mounted into routes instead of all Rails app routes
+  * Default: `Rails.application`
 
 ### Very Advanced Setup
 
@@ -184,6 +187,7 @@ Sometimes the destinction between JS Hash and Object can not be found by js-rout
 In this case you would need to pass a special key to help:
 
 ``` js
+Routes.company_project_path({company_id: 1, id: 2}) // => Not Enough parameters
 Routes.company_project_path({company_id: 1, id: 2, _options: true}) // => "/companies/1/projects/2"
 ```
 
