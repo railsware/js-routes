@@ -56,7 +56,7 @@ Available options:
   * Default: `Routes`
 * `prefix` - String representing a url path to prepend to all paths.
   * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only.
-  * Default: Rails.application.config.relative_url_root
+  * Default: `Rails.application.config.relative_url_root`
 * `camel_case` (version >= 0.8.8) - Generate camel case route names.
   * Default: false
 * `url_links` (version >= 0.8.9) - Generate `*_url` helpers (in addition to the default `*_path` helpers).
