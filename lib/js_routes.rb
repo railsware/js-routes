@@ -105,6 +105,7 @@ class JsRoutes
       "GEM_VERSION"         => JsRoutes::VERSION,
       "APP_CLASS"           => application.class.to_s,
       "NAMESPACE"           => @options[:namespace],
+      "RAILS_VERSION"       => Rails::VERSION::STRING,
       "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecate_url_options)),
       "PREFIX"              => @options[:prefix] || Rails.application.config.relative_url_root || "",
       "NODE_TYPES"          => json(NODE_TYPES),
@@ -216,13 +217,19 @@ class JsRoutes
   end
 
   def route_js_arguments(route, parent_spec)
-    required_parts = route.required_parts.clone
-    optional_parts = route.parts - required_parts
-    default_parts = route.defaults.select do |part, _|
-      FILTERED_DEFAULT_PARTS.exclude?(part) && URL_OPTIONS.include?(part) || required_parts.include?(part)
+    required_parts = route.required_parts
+    parts_table = route.parts.each_with_object({}) do |part, hash|
+      hash[part] = required_parts.include?(part)
+    end
+    default_options = route.defaults.select do |part, _|
+      FILTERED_DEFAULT_PARTS.exclude?(part) && URL_OPTIONS.include?(part) || parts_table[part]
     end
     [
-      required_parts, optional_parts, serialize(route.path.spec, parent_spec), default_parts
+      # JS objects don't preserve the order of properties which is crucial,
+      # so array is a better choice.
+      parts_table.to_a,
+      default_options,
+      serialize(route.path.spec, parent_spec)
     ].map do |argument|
       json(argument)
     end.join(", ")

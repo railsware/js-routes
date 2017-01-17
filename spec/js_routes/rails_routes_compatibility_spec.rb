@@ -14,6 +14,17 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
   end
 
+  it "should raise error if required argument is not passed" do
+    expect { evaljs("Routes.thing_path()") }
+      .to raise_error('Route parameter missing: id')
+    expect { evaljs("Routes.search_path()") }
+      .to raise_error('Route parameter missing: q')
+    expect { evaljs("Routes.book_path()") }
+      .to raise_error('Route parameter missing: title')
+    expect { evaljs("Routes.book_title_path()") }
+      .to raise_error('Route parameter missing: title')
+  end
+
   it "should support 0 as a member parameter" do
     expect(evaljs("Routes.inbox_path(0)")).to eq(routes.inbox_path(0))
   end
@@ -59,14 +70,15 @@ describe JsRoutes, "compatibility with Rails"  do
     end
 
     it 'should support route default subdomain' do
-      # root inside namespace is broken
-      # https://github.com/rails/rails/pull/23235
-      pending if Rails.version >= '5.0.0' && Rails.version <= "5.0.1"
       expect(evaljs("Routes.backend_root_path()")).to eq(routes.backend_root_path)
     end
 
     it "should support default format override" do
       expect(evaljs("Routes.api_purchases_path({format: 'xml'})")).to eq(routes.api_purchases_path(format: 'xml'))
+    end
+
+    it "should support default format override by passing it in args" do
+      expect(evaljs("Routes.api_purchases_path('xml')")).to eq(routes.api_purchases_path('xml'))
     end
 
     it "doesn't apply defaults to path" do
@@ -184,11 +196,10 @@ describe JsRoutes, "compatibility with Rails"  do
     context "but not including them" do
       it "should not include the optional parts" do
         expect(evaljs("Routes.things_path()")).to eq(routes.things_path)
+        expect(evaljs("Routes.things_path({ q: 'hello' })")).to eq(routes.things_path(q: 'hello'))
       end
 
       it "should not require the optional parts as arguments" do
-        #TODO: fix this inconsistence
-        pending
         expect(evaljs("Routes.thing_path(null, 5)")).to eq(routes.thing_path(nil, 5))
       end
 
@@ -196,14 +207,58 @@ describe JsRoutes, "compatibility with Rails"  do
         expect(evaljs("Routes.thing_path(5, {optional_id: undefined})")).to eq(routes.thing_path(5, :optional_id => nil))
       end
 
+      it "should raise error when passing non-full list of arguments and some query params" do
+        expect { evaljs("Routes.thing_path(5, {q: 'hello'})") }
+          .to raise_error('Route parameter missing: id')
+      end
+
       it "should treat null as non-given optional part" do
         expect(evaljs("Routes.thing_path(5, {optional_id: null})")).to eq(routes.thing_path(5, :optional_id => nil))
+      end
+
+      it "should work when passing required params in options" do
+        expect(evaljs("Routes.thing_deep_path({thing_id: 1, deep_id: 2})")).to eq(routes.thing_deep_path(thing_id: 1, deep_id: 2))
+      end
+
+      it "should skip leading and trailing optional parts" do
+        skip if Rails.version < '4'
+        expect(evaljs("Routes.thing_deep_path(1, 2)")).to eq(routes.thing_deep_path(1, 2))
       end
     end
 
     context "and including them" do
+      if Rails.version < '4'
+        it "should fail when insufficient arguments are given" do
+          expect { evaljs("Routes.thing_deep_path(1)")}
+            .to raise_error('Route parameter missing: thing_id')
+          expect { evaljs("Routes.thing_deep_path(1,2)")}
+            .to raise_error('Route parameter missing: deep_id')
+        end
+      end
+
       it "should include the optional parts" do
         expect(evaljs("Routes.things_path({optional_id: 5})")).to eq(routes.things_path(:optional_id => 5))
+        expect(evaljs("Routes.things_path(5)")).to eq(routes.things_path(5))
+        expect(evaljs("Routes.thing_deep_path(1, { deep_id: 3, thing_id: 2 })")).to eq(routes.thing_deep_path(1, deep_id: 3, thing_id: 2))
+        expect(evaljs("Routes.thing_deep_path(1, { deep_id: 3, thing_id: 2, optional_deep_id: 4 })")).to eq(routes.thing_deep_path(1, deep_id: 3, thing_id: 2, optional_deep_id: 4))
+        expect(evaljs("Routes.thing_deep_path(2, { deep_id: 3, optional_id: 1 })")).to eq(routes.thing_deep_path(2, deep_id: 3, optional_id: 1))
+        expect(evaljs("Routes.thing_deep_path(3, { optional_id: 1, thing_id: 2 })")).to eq(routes.thing_deep_path(3, optional_id: 1, thing_id: 2))
+        expect(evaljs("Routes.thing_deep_path(3, { optional_id: 1, thing_id: 2, optional_deep_id: 4 })")).to eq(routes.thing_deep_path(3, optional_id: 1, thing_id: 2, optional_deep_id: 4))
+        expect(evaljs("Routes.thing_deep_path(4, { optional_id: 1, thing_id: 2, deep_id: 3 })")).to eq(routes.thing_deep_path(4, optional_id: 1, thing_id: 2, deep_id: 3))
+        expect(evaljs("Routes.thing_deep_path(1, 2, { deep_id: 3 })")).to eq(routes.thing_deep_path(1, 2, deep_id: 3))
+        expect(evaljs("Routes.thing_deep_path(1, 2, { optional_deep_id: 4, deep_id: 3 })")).to eq(routes.thing_deep_path(1, 2, optional_deep_id: 4, deep_id: 3))
+        expect(evaljs("Routes.thing_deep_path(1, 3, { thing_id: 2 })")).to eq(routes.thing_deep_path(1, 3, thing_id: 2))
+        expect(evaljs("Routes.thing_deep_path(1, 4, { thing_id: 2, deep_id: 3 })")).to eq(routes.thing_deep_path(1, 4, thing_id: 2, deep_id: 3))
+        expect(evaljs("Routes.thing_deep_path(2, 3, { optional_id: 1 })")).to eq(routes.thing_deep_path(2, 3, optional_id: 1))
+        expect(evaljs("Routes.thing_deep_path(2, 3, { optional_id: 1, optional_deep_id: 4 })")).to eq(routes.thing_deep_path(2, 3, optional_id: 1, optional_deep_id: 4))
+        expect(evaljs("Routes.thing_deep_path(2, 4, { optional_id: 1, deep_id: 3 })")).to eq(routes.thing_deep_path(2, 4, optional_id: 1, deep_id: 3))
+        expect(evaljs("Routes.thing_deep_path(3, 4, { optional_id: 1, thing_id: 2 })")).to eq(routes.thing_deep_path(3, 4, optional_id: 1, thing_id: 2))
+        expect(evaljs("Routes.thing_deep_path(1, 2, 3)")).to eq(routes.thing_deep_path(1, 2, 3))
+        expect(evaljs("Routes.thing_deep_path(1, 2, 3, { optional_deep_id: 4 })")).to eq(routes.thing_deep_path(1, 2, 3, optional_deep_id: 4))
+        expect(evaljs("Routes.thing_deep_path(1, 2, 4, { deep_id: 3 })")).to eq(routes.thing_deep_path(1, 2, 4, deep_id: 3))
+        expect(evaljs("Routes.thing_deep_path(1, 3, 4, { thing_id: 2 })")).to eq(routes.thing_deep_path(1, 3, 4, thing_id: 2))
+        expect(evaljs("Routes.thing_deep_path(2, 3, 4, { optional_id: 1 })")).to eq(routes.thing_deep_path(2, 3, 4, optional_id: 1))
+        expect(evaljs("Routes.thing_deep_path(1, 2, 3, 4)")).to eq(routes.thing_deep_path(1, 2, 3, 4))
       end
 
       context "on nested optional parts" do
@@ -232,7 +287,7 @@ describe JsRoutes, "compatibility with Rails"  do
 
     it "should throw Exceptions if when there is too many parameters" do
       expect {
-        evaljs("Routes.inbox_path(1,2)")
+        evaljs("Routes.inbox_path(1,2,3)")
       }.to raise_error(js_error_class)
     end
 

@@ -26,7 +26,9 @@ def draw_routes
     resources :returns
 
     scope "(/optional/:optional_id)" do
-      resources :things
+      resources :things do
+        get "deep/:deep_id(/:optional_deep_id)", to: "things#index", as: :deep
+      end
     end
 
     if Rails.version < "5.0.0"

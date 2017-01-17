@@ -104,11 +104,22 @@ Utils =
     if xs?.length > 0
       tap {}, (m) -> m[k] = v for k, v of x for x in xs
 
-  normalize_options: (default_parts, required_parameters, optional_parts, actual_parameters) ->
-    options = @extract_options(required_parameters.length, actual_parameters)
-    if actual_parameters.length > required_parameters.length
+  normalize_options: (parts, required_parts, default_options, actual_parameters) ->
+    options = @extract_options(parts.length, actual_parameters)
+
+    if actual_parameters.length > parts.length
       throw new Error("Too many parameters provided for path")
-    options = @merge(defaults.default_url_options, default_parts, options)
+
+    use_all_parts = "RAILS_VERSION" < "4"
+    use_all_parts or= actual_parameters.length > required_parts.length
+    parts_options = {}
+
+    for own key of options
+      use_all_parts = true
+      if @indexOf(parts, key) >= 0
+        parts_options[key] = value
+
+    options = @merge(defaults.default_url_options, default_options, options)
     result = {}
     url_parameters = {}
     result['url_parameters'] = url_parameters
@@ -118,14 +129,19 @@ Utils =
       else
         url_parameters[key] = value
 
-    for value, i in required_parameters when i < actual_parameters.length
-      url_parameters[value] = actual_parameters[i]
+    route_parts = if use_all_parts then parts else required_parts
+    i = 0
+    for part in route_parts when i < actual_parameters.length
+      unless parts_options.hasOwnProperty(part)
+        url_parameters[part] = actual_parameters[i]
+        ++i
+
     result
 
-  build_route: (required_parameters, optional_parts, route, default_parts, full_url, args) ->
+  build_route: (parts, required_parts, default_options, route, full_url, args) ->
     args = Array::slice.call(args)
 
-    options = @normalize_options(default_parts, required_parameters, optional_parts, args)
+    options = @normalize_options(parts, required_parts, default_options, args)
     parameters = options['url_parameters']
 
     # path
@@ -239,9 +255,15 @@ Utils =
   #
   # route function: create route path function and add spec to it
   #
-  route: (required_parts, optional_parts, route_spec, default_parts, full_url) ->
+  route: (parts_table, default_options, route_spec, full_url) ->
+    required_parts = []
+    parts = []
+    for [part, required] in parts_table
+      parts.push(part)
+      required_parts.push(part) if required
+
     path_fn = -> Utils.build_route(
-      required_parts, optional_parts, route_spec, default_parts, full_url, arguments
+      parts, required_parts, default_options, route_spec, full_url, arguments
     )
     path_fn.required_params = required_parts
     path_fn.toString = -> Utils.build_path_spec(route_spec)
