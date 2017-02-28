@@ -13,6 +13,7 @@ defaults =
 
 NodeTypes = NODE_TYPES
 SpecialOptionsKey = "SPECIAL_OPTIONS_KEY"
+DeprecatedBehavior = DEPRECATED_BEHAVIOR
 
 ReservedOptions = [
   'anchor'
@@ -110,8 +111,7 @@ Utils =
     if actual_parameters.length > parts.length
       throw new Error("Too many parameters provided for path")
 
-    use_all_parts = "RAILS_VERSION" < "4"
-    use_all_parts or= actual_parameters.length > required_parts.length
+    use_all_parts = DeprecatedBehavior or actual_parameters.length > required_parts.length
     parts_options = {}
 
     for own key of options

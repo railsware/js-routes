@@ -105,15 +105,15 @@ class JsRoutes
       "GEM_VERSION"         => JsRoutes::VERSION,
       "APP_CLASS"           => application.class.to_s,
       "NAMESPACE"           => @options[:namespace],
-      "RAILS_VERSION"       => Rails::VERSION::STRING,
       "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecate_url_options)),
       "PREFIX"              => @options[:prefix] || Rails.application.config.relative_url_root || "",
       "NODE_TYPES"          => json(NODE_TYPES),
       "SERIALIZER"          => @options[:serializer] || json(nil),
       "ROUTES"              => js_routes,
-      "SPECIAL_OPTIONS_KEY" => @options[:special_options_key].to_s
+      "SPECIAL_OPTIONS_KEY" => @options[:special_options_key].to_s,
+      "DEPRECATED_BEHAVIOR" => Rails.version < "4",
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
-      js.gsub!(key, value)
+      js.gsub!(key, value.to_s)
     end
   end
 

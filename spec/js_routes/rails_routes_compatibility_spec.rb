@@ -246,6 +246,7 @@ describe JsRoutes, "compatibility with Rails"  do
         expect(evaljs("Routes.thing_deep_path(3, { optional_id: 1, thing_id: 2, optional_deep_id: 4 })")).to eq(routes.thing_deep_path(3, optional_id: 1, thing_id: 2, optional_deep_id: 4))
         expect(evaljs("Routes.thing_deep_path(4, { optional_id: 1, thing_id: 2, deep_id: 3 })")).to eq(routes.thing_deep_path(4, optional_id: 1, thing_id: 2, deep_id: 3))
         expect(evaljs("Routes.thing_deep_path(1, 2, { deep_id: 3 })")).to eq(routes.thing_deep_path(1, 2, deep_id: 3))
+        expect(evaljs("Routes.thing_deep_path(1,2, {deep_id: 3, q: 'bogdan'})")).to eq(routes.thing_deep_path(1,2, {deep_id: 3, q: 'bogdan'}))
         expect(evaljs("Routes.thing_deep_path(1, 2, { optional_deep_id: 4, deep_id: 3 })")).to eq(routes.thing_deep_path(1, 2, optional_deep_id: 4, deep_id: 3))
         expect(evaljs("Routes.thing_deep_path(1, 3, { thing_id: 2 })")).to eq(routes.thing_deep_path(1, 3, thing_id: 2))
         expect(evaljs("Routes.thing_deep_path(1, 4, { thing_id: 2, deep_id: 3 })")).to eq(routes.thing_deep_path(1, 4, thing_id: 2, deep_id: 3))
@@ -259,6 +260,7 @@ describe JsRoutes, "compatibility with Rails"  do
         expect(evaljs("Routes.thing_deep_path(1, 3, 4, { thing_id: 2 })")).to eq(routes.thing_deep_path(1, 3, 4, thing_id: 2))
         expect(evaljs("Routes.thing_deep_path(2, 3, 4, { optional_id: 1 })")).to eq(routes.thing_deep_path(2, 3, 4, optional_id: 1))
         expect(evaljs("Routes.thing_deep_path(1, 2, 3, 4)")).to eq(routes.thing_deep_path(1, 2, 3, 4))
+
       end
 
       context "on nested optional parts" do
