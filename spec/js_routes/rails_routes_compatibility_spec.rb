@@ -217,7 +217,7 @@ describe JsRoutes, "compatibility with Rails"  do
       end
 
       it "should work when passing required params in options" do
-        expect(evaljs("Routes.thing_deep_path({thing_id: 1, deep_id: 2})")).to eq(routes.thing_deep_path(thing_id: 1, deep_id: 2))
+        expect(evaljs("Routes.thing_deep_path({second_required: 1, third_required: 2})")).to eq(routes.thing_deep_path(second_required: 1, third_required: 2))
       end
 
       it "should skip leading and trailing optional parts" do
@@ -230,35 +230,35 @@ describe JsRoutes, "compatibility with Rails"  do
       if Rails.version < '4'
         it "should fail when insufficient arguments are given" do
           expect { evaljs("Routes.thing_deep_path(1)")}
-            .to raise_error('Route parameter missing: thing_id')
+            .to raise_error('Route parameter missing: second_required')
           expect { evaljs("Routes.thing_deep_path(1,2)")}
-            .to raise_error('Route parameter missing: deep_id')
+            .to raise_error('Route parameter missing: third_required')
         end
       end
 
       it "should include the optional parts" do
         expect(evaljs("Routes.things_path({optional_id: 5})")).to eq(routes.things_path(:optional_id => 5))
         expect(evaljs("Routes.things_path(5)")).to eq(routes.things_path(5))
-        expect(evaljs("Routes.thing_deep_path(1, { deep_id: 3, thing_id: 2 })")).to eq(routes.thing_deep_path(1, deep_id: 3, thing_id: 2))
-        expect(evaljs("Routes.thing_deep_path(1, { deep_id: 3, thing_id: 2, optional_deep_id: 4 })")).to eq(routes.thing_deep_path(1, deep_id: 3, thing_id: 2, optional_deep_id: 4))
-        expect(evaljs("Routes.thing_deep_path(2, { deep_id: 3, optional_id: 1 })")).to eq(routes.thing_deep_path(2, deep_id: 3, optional_id: 1))
-        expect(evaljs("Routes.thing_deep_path(3, { optional_id: 1, thing_id: 2 })")).to eq(routes.thing_deep_path(3, optional_id: 1, thing_id: 2))
-        expect(evaljs("Routes.thing_deep_path(3, { optional_id: 1, thing_id: 2, optional_deep_id: 4 })")).to eq(routes.thing_deep_path(3, optional_id: 1, thing_id: 2, optional_deep_id: 4))
-        expect(evaljs("Routes.thing_deep_path(4, { optional_id: 1, thing_id: 2, deep_id: 3 })")).to eq(routes.thing_deep_path(4, optional_id: 1, thing_id: 2, deep_id: 3))
-        expect(evaljs("Routes.thing_deep_path(1, 2, { deep_id: 3 })")).to eq(routes.thing_deep_path(1, 2, deep_id: 3))
-        expect(evaljs("Routes.thing_deep_path(1,2, {deep_id: 3, q: 'bogdan'})")).to eq(routes.thing_deep_path(1,2, {deep_id: 3, q: 'bogdan'}))
-        expect(evaljs("Routes.thing_deep_path(1, 2, { optional_deep_id: 4, deep_id: 3 })")).to eq(routes.thing_deep_path(1, 2, optional_deep_id: 4, deep_id: 3))
-        expect(evaljs("Routes.thing_deep_path(1, 3, { thing_id: 2 })")).to eq(routes.thing_deep_path(1, 3, thing_id: 2))
-        expect(evaljs("Routes.thing_deep_path(1, 4, { thing_id: 2, deep_id: 3 })")).to eq(routes.thing_deep_path(1, 4, thing_id: 2, deep_id: 3))
-        expect(evaljs("Routes.thing_deep_path(2, 3, { optional_id: 1 })")).to eq(routes.thing_deep_path(2, 3, optional_id: 1))
-        expect(evaljs("Routes.thing_deep_path(2, 3, { optional_id: 1, optional_deep_id: 4 })")).to eq(routes.thing_deep_path(2, 3, optional_id: 1, optional_deep_id: 4))
-        expect(evaljs("Routes.thing_deep_path(2, 4, { optional_id: 1, deep_id: 3 })")).to eq(routes.thing_deep_path(2, 4, optional_id: 1, deep_id: 3))
-        expect(evaljs("Routes.thing_deep_path(3, 4, { optional_id: 1, thing_id: 2 })")).to eq(routes.thing_deep_path(3, 4, optional_id: 1, thing_id: 2))
+        expect(evaljs("Routes.thing_deep_path(1, { third_required: 3, second_required: 2 })")).to eq(routes.thing_deep_path(1, third_required: 3, second_required: 2))
+        expect(evaljs("Routes.thing_deep_path(1, { third_required: 3, second_required: 2, forth_optional: 4 })")).to eq(routes.thing_deep_path(1, third_required: 3, second_required: 2, forth_optional: 4))
+        expect(evaljs("Routes.thing_deep_path(2, { third_required: 3, first_optional: 1 })")).to eq(routes.thing_deep_path(2, third_required: 3, first_optional: 1))
+        expect(evaljs("Routes.thing_deep_path(3, { first_optional: 1, second_required: 2 })")).to eq(routes.thing_deep_path(3, first_optional: 1, second_required: 2))
+        expect(evaljs("Routes.thing_deep_path(3, { first_optional: 1, second_required: 2, forth_optional: 4 })")).to eq(routes.thing_deep_path(3, first_optional: 1, second_required: 2, forth_optional: 4))
+        expect(evaljs("Routes.thing_deep_path(4, { first_optional: 1, second_required: 2, third_required: 3 })")).to eq(routes.thing_deep_path(4, first_optional: 1, second_required: 2, third_required: 3))
+        expect(evaljs("Routes.thing_deep_path(1, 2, { third_required: 3 })")).to eq(routes.thing_deep_path(1, 2, third_required: 3))
+        expect(evaljs("Routes.thing_deep_path(1,2, {third_required: 3, q: 'bogdan'})")).to eq(routes.thing_deep_path(1,2, {third_required: 3, q: 'bogdan'}))
+        expect(evaljs("Routes.thing_deep_path(1, 2, { forth_optional: 4, third_required: 3 })")).to eq(routes.thing_deep_path(1, 2, forth_optional: 4, third_required: 3))
+        expect(evaljs("Routes.thing_deep_path(1, 3, { second_required: 2 })")).to eq(routes.thing_deep_path(1, 3, second_required: 2))
+        expect(evaljs("Routes.thing_deep_path(1, 4, { second_required: 2, third_required: 3 })")).to eq(routes.thing_deep_path(1, 4, second_required: 2, third_required: 3))
+        expect(evaljs("Routes.thing_deep_path(2, 3, { first_optional: 1 })")).to eq(routes.thing_deep_path(2, 3, first_optional: 1))
+        expect(evaljs("Routes.thing_deep_path(2, 3, { first_optional: 1, forth_optional: 4 })")).to eq(routes.thing_deep_path(2, 3, first_optional: 1, forth_optional: 4))
+        expect(evaljs("Routes.thing_deep_path(2, 4, { first_optional: 1, third_required: 3 })")).to eq(routes.thing_deep_path(2, 4, first_optional: 1, third_required: 3))
+        expect(evaljs("Routes.thing_deep_path(3, 4, { first_optional: 1, second_required: 2 })")).to eq(routes.thing_deep_path(3, 4, first_optional: 1, second_required: 2))
         expect(evaljs("Routes.thing_deep_path(1, 2, 3)")).to eq(routes.thing_deep_path(1, 2, 3))
-        expect(evaljs("Routes.thing_deep_path(1, 2, 3, { optional_deep_id: 4 })")).to eq(routes.thing_deep_path(1, 2, 3, optional_deep_id: 4))
-        expect(evaljs("Routes.thing_deep_path(1, 2, 4, { deep_id: 3 })")).to eq(routes.thing_deep_path(1, 2, 4, deep_id: 3))
-        expect(evaljs("Routes.thing_deep_path(1, 3, 4, { thing_id: 2 })")).to eq(routes.thing_deep_path(1, 3, 4, thing_id: 2))
-        expect(evaljs("Routes.thing_deep_path(2, 3, 4, { optional_id: 1 })")).to eq(routes.thing_deep_path(2, 3, 4, optional_id: 1))
+        expect(evaljs("Routes.thing_deep_path(1, 2, 3, { forth_optional: 4 })")).to eq(routes.thing_deep_path(1, 2, 3, forth_optional: 4))
+        expect(evaljs("Routes.thing_deep_path(1, 2, 4, { third_required: 3 })")).to eq(routes.thing_deep_path(1, 2, 4, third_required: 3))
+        expect(evaljs("Routes.thing_deep_path(1, 3, 4, { second_required: 2 })")).to eq(routes.thing_deep_path(1, 3, 4, second_required: 2))
+        expect(evaljs("Routes.thing_deep_path(2, 3, 4, { first_optional: 1 })")).to eq(routes.thing_deep_path(2, 3, 4, first_optional: 1))
         expect(evaljs("Routes.thing_deep_path(1, 2, 3, 4)")).to eq(routes.thing_deep_path(1, 2, 3, 4))
 
       end
