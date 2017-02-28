@@ -104,7 +104,6 @@ RSpec.configure do |config|
           inspectify(v)
         end
       when V8::Object
-        require 'byebug'; byebug
         value.to_h.map do |k,v|
           [k, inspectify(v)]
         end.to_h

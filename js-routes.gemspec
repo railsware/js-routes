@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
     s.add_development_dependency(%q<therubyrhino>, [">= 2.0.4"])
   else
     s.add_development_dependency(%q<byebug>)
+    s.add_development_dependency(%q<pry-byebug>)
     s.add_development_dependency(%q<therubyracer>, [">= 0.12.1"])
   end
 end
