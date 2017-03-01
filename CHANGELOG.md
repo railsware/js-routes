@@ -1,5 +1,18 @@
 ## master
 
+## v1.3.3
+
+* Improved optional parameters support #216
+
+## v1.3.2
+
+* Added `application` option #214
+
+## v1.3.1
+
+* Raise error object with id null passed as route paramter #209
+* Sprockets bugfixes #212
+
 ## v1.3.0
 
 * Introduce the special _options key. Fixes #86
