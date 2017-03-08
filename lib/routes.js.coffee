@@ -47,7 +47,7 @@ Utils =
     path.join "://"
 
   set_default_url_options: (optional_parts, options) ->
-    for part, i in optional_parts when (not options.hasOwnProperty(part) and defaults.default_url_options.hasOwnProperty(part))
+    for part, i in optional_parts when (not options.hasOwnProperty(part) and defaults.defaults_url_options.part?)
       options[part] = defaults.default_url_options[part]
 
   extract_anchor: (options) ->
