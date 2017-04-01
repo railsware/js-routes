@@ -2,8 +2,7 @@
 
 source "http://rubygems.org"
 
-gem "railties", "~> 4.2.1"
+gem "railties", "~> 4.2.8"
 gem "sprockets", "~> 3.0"
-gem "nokogiri", "< 1.7"
 
 gemspec :path => "../"
