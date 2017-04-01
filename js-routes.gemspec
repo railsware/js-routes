@@ -31,7 +31,6 @@ Gem::Specification.new do |s|
   else
     s.add_development_dependency(%q<byebug>)
     s.add_development_dependency(%q<pry-byebug>)
-    s.add_development_dependency(%q<therubyracer>, [">= 0.12.1"])
+    s.add_development_dependency(%q<therubyracer>, [">= 0.12.3"])
   end
 end
-
