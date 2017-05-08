@@ -22,6 +22,7 @@ class JsRoutes
     compact: false,
     serializer: nil,
     special_options_key: "_options",
+    application: -> { Rails.application }
   }
 
   NODE_TYPES = {
@@ -40,6 +41,28 @@ class JsRoutes
   URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain]
 
   class Options < Struct.new(*DEFAULTS.keys)
+    def initialize(attributes = nil)
+      assign(DEFAULTS)
+      return unless attributes
+      assign(attributes)
+    end
+
+    def assign(attributes)
+      attributes.each do |attribute, value|
+        value = value.call if value.is_a?(Proc)
+        send(:"#{attribute}=", value)
+      end
+      self
+    end
+
+    def [](attribute)
+      send(attribute)
+    end
+
+    def merge(attributes)
+      clone.assign(attributes)
+    end
+
     def to_hash
       Hash[*members.zip(values).flatten(1)].symbolize_keys
     end
@@ -55,9 +78,7 @@ class JsRoutes
     end
 
     def options
-      @options ||= Options.new.tap do |opts|
-        DEFAULTS.each_pair {|k,v| opts[k] = v}
-      end
+      @options ||= Options.new
     end
 
     def generate(opts = {})
@@ -92,7 +113,7 @@ class JsRoutes
   #
 
   def initialize(options = {})
-    @options = self.class.options.to_hash.merge(options)
+    @options = self.class.options.merge(options)
   end
 
   def generate
@@ -104,39 +125,17 @@ class JsRoutes
     {
       "GEM_VERSION"         => JsRoutes::VERSION,
       "APP_CLASS"           => application.class.to_s,
-      "NAMESPACE"           => @options[:namespace],
-      "DEFAULT_URL_OPTIONS" => json(@options[:default_url_options].merge(deprecate_url_options)),
-      "PREFIX"              => @options[:prefix] || Rails.application.config.relative_url_root || "",
+      "NAMESPACE"           => @options.namespace,
+      "DEFAULT_URL_OPTIONS" => json(@options.default_url_options),
+      "PREFIX"              => @options.prefix || Rails.application.config.relative_url_root || "",
       "NODE_TYPES"          => json(NODE_TYPES),
-      "SERIALIZER"          => @options[:serializer] || json(nil),
+      "SERIALIZER"          => @options.serializer || json(nil),
       "ROUTES"              => js_routes,
-      "SPECIAL_OPTIONS_KEY" => @options[:special_options_key].to_s,
+      "SPECIAL_OPTIONS_KEY" => @options.special_options_key.to_s,
       "DEPRECATED_BEHAVIOR" => Rails.version < "4",
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
       js.gsub!(key, value.to_s)
     end
-  end
-
-  def deprecate_url_options
-    result = {}
-    if @options.key?(:default_format)
-      warn("default_format option is deprecated. Use default_url_options = { format: <format> } instead")
-      result.merge!(  format: @options[:default_format]  )
-    end
-    if @options[:url_links].is_a?(String)
-      ActiveSupport::Deprecation.warn('js-routes url_links config value must be a boolean. Use default_url_options for specifying a default host.')
-
-      raise "invalid URL format in url_links (ex: http[s]://example.com)" if @options[:url_links].match(URI::Parser.new.make_regexp(%w(http https))).nil?
-      uri = URI.parse(@options[:url_links])
-      default_port = uri.scheme == "https" ? 443 : 80
-      port = uri.port == default_port ? nil : uri.port
-      result.merge!(
-        host: uri.host,
-        port: port,
-        protocol: uri.scheme,
-      )
-    end
-    result
   end
 
   def generate!(file_name = nil)
@@ -154,7 +153,7 @@ class JsRoutes
   protected
 
   def application
-    @options[:application] || Rails.application
+    @options.application
   end
 
   def named_routes

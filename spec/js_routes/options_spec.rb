@@ -118,8 +118,8 @@ describe JsRoutes, "options" do
 
   end
 
-  context "when default_format is specified" do
-    let(:_options) { {:default_format => "json"} }
+  context "when default format is specified" do
+    let(:_options) { {:default_url_options => {format: "json"}} }
     let(:_warnings) { nil }
 
     it "should render routing with default_format" do
@@ -273,51 +273,6 @@ describe JsRoutes, "options" do
       end
     end
 
-    context 'with deprecated, non-boolean config value' do
-      around(:each) do |example|
-        ActiveSupport::Deprecation.silence do
-          example.run
-        end
-      end
-
-      context "with host" do
-        let(:_options) { { :url_links => "http://localhost" } }
-        it "should generate path and url links" do
-          expect(evaljs("Routes.inbox_path")).not_to be_nil
-          expect(evaljs("Routes.inbox_url")).not_to be_nil
-          expect(evaljs("Routes.inbox_path(1)")).to eq(routes.inbox_path(1))
-          expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
-          expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://localhost#{routes.inbox_path(1, :test_key => "test_val")}")
-        end
-      end
-
-      context "with invalid host" do
-        it "should raise error" do
-          expect { JsRoutes.generate({ :url_links => "localhost" }) }.to raise_error RuntimeError
-        end
-      end
-
-      context "with host and camel_case" do
-        let(:_options) { { :camel_case => true, :url_links => "http://localhost" } }
-        it "should generate path and url links" do
-          expect(evaljs("Routes.inboxPath")).not_to be_nil
-          expect(evaljs("Routes.inboxUrl")).not_to be_nil
-          expect(evaljs("Routes.inboxPath(1)")).to eq(routes.inbox_path(1))
-          expect(evaljs("Routes.inboxUrl(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
-        end
-      end
-
-      context "with host and prefix" do
-        let(:_options) { { :prefix => "/api", :url_links => "https://example.com" } }
-        it "should generate path and url links" do
-          expect(evaljs("Routes.inbox_path")).not_to be_nil
-          expect(evaljs("Routes.inbox_url")).not_to be_nil
-          expect(evaljs("Routes.inbox_path(1)")).to eq("/api#{routes.inbox_path(1)}")
-          expect(evaljs("Routes.inbox_url(1)")).to eq("https://example.com/api#{routes.inbox_path(1)}")
-        end
-      end
-    end
-
     context "when configuring with default_url_options" do
       context "when only host option is specified" do
         let(:_options) { { :url_links => true, :default_url_options => {:host => "example.com"} } }
@@ -461,18 +416,16 @@ describe JsRoutes, "options" do
     end
 
     context "with url_links option" do
-      context "with deprecated url_links config value" do
-        around(:each) do |example|
-          ActiveSupport::Deprecation.silence do
-            example.run
-          end
+      around(:each) do |example|
+        ActiveSupport::Deprecation.silence do
+          example.run
         end
+      end
 
-        let(:_options) { { :compact => true, :url_links => "http://localhost" } }
-        it "should not strip urls" do
-          expect(evaljs("Routes.inbox(1)")).to eq(routes.inbox_path(1))
-          expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
-        end
+      let(:_options) { { :compact => true, :url_links => true, default_url_options: {host: 'localhost'} } }
+      it "should not strip urls" do
+        expect(evaljs("Routes.inbox(1)")).to eq(routes.inbox_path(1))
+        expect(evaljs("Routes.inbox_url(1)")).to eq("http://localhost#{routes.inbox_path(1)}")
       end
     end
   end
