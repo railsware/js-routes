@@ -357,7 +357,7 @@ Utils =
     routes.options = defaults
     routes.default_serializer = (object, prefix) ->
       Utils.default_serializer(object, prefix)
-    Utils.namespace(root, "NAMESPACE", routes)
+    Utils.namespace(root, NAMESPACE, routes)
   
 # Set up Routes appropriately for the environment.
 if typeof define is "function" and define.amd
