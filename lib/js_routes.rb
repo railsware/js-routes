@@ -15,7 +15,7 @@ class JsRoutes
     exclude: [],
     include: //,
     file: DEFAULT_PATH,
-    prefix: nil,
+    prefix: -> { Rails.application.config.relative_url_root || "" },
     url_links: false,
     camel_case: false,
     default_url_options: {},
@@ -40,7 +40,7 @@ class JsRoutes
   FILTERED_DEFAULT_PARTS = [:controller, :action, :subdomain]
   URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain]
 
-  class Options < Struct.new(*DEFAULTS.keys)
+  class Configuration < Struct.new(*DEFAULTS.keys)
     def initialize(attributes = nil)
       assign(DEFAULTS)
       return unless attributes
@@ -74,11 +74,16 @@ class JsRoutes
 
   class << self
     def setup(&block)
-      options.tap(&block) if block
+      configuration.tap(&block) if block
     end
 
     def options
-      @options ||= Options.new
+      ActiveSupport::Deprecation.warn('JsRoutes.options method is deprecated use JsRoutes.configuration instead')
+      configuration
+    end
+
+    def configuration
+      @configuration ||= Configuration.new
     end
 
     def generate(opts = {})
@@ -113,7 +118,7 @@ class JsRoutes
   #
 
   def initialize(options = {})
-    @options = self.class.options.merge(options)
+    @configuration = self.class.configuration.merge(options)
   end
 
   def generate
@@ -125,13 +130,13 @@ class JsRoutes
     {
       "GEM_VERSION"         => JsRoutes::VERSION,
       "APP_CLASS"           => application.class.to_s,
-      "NAMESPACE"           => @options.namespace,
-      "DEFAULT_URL_OPTIONS" => json(@options.default_url_options),
-      "PREFIX"              => @options.prefix || Rails.application.config.relative_url_root || "",
+      "NAMESPACE"           => @configuration.namespace,
+      "DEFAULT_URL_OPTIONS" => json(@configuration.default_url_options),
+      "PREFIX"              => json(@configuration.prefix),
       "NODE_TYPES"          => json(NODE_TYPES),
-      "SERIALIZER"          => @options.serializer || json(nil),
+      "SERIALIZER"          => @configuration.serializer || json(nil),
       "ROUTES"              => js_routes,
-      "SPECIAL_OPTIONS_KEY" => @options.special_options_key.to_s,
+      "SPECIAL_OPTIONS_KEY" => json(@configuration.special_options_key),
       "DEPRECATED_BEHAVIOR" => Rails.version < "4",
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
       js.gsub!(key, value.to_s)
@@ -143,8 +148,8 @@ class JsRoutes
     # until initialization process finish
     # https://github.com/railsware/js-routes/issues/7
     Rails.configuration.after_initialize do
-      file_name ||= self.class.options['file']
-      File.open(Rails.root.join(file_name || DEFAULT_PATH), 'w') do |f|
+      file_name ||= self.class.configuration['file']
+      File.open(Rails.root.join(file_name), 'w') do |f|
         f.write generate
       end
     end
@@ -153,7 +158,7 @@ class JsRoutes
   protected
 
   def application
-    @options.application
+    @configuration.application
   end
 
   def named_routes
@@ -188,7 +193,7 @@ class JsRoutes
   end
 
   def build_route_if_match(route, parent_route=nil)
-    if any_match?(route, parent_route, @options[:exclude]) || !any_match?(route, parent_route, @options[:include])
+    if any_match?(route, parent_route, @configuration[:exclude]) || !any_match?(route, parent_route, @configuration[:include])
       nil
     else
       build_js(route, parent_route)
@@ -204,7 +209,7 @@ class JsRoutes
 
   def build_js(route, parent_route)
     name = [parent_route.try(:name), route.name].compact
-    route_name = generate_route_name(name, (:path unless @options[:compact]))
+    route_name = generate_route_name(name, (:path unless @configuration[:compact]))
     parent_spec = parent_route.try(:path).try(:spec)
     route_arguments = route_js_arguments(route, parent_spec)
     url_link = generate_url_link(name, route_name, route_arguments, route)
@@ -235,7 +240,7 @@ class JsRoutes
   end
 
   def generate_url_link(name, route_name, route_arguments, route)
-    return "" unless @options[:url_links]
+    return "" unless @configuration[:url_links]
     <<-JS.strip!
     #{generate_route_name(name, :url)}: Utils.route(#{route_arguments}, true)
     JS
@@ -244,7 +249,7 @@ class JsRoutes
   def generate_route_name(name, suffix)
     route_name = name.join('_')
     route_name << "_#{ suffix }" if suffix
-    @options[:camel_case] ? route_name.camelize(:lower) : route_name
+    @configuration[:camel_case] ? route_name.camelize(:lower) : route_name
   end
 
   def json(string)

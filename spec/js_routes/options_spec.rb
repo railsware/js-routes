@@ -3,13 +3,13 @@ require 'spec_helper'
 describe JsRoutes, "options" do
 
   before(:each) do
-    evaljs(_presetup)
+    evaljs(_presetup) if _presetup
     with_warnings(_warnings) do
       evaljs(JsRoutes.generate(_options))
     end
   end
 
-  let(:_presetup) { "this;" }
+  let(:_presetup) { nil }
   let(:_options) { {} }
   let(:_warnings) { true }
 

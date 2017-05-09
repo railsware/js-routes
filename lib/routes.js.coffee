@@ -8,11 +8,11 @@ root = (exports ? this)
 ParameterMissing = (@message) -> #
 ParameterMissing:: = new Error()
 defaults =
-  prefix: "PREFIX"
+  prefix: PREFIX
   default_url_options: DEFAULT_URL_OPTIONS
 
 NodeTypes = NODE_TYPES
-SpecialOptionsKey = "SPECIAL_OPTIONS_KEY"
+SpecialOptionsKey = SPECIAL_OPTIONS_KEY
 DeprecatedBehavior = DEPRECATED_BEHAVIOR
 
 ReservedOptions = [
@@ -353,7 +353,7 @@ createGlobalJsRoutesObject = ->
     mainRoot[current] = mainRoot[current] or {}
     namespace mainRoot[current], parts.join(".")
   # object
-  namespace(root, "NAMESPACE")
+  ns = namespace(root, "NAMESPACE")
   root.NAMESPACE = ROUTES
   root.NAMESPACE.options = defaults
   root.NAMESPACE.default_serializer = (object, prefix) ->
