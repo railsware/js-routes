@@ -343,26 +343,26 @@ Utils =
     (result = i for el, i in array when el is element)
     result
 
-# globalJsObject
-createGlobalJsRoutesObject = ->
-  # namespace function, private
-  namespace = (mainRoot, namespaceString) ->
-    parts = (if namespaceString then namespaceString.split(".") else [])
-    return unless parts.length
-    current = parts.shift()
-    mainRoot[current] = mainRoot[current] or {}
-    namespace mainRoot[current], parts.join(".")
-  # object
-  ns = namespace(root, "NAMESPACE")
-  root.NAMESPACE = ROUTES
-  root.NAMESPACE.options = defaults
-  root.NAMESPACE.default_serializer = (object, prefix) ->
-    Utils.default_serializer(object, prefix)
-  root.NAMESPACE
+  namespace: (root, namespace, routes) ->
+    parts = namespace.split(".")
+    return routes if parts.length == 0
+    for part, index in parts
+      if index < parts.length - 1
+        root = (root[part] or= {})
+      else
+        return root[part] = routes
+
+  make: ->
+    routes = ROUTES
+    routes.options = defaults
+    routes.default_serializer = (object, prefix) ->
+      Utils.default_serializer(object, prefix)
+    Utils.namespace(root, "NAMESPACE", routes)
+  
 # Set up Routes appropriately for the environment.
 if typeof define is "function" and define.amd
   # AMD
-  define [], -> createGlobalJsRoutesObject()
+  define [], -> Utils.make()
 else
   # Browser globals
-  createGlobalJsRoutesObject()
+  Utils.make()

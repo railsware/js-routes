@@ -1,5 +1,7 @@
+require "spec_helper"
+
 describe JsRoutes, "#default_serializer" do
-  
+
   before(:each) do
     evaljs(JsRoutes.generate({}))
   end
