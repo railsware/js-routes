@@ -10,10 +10,6 @@ describe JsRoutes do
   describe "generated js" do
     subject { JsRoutes.generate }
 
-    it "should set the default serializer when none is configured" do
-      is_expected.to match(%r(custom_serializer: null,\s+serialize: function\(object\) {\s+if \(\(this\.custom_serializer != null\) && this.get_object_type\(this\.custom_serializer\) === \"function\"\) {\s+return this\.custom_serializer\(object\);\s+} else {\s+return this\.default_serializer\(object\);\s+}\s+},))
-    end
-
     it "should include a comment in the header" do
       app_class = "App"
 

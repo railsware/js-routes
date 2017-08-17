@@ -39,10 +39,19 @@ JsRoutes.setup do |config|
 end
 ```
 
+Or make a more dynamic configuration in JavaScript, but only specific options support the possibility of such configuration(see the list below):
+
+``` js
+Routes.configure({
+  option: value
+});
+Routes.config(); // current config
+```
+
 Available options:
 
 * `default_url_options` - default parameters used when generating URLs
-  * Note that only specific options are supported at this time.
+  * Option is configurable at JS level with `Routes.configure()`
   * Example: {:format => "json", :trailing\_slash => true, :protocol => "https", :host => "example.com", :port => 3000}
   * Default: {}
 * `exclude` - Array of regexps to exclude from js routes.
@@ -55,6 +64,7 @@ Available options:
   * Supports nested namespace like `MyProject.routes`
   * Default: `Routes`
 * `prefix` - String representing a url path to prepend to all paths.
+  * Option is configurable at JS level with `Routes.configure()`
   * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only.
   * Default: `Rails.application.config.relative_url_root`
 * `camel_case` (version >= 0.8.8) - Generate camel case route names.
@@ -68,11 +78,13 @@ Available options:
   * Sample route call when option is set to true: Routes.users() => `/users`
 * `serializer` (version >= 1.1.0) - Puts a JS function here that serializes a Javascript Hash object into URL paramters: `{a: 1, b: 2} => "a=1&b=2"`.
   * Default: `nil`. Uses built-in serializer
+  * Option is configurable at JS level with `Routes.configure()`
   * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
   * Example: `MyApp.custom_serialize` - use completely custom serializer of your application.
 
 * `special_options_key` - a special key that helps js-routes to destinguish serialized model from options hash
   * This option is required because JS doesn't provide a difference between an object and a hash
+  * Option is configurable at JS level with `Routes.configure()`
   * Default: `_options`
 * `application` - a key to specify which rails engine you want to generate routes too.
   * This option allows to only generate routes for a specific rails engine, that is mounted into routes instead of all Rails app routes

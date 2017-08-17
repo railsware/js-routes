@@ -34,8 +34,8 @@ def evaljs(string, force = false)
   jscontext(force).eval(string)
 end
 
-def routes
-  App.routes.url_helpers
+def test_routes
+  ::App.routes.url_helpers
 end
 
 def blog_routes
@@ -55,7 +55,7 @@ module BlogEngine
 end
 
 
-class App < Rails::Application
+class ::App < Rails::Application
   # Enable the asset pipeline
   config.assets.enabled = true
   # initialize_on_precompile

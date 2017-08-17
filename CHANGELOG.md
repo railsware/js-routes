@@ -1,5 +1,28 @@
 ## master
 
+* __breaking change!__ Implemented Routes.config() and Routes.configure instead of Routes.defaults
+
+New methods support 4 options at the moment:
+
+``` js
+Routes.configuration(); // =>
+/*
+{
+  prefix: "",
+  default_url_options: {},
+  special_options_key: '_options',
+  custom_serializer: function(...) { ... }
+}
+*/
+
+Routes.configure({
+ prefix: '/app',
+ default_url_options: {format: 'json'},
+ special_options_key: '_my_options_key',
+ custom_serializer: function(...) { ... }
+});
+```
+
 ## v1.3.3
 
 * Improved optional parameters support #216

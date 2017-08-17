@@ -28,7 +28,7 @@ EOF
   end
 
   it "should working from global scope" do
-    expect(evaljs("Routes.inboxes_path()")).to eq(routes.inboxes_path())
+    expect(evaljs("Routes.inboxes_path()")).to eq(test_routes.inboxes_path())
   end
 
   it "should working from define function" do
@@ -36,7 +36,7 @@ EOF
   end
 
   it "should working from require" do
-    expect(evaljs("require(['js-routes'], function(r){ return r.inboxes_path(); })")).to eq(routes.inboxes_path())
+    expect(evaljs("require(['js-routes'], function(r){ return r.inboxes_path(); })")).to eq(test_routes.inboxes_path())
   end
 
 end

@@ -7,9 +7,6 @@ root = (exports ? this)
 
 ParameterMissing = (@message) -> #
 ParameterMissing:: = new Error()
-defaults =
-  prefix: PREFIX
-  default_url_options: DEFAULT_URL_OPTIONS
 
 NodeTypes = NODE_TYPES
 SpecialOptionsKey = SPECIAL_OPTIONS_KEY
@@ -24,6 +21,13 @@ ReservedOptions = [
 ]
 
 Utils =
+
+  configuration:
+    prefix: PREFIX
+    default_url_options: DEFAULT_URL_OPTIONS
+    special_options_key: SPECIAL_OPTIONS_KEY
+    serializer: SERIALIZER
+
 
   default_serializer: (object, prefix = null) ->
     return "" unless object?
@@ -50,10 +54,10 @@ Utils =
     return "" unless s.length
     s.join("&")
 
-  custom_serializer: SERIALIZER
   serialize: (object) ->
-    if @custom_serializer? and @get_object_type(@custom_serializer) is "function"
-      @custom_serializer(object)
+    custom_serializer = @configuration.serializer
+    if custom_serializer? and @get_object_type(custom_serializer) is "function"
+      custom_serializer(object)
     else
       @default_serializer(object)
 
@@ -67,13 +71,13 @@ Utils =
     last_el = args[args.length - 1]
     if (args.length > number_of_params and last_el == undefined) or (last_el? and "object" is @get_object_type(last_el) and !@looks_like_serialized_model(last_el))
       options = args.pop() || {}
-      delete options[SpecialOptionsKey]
+      delete options[@configuration.special_options_key]
       options
     else
       {}
 
   looks_like_serialized_model: (object) ->
-    !object[SpecialOptionsKey] and ("id" of object or "to_param" of object)
+    !object[@configuration.special_options_key] and ("id" of object or "to_param" of object)
 
 
   path_identifier: (object) ->
@@ -119,7 +123,7 @@ Utils =
       if @indexOf(parts, key) >= 0
         parts_options[key] = value
 
-    options = @merge(defaults.default_url_options, default_options, options)
+    options = @merge(@configuration.default_url_options, default_options, options)
     result = {}
     url_parameters = {}
     result['url_parameters'] = url_parameters
@@ -248,7 +252,7 @@ Utils =
   # This method check and return prefix from options
   #
   get_prefix: ->
-    prefix = defaults.prefix
+    prefix = @configuration.prefix
     prefix = (if prefix.match("/$") then prefix else "#{prefix}/") if prefix isnt ""
     prefix
 
@@ -352,9 +356,21 @@ Utils =
       else
         return root[part] = routes
 
+  configure: (new_config) ->
+    @configuration = @merge(@configuration, new_config)
+
+  config: ->
+    @clone(@configuration)
+
   make: ->
     routes = ROUTES
-    routes.options = defaults
+    routes.configure = (config) -> Utils.configure(config)
+    routes.config = -> Utils.config()
+    Object.defineProperty routes, 'defaults',
+      get: ->
+        throw new Error("#{NAMESPACE}.defaults is removed. Use #{NAMESPACE}.configure() instead.")
+      set: (value) ->
+
     routes.default_serializer = (object, prefix) ->
       Utils.default_serializer(object, prefix)
     Utils.namespace(root, NAMESPACE, routes)
