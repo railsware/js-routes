@@ -1,5 +1,7 @@
 ## master
 
+## v1.4.0
+
 * __breaking change!__ Implemented Routes.config() and Routes.configure instead of Routes.defaults
 
 New methods support 4 options at the moment:
