@@ -13,7 +13,7 @@ Routes.configuration(); // =>
   prefix: "",
   default_url_options: {},
   special_options_key: '_options',
-  custom_serializer: function(...) { ... }
+  serializer: function(...) { ... }
 }
 */
 
@@ -21,7 +21,7 @@ Routes.configure({
  prefix: '/app',
  default_url_options: {format: 'json'},
  special_options_key: '_my_options_key',
- custom_serializer: function(...) { ... }
+ serializer: function(...) { ... }
 });
 ```
 
