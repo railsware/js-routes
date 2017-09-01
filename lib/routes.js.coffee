@@ -275,30 +275,27 @@ Utils =
 
 
   route_url: (route_defaults) ->
-    return route_defaults if typeof route_defaults == 'string'
+    return route_defaults if typeof route_defaults is 'string'
     protocol = route_defaults.protocol || Utils.current_protocol()
-    hostname = route_defaults.host || window.location.hostname
+    hostname = route_defaults.host || Utils.current_host()
     port = route_defaults.port || (Utils.current_port() unless route_defaults.host)
     port = if port then ":#{port}" else ''
+    "#{protocol}://#{hostname}#{port}"
 
-    protocol + "://" + hostname + port
-
-
-  has_location: ->
-    typeof window != 'undefined' && typeof window.location != 'undefined'
+  has_location: -> window? and window.location?
 
   current_host: ->
     if @has_location() then window.location.hostname else null
 
   current_protocol: () ->
-    if @has_location() && window.location.protocol != ''
+    if @has_location() && window.location.protocol isnt ''
       # location.protocol includes the colon character
       window.location.protocol.replace(/:$/, '')
     else
       'http'
 
   current_port: () ->
-    if @has_location() && window.location.port != ''
+    if @has_location() && window.location.port isnt ''
       window.location.port
     else
       ''
@@ -349,7 +346,7 @@ Utils =
 
   namespace: (root, namespace, routes) ->
     parts = namespace.split(".")
-    return routes if parts.length == 0
+    return routes if parts.length is 0
     for part, index in parts
       if index < parts.length - 1
         root = (root[part] or= {})
@@ -374,7 +371,7 @@ Utils =
     routes.default_serializer = (object, prefix) ->
       Utils.default_serializer(object, prefix)
     Utils.namespace(root, NAMESPACE, routes)
-  
+
 # Set up Routes appropriately for the environment.
 if typeof define is "function" and define.amd
   # AMD
