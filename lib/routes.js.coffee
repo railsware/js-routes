@@ -287,9 +287,7 @@ Utils =
 
     protocol + "://" + hostname + port
 
-
-  has_location: ->
-    typeof window != 'undefined' && typeof window.location != 'undefined'
+  has_location: -> window?.location?
 
   current_host: ->
     if @has_location() then window.location.hostname else null
