@@ -276,8 +276,12 @@ Utils =
 
   route_url: (route_defaults) ->
     return route_defaults if typeof route_defaults == 'string'
+
+    hostname = route_defaults.host || Utils.current_host()
+
+    return '' unless hostname
+
     protocol = route_defaults.protocol || Utils.current_protocol()
-    hostname = route_defaults.host || window.location.hostname
     port = route_defaults.port || (Utils.current_port() unless route_defaults.host)
     port = if port then ":#{port}" else ''
 
