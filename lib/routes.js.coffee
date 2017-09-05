@@ -276,16 +276,18 @@ Utils =
 
   route_url: (route_defaults) ->
     return route_defaults if typeof route_defaults == 'string'
+
+    hostname = route_defaults.host || Utils.current_host()
+
+    return '' unless hostname
+
     protocol = route_defaults.protocol || Utils.current_protocol()
-    hostname = route_defaults.host || window.location.hostname
     port = route_defaults.port || (Utils.current_port() unless route_defaults.host)
     port = if port then ":#{port}" else ''
 
     protocol + "://" + hostname + port
 
-
-  has_location: ->
-    typeof window != 'undefined' && typeof window.location != 'undefined'
+  has_location: -> window?.location?
 
   current_host: ->
     if @has_location() then window.location.hostname else null

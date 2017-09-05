@@ -425,6 +425,17 @@ describe JsRoutes, "options" do
         end
       end
     end
+
+    context 'when window.location is not present' do
+      context 'without specifying a default host' do
+        let(:_options) { { url_links: true } }
+
+        it 'generates path' do
+          expect(evaljs("Routes.inbox_url(1)")).to eq test_routes.inbox_path(1)
+          expect(evaljs("Routes.new_session_url()")).to eq test_routes.new_session_path
+        end
+      end
+    end
   end
 
   describe "when the compact mode is enabled" do
