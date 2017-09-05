@@ -1,5 +1,10 @@
 ## master
 
+## v1.4.1
+
+* Fixed bug when js-routes is used in envs without window.location #224
+
+
 ## v1.4.0
 
 * __breaking change!__ Implemented Routes.config() and Routes.configure instead of Routes.defaults
