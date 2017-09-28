@@ -332,9 +332,6 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.inbox_message_path(5, {id: 7, q: 'hello', _options: true})")).to eq(test_routes.inbox_message_path(5, id: 7, q: 'hello'))
     end
 
-    it "should check for options special key" do
-    end
-
     it "should support 0 as an id option" do
       expect(evaljs("Routes.inbox_path({id: 0})")).to eq(test_routes.inbox_path(0))
     end
