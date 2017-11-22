@@ -1,4 +1,5 @@
-class JsRoutesSprocketsExtension
+class JsRoutes
+class SprocketsExtension
   def initialize(filename, &block)
     @filename = filename
     @source   = block.call
@@ -55,14 +56,14 @@ class Engine < ::Rails::Engine
       if is_running_rails_32
         Rails.application.assets.register_preprocessor(
           "application/javascript",
-          JsRoutesSprocketsExtension,
+          SprocketsExtension,
         )
       else
         # Other rails version, assumed newer
         Rails.application.config.assets.configure do |config|
           config.register_preprocessor(
             "application/javascript",
-            JsRoutesSprocketsExtension,
+            SprocketsExtension,
           )
         end
       end
@@ -70,4 +71,5 @@ class Engine < ::Rails::Engine
       raise StandardError, "Sprockets version #{sprockets_version} is not supported"
     end
   end
+end
 end
