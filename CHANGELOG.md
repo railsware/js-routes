@@ -1,5 +1,9 @@
 ## master
 
+## v1.4.2
+
+* Added JsRoutes namespace to Engine #230
+
 ## v1.4.1
 
 * Fixed bug when js-routes is used in envs without window.location #224
