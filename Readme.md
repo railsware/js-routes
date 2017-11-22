@@ -1,5 +1,6 @@
 # JsRoutes
 [![Build Status](https://travis-ci.org/railsware/js-routes.svg?branch=master)](https://travis-ci.org/railsware/js-routes)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Frailsware%2Fjs-routes.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Frailsware%2Fjs-routes?ref=badge_shield)
 
 Generates javascript file that defines all Rails named routes as javascript helpers
 
@@ -244,3 +245,7 @@ Advantages of this one are:
 #### Thanks to [Contributors](https://github.com/railsware/js-routes/contributors)
 
 #### Have fun
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Frailsware%2Fjs-routes.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Frailsware%2Fjs-routes?ref=badge_large)
