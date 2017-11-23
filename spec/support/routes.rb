@@ -8,25 +8,24 @@ def draw_routes
 
     get 'support(/page/:page)', to: BlogEngine::Engine, as: 'support'
 
-    resources :inboxes do
-      resources :messages do
-        resources :attachments
+    resources :inboxes, only: [:index, :show] do
+      resources :messages, only: [:index, :show] do
+        resources :attachments, only: [:new, :show]
       end
     end
 
     root :to => "inboxes#index"
 
     namespace :admin do
-      resources :users
+      resources :users, only: [:index]
     end
 
     scope "/returns/:return" do
-      resources :objects
+      resources :objects, only: [:show]
     end
-    resources :returns
 
     scope "(/optional/:optional_id)" do
-      resources :things
+      resources :things, only: [:show, :index]
     end
 
     get "(/sep1/:first_optional)/sep2/:second_required/sep3/:third_required(/:forth_optional)",
@@ -51,11 +50,11 @@ def draw_routes
     get '/привет' => "foo#foo", :as => :hello
     get '(/o/:organization)/search/:q' => "foo#foo", as: :search
 
-    resources :sessions, :only => [:new, :create, :destroy], :protocol => 'https'
+    resources :sessions, :only => [:new, :create], :protocol => 'https'
 
     get '/' => 'sso#login', host: 'sso.example.com', as: :sso
 
-    resources :portals, :port => 8080
+    resources :portals, :port => 8080, only: [:index]
 
     get '/with_defaults' => 'foo#foo', defaults: { bar: 'tested', format: :json }, format: :true
 
@@ -63,7 +62,7 @@ def draw_routes
       get "/purchases" => "purchases#index"
     end
 
-    resources :budgies do
+    resources :budgies, only: [:show, :index] do
       get "descendents"
     end
 

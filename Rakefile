@@ -22,6 +22,7 @@ task :default => :spec
 
 
 namespace :spec do
+  desc "Print all routes defined in test env"
   task :routes do
     require './spec/spec_helper'
     require 'action_dispatch/routing/inspector'
