@@ -15,6 +15,7 @@ DeprecatedBehavior = DEPRECATED_BEHAVIOR
 ReservedOptions = [
   'anchor'
   'trailing_slash'
+  'subdomain'
   'host'
   'port'
   'protocol'
