@@ -399,8 +399,11 @@ describe JsRoutes, "options" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://current.example.com#{test_routes.inbox_path(1)}")
           expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://current.example.com#{test_routes.inbox_path(1, :test_key => "test_val")}")
           expect(evaljs("Routes.new_session_url()")).to eq("https://current.example.com#{test_routes.new_session_path}")
-          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com#{test_routes.sso_path}")
 
+        end
+
+        it "doesn't use current when specified in the route" do
+          expect(evaljs("Routes.sso_url()")).to eq(test_routes.sso_url)
         end
 
         it "uses host option as an argument" do
