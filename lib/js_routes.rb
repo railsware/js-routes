@@ -37,7 +37,7 @@ class JsRoutes
   }
 
   LAST_OPTIONS_KEY = "options".freeze
-  FILTERED_DEFAULT_PARTS = [:controller, :action, :subdomain]
+  FILTERED_DEFAULT_PARTS = [:controller, :action]
   URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain]
 
   class Configuration < Struct.new(*DEFAULTS.keys)

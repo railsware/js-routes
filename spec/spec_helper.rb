@@ -107,7 +107,7 @@ RSpec.configure do |config|
         value.to_h.map do |k,v|
           [k, inspectify(v)]
         end.to_h
-      when String, nil, Fixnum, FalseClass, TrueClass
+      when String, nil, Integer, FalseClass, TrueClass
         value
       else
         raise "wtf #{value.class}?"

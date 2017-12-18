@@ -349,8 +349,8 @@ describe JsRoutes, "options" do
           expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com:3000" + test_routes.sso_path)
         end
 
-        it "does not override port when specified in route" do
-          expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{test_routes.portals_path}")
+        it "does not override parts when specified in route" do
+          expect(evaljs("Routes.secret_root_url()")).to eq(test_routes.secret_root_url)
         end
       end
 
@@ -358,9 +358,6 @@ describe JsRoutes, "options" do
         let(:_options) { { :camel_case => true, :url_links => true, :default_url_options => {:host => "example.com"} } }
         it "should generate path and url links" do
           expect(evaljs("Routes.inboxUrl(1)")).to eq("http://example.com#{test_routes.inbox_path(1)}")
-          expect(evaljs("Routes.newSessionUrl()")).to eq("https://example.com#{test_routes.new_session_path}")
-          expect(evaljs("Routes.ssoUrl()")).to eq(test_routes.sso_url)
-          expect(evaljs("Routes.portalsUrl()")).to eq("http://example.com:8080#{test_routes.portals_path}")
         end
       end
 
@@ -368,9 +365,6 @@ describe JsRoutes, "options" do
         let(:_options) { { :prefix => "/api", :url_links => true, :default_url_options => {:host => 'example.com'} } }
         it "should generate path and url links" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com/api#{test_routes.inbox_path(1)}")
-          expect(evaljs("Routes.new_session_url()")).to eq("https://example.com/api#{test_routes.new_session_path}")
-          expect(evaljs("Routes.sso_url()")).to eq("http://sso.example.com/api#{test_routes.sso_path}")
-          expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080/api#{test_routes.portals_path}")
         end
       end
 
@@ -378,9 +372,6 @@ describe JsRoutes, "options" do
         let(:_options) { { :compact => true, :url_links => true, :default_url_options => {:host => 'example.com'} } }
         it "does not affect url helpers" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://example.com#{test_routes.inbox_path(1)}")
-          expect(evaljs("Routes.new_session_url()")).to eq("https://example.com#{test_routes.new_session_path}")
-          expect(evaljs("Routes.sso_url()")).to eq(test_routes.sso_url)
-          expect(evaljs("Routes.portals_url()")).to eq("http://example.com:8080#{test_routes.portals_path}")
         end
       end
     end
@@ -413,15 +404,19 @@ describe JsRoutes, "options" do
         end
 
         it "uses host option as an argument" do
-          expect(evaljs("Routes.portals_url({host: 'another.com'})")).to eq(test_routes.portals_url(host: 'another.com'))
+          expect(evaljs("Routes.secret_root_url({host: 'another.com'})")).to eq(test_routes.secret_root_url(host: 'another.com'))
         end
 
         it "uses port option as an argument" do
-          expect(evaljs("Routes.portals_url({host: 'localhost', port: 8080})")).to eq(test_routes.portals_url(host: 'localhost', port: 8080))
+          expect(evaljs("Routes.secret_root_url({host: 'localhost', port: 8080})")).to eq(test_routes.secret_root_url(host: 'localhost', port: 8080))
         end
 
         it "uses protocol option as an argument" do
-          expect(evaljs("Routes.portals_url({host: 'localhost', protocol: 'https'})")).to eq(test_routes.portals_url(protocol: 'https', host: 'localhost'))
+          expect(evaljs("Routes.secret_root_url({host: 'localhost', protocol: 'https'})")).to eq(test_routes.secret_root_url(protocol: 'https', host: 'localhost'))
+        end
+
+        it "uses subdomain option as an argument" do
+          expect(evaljs("Routes.secret_root_url({subdomain: 'custom'})")).to eq(test_routes.secret_root_url(subdomain: 'custom'))
         end
       end
     end

@@ -51,8 +51,8 @@ def draw_routes
     get '(/o/:organization)/search/:q' => "foo#foo", as: :search
 
     resources :sessions, :only => [:new, :create], :protocol => 'https'
-
     get '/' => 'sso#login', host: 'sso.example.com', as: :sso
+    get "/" => "a#b", subdomain: 'www', host: 'example.com', port: 88, as: :secret_root
 
     resources :portals, :port => 8080, only: [:index]
 

@@ -282,7 +282,7 @@ Utils =
 
     return '' unless hostname
 
-    subdomain = route_defaults.subdomain ? route_defaults.subdomain + '.' : ''
+    subdomain = if route_defaults.subdomain then route_defaults.subdomain + '.' else ''
     protocol = route_defaults.protocol || Utils.current_protocol()
     port = route_defaults.port || (Utils.current_port() unless route_defaults.host)
     port = if port then ":#{port}" else ''
