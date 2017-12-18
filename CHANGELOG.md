@@ -1,5 +1,9 @@
 ## master
 
+## v1.4.3
+
+* Proper implementation of the :subdomain option in routes generation
+
 ## v1.4.2
 
 * Added JsRoutes namespace to Engine #230
