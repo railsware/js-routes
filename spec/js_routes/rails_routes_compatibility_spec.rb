@@ -25,6 +25,19 @@ describe JsRoutes, "compatibility with Rails"  do
       .to raise_error('Route parameter missing: title')
   end
 
+  it "should produce error stacktraces including function names" do
+     stacktrace = evaljs("
+        (function(){
+          try {
+            Routes.thing_path()
+          } catch(e) {
+            return e.stack;
+          }
+        })()
+      ")
+    expect(stacktrace).to include "thing_path"
+  end
+
   it "should support 0 as a member parameter" do
     expect(evaljs("Routes.inbox_path(0)")).to eq(test_routes.inbox_path(0))
   end
