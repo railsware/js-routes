@@ -7,7 +7,10 @@ root = (exports ? this)
 
 ParameterMissing = (message, fileName, lineNumber) ->
   instance = new Error(message, fileName, lineNumber)
-  Object.setPrototypeOf instance, Object.getPrototypeOf(this)
+  if Object.setPrototypeOf
+    Object.setPrototypeOf instance, Object.getPrototypeOf(this)
+  else
+    instance.__proto__ = this.__proto__
   if Error.captureStackTrace
     Error.captureStackTrace instance, ParameterMissing
   instance
