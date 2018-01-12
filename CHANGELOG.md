@@ -1,5 +1,7 @@
 ## master
 
+* More informative stack trace for ParameterMissing error #235
+
 ## v1.4.3
 
 * Proper implementation of the :subdomain option in routes generation
