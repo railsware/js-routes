@@ -5,8 +5,27 @@ Based on Rails routes of APP_CLASS
 # root is this
 root = (exports ? this)
 
-ParameterMissing = (@message) -> #
-ParameterMissing:: = new Error()
+ParameterMissing = (message, fileName, lineNumber) ->
+  instance = new Error(message, fileName, lineNumber)
+  if Object.setPrototypeOf
+    Object.setPrototypeOf instance, Object.getPrototypeOf(this)
+  else
+    instance.__proto__ = this.__proto__
+  if Error.captureStackTrace
+    Error.captureStackTrace instance, ParameterMissing
+  instance
+
+ParameterMissing.prototype = Object.create(Error.prototype, constructor:
+  value: Error
+  enumerable: false
+  writable: true
+  configurable: true
+)
+
+if Object.setPrototypeOf
+  Object.setPrototypeOf(ParameterMissing, Error)
+else
+  ParameterMissing.__proto__ = Error
 
 NodeTypes = NODE_TYPES
 SpecialOptionsKey = SPECIAL_OPTIONS_KEY
