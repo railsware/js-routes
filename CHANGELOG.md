@@ -1,5 +1,7 @@
 ## master
 
+## v1.4.4
+
 * More informative stack trace for ParameterMissing error #235
 
 ## v1.4.3
