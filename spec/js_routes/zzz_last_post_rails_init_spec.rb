@@ -43,6 +43,20 @@ describe "after Rails initialization" do
     expect(File.exists?(NAME)).to be_truthy
   end
 
+  it "should not rewrite routes file if nothing changed" do
+    routes_file_mtime = File.mtime(NAME)
+    JsRoutes.generate!(NAME)
+    expect(File.mtime(NAME)).to eq(routes_file_mtime)
+  end
+
+  it "should rewrite routes file if file content changed" do
+    # Change content of existed routes file (add space to the end of file).
+    File.open(NAME, 'a') { |f| f << ' ' }
+    routes_file_mtime = File.mtime(NAME)
+    JsRoutes.generate!(NAME)
+    expect(File.mtime(NAME)).not_to eq(routes_file_mtime)
+  end
+
   context "JsRoutes::Engine" do
     TEST_ASSET_PATH = Rails.root.join('app','assets','javascripts','test.js')
 

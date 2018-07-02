@@ -150,8 +150,15 @@ class JsRoutes
     # https://github.com/railsware/js-routes/issues/7
     Rails.configuration.after_initialize do
       file_name ||= self.class.configuration['file']
-      File.open(Rails.root.join(file_name), 'w') do |f|
-        f.write generate
+      file_path = Rails.root.join(file_name)
+      js_content = generate
+
+      # We don't need to rewrite file if it already exist and have same content.
+      # It helps asset pipeline or webpack understand that file wasn't changed.
+      return if File.exist?(file_path) && File.read(file_path) == js_content
+
+      File.open(file_path, 'w') do |f|
+        f.write js_content
       end
     end
   end
