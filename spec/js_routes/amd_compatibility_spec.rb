@@ -4,7 +4,7 @@ describe JsRoutes, "compatibility with AMD/require.js"  do
 
   before(:each) do
     evaljs("window.GlobalCheck = {};")
-    evaljs("window.define = function (requirs, callback) { window.GlobalCheck['js-routes'] = callback.call(this); return window.GlobalCheck['js-routes']; };")
+    evaljs("window.define = function (callback) { window.GlobalCheck['js-routes'] = callback(); };")
     evaljs("window.define.amd = { jQuery: true };")
     strRequire =<<EOF
     window.require = function (r, callback) {
@@ -27,12 +27,8 @@ EOF
     evaljs(JsRoutes.generate({}))
   end
 
-  it "should working from global scope" do
-    expect(evaljs("Routes.inboxes_path()")).to eq(test_routes.inboxes_path())
-  end
-
   it "should working from define function" do
-    expect(evaljs("Routes.inboxes_path()")).to eq(evaljs("GlobalCheck['js-routes'].inboxes_path()"))
+    expect(evaljs("GlobalCheck['js-routes'].inboxes_path()")).to eq(test_routes.inboxes_path())
   end
 
   it "should working from require" do

@@ -1,0 +1,15 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false,
+        "loose": true,
+        "target": {
+          "browsers": "> 1%"
+        }
+      }
+    ]
+  ],
+  "plugins": ["external-helpers"]
+}

@@ -134,7 +134,7 @@ class JsRoutes
       "NODE_TYPES"          => json(NODE_TYPES),
 
       "APP_CLASS"           => application.class.to_s,
-      "NAMESPACE"           => json(@configuration.namespace),
+      "NAMESPACE"           => @configuration.namespace,
       "DEFAULT_URL_OPTIONS" => json(@configuration.default_url_options),
       "PREFIX"              => json(@configuration.prefix),
       "SPECIAL_OPTIONS_KEY" => json(@configuration.special_options_key),
@@ -297,4 +297,3 @@ class JsRoutes
     ]
   end
 end
-

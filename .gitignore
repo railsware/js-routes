@@ -58,3 +58,5 @@ gemfiles/*.lock
 /spec/dummy/app/assets/javascripts/routes.js
 /spec/dummy/logs
 /spec/dummy/tmp
+
+node_modules/
