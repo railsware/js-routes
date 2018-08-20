@@ -6,7 +6,6 @@ require 'rspec'
 require 'rails/all'
 require 'js-routes'
 require 'active_support/core_ext/hash/slice'
-require 'coffee-script'
 # fix ends_with? error for rails 3.2
 require 'active_support/core_ext/string/starts_ends_with' if 3 == Rails::VERSION::MAJOR
 
@@ -84,13 +83,6 @@ RSpec.configure do |config|
   end
 
   config.before(:all) do
-    # compile all js files begin
-    Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))}/**/*.coffee"].each do |coffee|
-      File.open(coffee.gsub(/\.coffee$/, ""), 'w') do |f|
-        f.write(CoffeeScript.compile(File.read(coffee)).lstrip)
-      end
-    end
-    # compile all js files end
     draw_routes
   end
 

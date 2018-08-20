@@ -24,7 +24,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<sprockets-rails>)
   s.add_development_dependency(%q<rspec>, [">= 3.0.0"])
   s.add_development_dependency(%q<bundler>, [">= 1.1.0"])
-  s.add_development_dependency(%q<coffee-script>, [">= 0"])
   s.add_development_dependency(%q<appraisal>, [">= 0.5.2"])
   if defined?(JRUBY_VERSION)
     s.add_development_dependency(%q<therubyrhino>, [">= 2.0.4"])

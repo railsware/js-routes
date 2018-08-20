@@ -179,13 +179,6 @@ describe JsRoutes, "options" do
       end
     end
 
-    context "but undefined on client" do
-      let(:_options) { {:namespace => "PHM.Routes"} }
-      it "should initialize namespace" do
-        expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
-      end
-    end
-
     context "and some parts are defined" do
       let(:_presetup) { "window.PHM = { Utils: {} };" }
       let(:_options) { {:namespace => "PHM.Routes"} }
