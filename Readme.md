@@ -30,9 +30,9 @@ This cache is not flushed on server restart in development environment.
 
 **Important:** If routes.js file is not updated after some configuration change you need to run this rake task again.
 
-### Advanced Setup
+### Configuration
 
-If you need to customize routes file create initializer, like `config/initializers/jsroutes.rb`:
+You can configure JsRoutes in two main ways. Either with an initializer (e.g. `config/initializers/jsroutes.rb`):
 
 ``` ruby
 JsRoutes.setup do |config|
@@ -40,7 +40,7 @@ JsRoutes.setup do |config|
 end
 ```
 
-Or make a more dynamic configuration in JavaScript, but only specific options support the possibility of such configuration(see the list below):
+Or dynamically in JavaScript, although not all configuration options are supported:
 
 ``` js
 Routes.configure({
@@ -191,7 +191,7 @@ Routes.user_path.required_params // => ['id']
 
 ## Rails Compatibility
 
-JsRoutes tries to replicate the Rails routing API as closely as possible. If you find any incompatibilities  (outside of what is described below), please [open an issue](https://github.com/railsware/js-routes/issues/new).
+JsRoutes tries to replicate the Rails routing API as closely as possible. If you find any incompatibilities (outside of what is described below), please [open an issue](https://github.com/railsware/js-routes/issues/new).
 
 ### Object and Hash distinction issue
 
@@ -199,7 +199,7 @@ Sometimes the destinction between JS Hash and Object can not be found by JsRoute
 In this case you would need to pass a special key to help:
 
 ``` js
-Routes.company_project_path({company_id: 1, id: 2}) // => Not Enough parameters
+Routes.company_project_path({company_id: 1, id: 2}) // => Not enough parameters
 Routes.company_project_path({company_id: 1, id: 2, _options: true}) // => "/companies/1/projects/2"
 ```
 
@@ -220,7 +220,7 @@ Spork.trap_method(JsRoutes, :generate!)
 
 ## JsRoutes and Heroku
 
-Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environment. You should use "Very Advanced Setup" schema in this case.
+When using this setup on Heroku, it is impossible to use the asset pipeline. You should use the "Very Advanced Setup" schema in this case.
 
 For example create routes.js.erb in assets folder with needed content:
 
@@ -241,7 +241,7 @@ Advantages of this one are:
 * Support Rails `#to_param` convention for seo optimized paths
 * Well tested
 
-#### Thanks to [Contributors](https://github.com/railsware/js-routes/contributors)
+#### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)
 
 #### Have fun
 
