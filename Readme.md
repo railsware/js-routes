@@ -14,7 +14,7 @@ gem "js-routes"
 
 ### Basic Setup
 
-Require js routes file in `application.js` or other bundle
+Require JsRoutes in `application.js` or other bundle
 
 ``` js
 //= require js-routes
@@ -55,10 +55,10 @@ Available options:
   * Option is configurable at JS level with `Routes.configure()`
   * Example: {:format => "json", :trailing\_slash => true, :protocol => "https", :subdomain => "api", :host => "example.com", :port => 3000}
   * Default: {}
-* `exclude` - Array of regexps to exclude from js routes.
+* `exclude` - Array of regexps to exclude from routes.
   * Default: []
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
-* `include` - Array of regexps to include in js routes.
+* `include` - Array of regexps to include in routes.
   * Default: []
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
 * `namespace` - global object used to access routes.
@@ -83,7 +83,7 @@ Available options:
   * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
   * Example: `MyApp.custom_serialize` - use completely custom serializer of your application.
 
-* `special_options_key` - a special key that helps js-routes to destinguish serialized model from options hash
+* `special_options_key` - a special key that helps JsRoutes to destinguish serialized model from options hash
   * This option is required because JS doesn't provide a difference between an object and a hash
   * Option is configurable at JS level with `Routes.configure()`
   * Default: `_options`
@@ -189,14 +189,13 @@ Routes.user_path.required_params // => ['id']
 ```
 
 
-## Rails Compatibilities
+## Rails Compatibility
 
-JsRoutes ties to be as close as possible to rails behaviour in all aspects of routing API.
-Please make and issue in case of any incomtibilities found outside of described below.
+JsRoutes tries to replicate the Rails routing API as closely as possible. If you find any incompatibilities  (outside of what is described below), please [open an issue](https://github.com/railsware/js-routes/issues/new).
 
 ### Object and Hash distinction issue
 
-Sometimes the destinction between JS Hash and Object can not be found by js-routes.
+Sometimes the destinction between JS Hash and Object can not be found by JsRoutes.
 In this case you would need to pass a special key to help:
 
 ``` js
@@ -207,7 +206,7 @@ Routes.company_project_path({company_id: 1, id: 2, _options: true}) // => "/comp
 
 ## What about security?
 
-js-routes itself do not have security holes. It makes URLs
+JsRoutes itself do not have security holes. It makes URLs
 without access protection more reachable by potential attacker.
 In order to prevent this use `:exclude` option for sensitive urls like `/admin_/`
 
@@ -219,7 +218,7 @@ When using Spork and `Spork.trap_method(Rails::Application::RoutesReloader, :rel
 Spork.trap_method(JsRoutes, :generate!)
 ```
 
-## JS-Routes and heroku
+## JsRoutes and Heroku
 
 Heroku environment has a specific problems with setup. It is impossible to use asset pipeline in this environment. You should use "Very Advanced Setup" schema in this case.
 
