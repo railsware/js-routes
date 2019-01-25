@@ -6,7 +6,12 @@ describe JsRoutes, "options" do
     evaljs(_presetup) if _presetup
     with_warnings(_warnings) do
       evaljs(JsRoutes.generate(_options))
+      App.routes.default_url_options = _options[:default_url_options] || {}
     end
+  end
+
+  after(:each) do
+    App.routes.default_url_options = {}
   end
 
   let(:_presetup) { nil }
@@ -135,11 +140,11 @@ describe JsRoutes, "options" do
     let(:_warnings) { nil }
 
     it "should render routing with default_format" do
-      expect(evaljs("Routes.inbox_path(1)")).to eq(test_routes.inbox_path(1, :format => "json"))
+      expect(evaljs("Routes.inbox_path(1)")).to eq(test_routes.inbox_path(1))
     end
 
     it "should render routing with default_format and zero object" do
-      expect(evaljs("Routes.inbox_path(0)")).to eq(test_routes.inbox_path(0, :format => "json"))
+      expect(evaljs("Routes.inbox_path(0)")).to eq(test_routes.inbox_path(0))
     end
 
     it "should override default_format when spefified implicitly" do
@@ -147,13 +152,13 @@ describe JsRoutes, "options" do
     end
 
     it "should override nullify implicitly when specified implicitly" do
-      expect(evaljs("Routes.inbox_path(1, {format: null})")).to eq(test_routes.inbox_path(1))
+      expect(evaljs("Routes.inbox_path(1, {format: null})")).to eq(test_routes.inbox_path(1, format: nil))
     end
 
 
     it "shouldn't require the format" do
       pending if Rails.version < "4.0"
-      expect(evaljs("Routes.json_only_path()")).to eq(test_routes.json_only_path(:format => 'json'))
+      expect(evaljs("Routes.json_only_path()")).to eq(test_routes.json_only_path)
     end
   end
 
@@ -201,14 +206,14 @@ describe JsRoutes, "options" do
       context "provided" do
         let(:_options) { { :default_url_options => { :optional_id => "12", :format => "json" } } }
         it "should use this opions to fill optional parameters" do
-          expect(evaljs("Routes.things_path()")).to eq(test_routes.things_path(:optional_id => 12, :format => "json"))
+          expect(evaljs("Routes.things_path()")).to eq(test_routes.things_path)
         end
       end
 
       context "not provided" do
         let(:_options) { { :default_url_options => { :format => "json" } } }
         it "breaks" do
-          expect(evaljs("Routes.foo_all_path()")).to eq(test_routes.foo_all_path(:format => "json"))
+          expect(evaljs("Routes.foo_all_path()")).to eq(test_routes.foo_all_path)
         end
       end
     end
@@ -216,7 +221,7 @@ describe JsRoutes, "options" do
     context "with required route parts" do
       let(:_options) { {:default_url_options => {:inbox_id => "12"}} }
       it "should use this opions to fill optional parameters" do
-        expect(evaljs("Routes.inbox_messages_path()")).to eq(test_routes.inbox_messages_path(:inbox_id => 12))
+        expect(evaljs("Routes.inbox_messages_path()")).to eq(test_routes.inbox_messages_path)
       end
     end
 
@@ -248,7 +253,7 @@ describe JsRoutes, "options" do
       end
 
       it "should remove it by params" do
-        expect(evaljs("Routes.inbox_path(1, {trailing_slash: false})")).to eq(test_routes.inbox_path(1))
+        expect(evaljs("Routes.inbox_path(1, {trailing_slash: false})")).to eq(test_routes.inbox_path(1, trailing_slash: false))
       end
     end
 
