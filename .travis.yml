@@ -14,7 +14,6 @@ rvm:
   - jruby-head
 
 gemfile:
-  - gemfiles/rails32.gemfile
   - gemfiles/rails40_sprockets_2.gemfile
   - gemfiles/rails40_sprockets_3.gemfile
   - gemfiles/rails41_sprockets_2.gemfile
