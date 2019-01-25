@@ -1,8 +1,3 @@
-appraise "rails32" do
-  gem "railties", "~> 3.2.22.5"
-  gem 'tzinfo'
-end
-
 def define_appraisal(rails, version, sprockets)
   sprockets.each do |sprocket|
     appraise "#{rails}-sprockets-#{sprocket}" do

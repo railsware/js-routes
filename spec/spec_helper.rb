@@ -60,13 +60,7 @@ class ::App < Rails::Application
   config.assets.enabled = true
   # initialize_on_precompile
   config.assets.initialize_on_precompile = true
-
-  if 3 == Rails::VERSION::MAJOR
-    config.paths['config/routes'] << 'spec/config/routes.rb'
-  else
-    config.paths['config/routes.rb'] << 'spec/config/routes.rb'
-  end
-
+  config.paths['config/routes.rb'] << 'spec/config/routes.rb'
   config.root = File.expand_path('../dummy', __FILE__)
 end
 

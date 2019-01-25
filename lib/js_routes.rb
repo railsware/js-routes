@@ -98,16 +98,6 @@ class JsRoutes
       new(opts).generate!(file_name)
     end
 
-    # Under rails 3.1.1 and higher, perform a check to ensure that the
-    # full environment will be available during asset compilation.
-    # This is required to ensure routes are loaded.
-    def assert_usable_configuration!
-      if 3 == Rails::VERSION::MAJOR && !Rails.application.config.assets.initialize_on_precompile
-        raise("Cannot precompile js-routes unless environment is initialized. Please set config.assets.initialize_on_precompile to true.")
-      end
-      true
-    end
-
     def json(string)
       ActiveSupport::JSON.encode(string)
     end
@@ -130,7 +120,6 @@ class JsRoutes
     {
       "GEM_VERSION"         => JsRoutes::VERSION,
       "ROUTES"              => js_routes,
-      "DEPRECATED_BEHAVIOR" => Rails.version < "4",
       "NODE_TYPES"          => json(NODE_TYPES),
 
       "APP_CLASS"           => application.class.to_s,
