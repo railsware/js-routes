@@ -210,14 +210,6 @@ JsRoutes itself do not have security holes. It makes URLs
 without access protection more reachable by potential attacker.
 In order to prevent this use `:exclude` option for sensitive urls like `/admin_/`
 
-## Spork
-
-When using Spork and `Spork.trap_method(Rails::Application::RoutesReloader, :reload!)` you should also do:
-
-``` ruby
-Spork.trap_method(JsRoutes, :generate!)
-```
-
 ## JsRoutes and Heroku
 
 When using this setup on Heroku, it is impossible to use the asset pipeline. You should use the "Very Advanced Setup" schema in this case.
