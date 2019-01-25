@@ -100,11 +100,7 @@ describe "after Rails initialization" do
               Rails.application.config.assets.initialize_on_precompile = false
             end
             it "should raise an exception if 3 version" do
-              if 3 == Rails::VERSION::MAJOR
-                expect { evaluate(ctx, 'js-routes.js') }.to raise_error(/Cannot precompile/)
-              else
-                expect(evaluate(ctx, 'js-routes.js')).to match(/routes = /)
-              end
+              expect(evaluate(ctx, 'js-routes.js')).to match(/routes = /)
             end
           end
 
