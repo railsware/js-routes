@@ -5,11 +5,9 @@ before_install:
   - gem install bundler # need for jruby and ruby-head
 
 rvm:
-  - 2.0
-  - 2.1
-  - 2.2.5
   - 2.3.1
   - 2.4.1
+  - 2.5.3
   - jruby-19mode
   - ruby-head
   - jruby-head
