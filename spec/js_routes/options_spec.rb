@@ -155,9 +155,7 @@ describe JsRoutes, "options" do
       expect(evaljs("Routes.inbox_path(1, {format: null})")).to eq(test_routes.inbox_path(1, format: nil))
     end
 
-
     it "shouldn't require the format" do
-      pending if Rails.version < "4.0"
       expect(evaljs("Routes.json_only_path()")).to eq(test_routes.json_only_path)
     end
   end

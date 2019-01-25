@@ -234,19 +234,16 @@ describe JsRoutes, "compatibility with Rails"  do
       end
 
       it "should skip leading and trailing optional parts" do
-        skip if Rails.version < '4'
         expect(evaljs("Routes.thing_deep_path(1, 2)")).to eq(test_routes.thing_deep_path(1, 2))
       end
     end
 
     context "and including them" do
-      if Rails.version < '4'
-        it "should fail when insufficient arguments are given" do
-          expect { evaljs("Routes.thing_deep_path(1)")}
-            .to raise_error('Route parameter missing: second_required')
-          expect { evaljs("Routes.thing_deep_path(1,2)")}
-            .to raise_error('Route parameter missing: third_required')
-        end
+      it "should fail when insufficient arguments are given" do
+        expect { evaljs("Routes.thing_deep_path(1)")}
+          .to raise_error('Route parameter missing: second_required')
+        expect { evaljs("Routes.thing_deep_path(1,2)")}
+          .to raise_error('Route parameter missing: third_required')
       end
 
       it "should include the optional parts" do
