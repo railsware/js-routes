@@ -241,8 +241,6 @@ describe JsRoutes, "compatibility with Rails"  do
     context "and including them" do
       it "should fail when insufficient arguments are given" do
         expect { evaljs("Routes.thing_deep_path(1)")}
-          .to raise_error('Route parameter missing: second_required')
-        expect { evaljs("Routes.thing_deep_path(1,2)")}
           .to raise_error('Route parameter missing: third_required')
       end
 
@@ -255,6 +253,7 @@ describe JsRoutes, "compatibility with Rails"  do
         expect(evaljs("Routes.thing_deep_path(3, { first_optional: 1, second_required: 2 })")).to eq(test_routes.thing_deep_path(3, first_optional: 1, second_required: 2))
         expect(evaljs("Routes.thing_deep_path(3, { first_optional: 1, second_required: 2, forth_optional: 4 })")).to eq(test_routes.thing_deep_path(3, first_optional: 1, second_required: 2, forth_optional: 4))
         expect(evaljs("Routes.thing_deep_path(4, { first_optional: 1, second_required: 2, third_required: 3 })")).to eq(test_routes.thing_deep_path(4, first_optional: 1, second_required: 2, third_required: 3))
+        expect(evaljs("Routes.thing_deep_path(2, 3)")).to eq(test_routes.thing_deep_path(2, 3))
         expect(evaljs("Routes.thing_deep_path(1, 2, { third_required: 3 })")).to eq(test_routes.thing_deep_path(1, 2, third_required: 3))
         expect(evaljs("Routes.thing_deep_path(1,2, {third_required: 3, q: 'bogdan'})")).to eq(test_routes.thing_deep_path(1,2, {third_required: 3, q: 'bogdan'}))
         expect(evaljs("Routes.thing_deep_path(1, 2, { forth_optional: 4, third_required: 3 })")).to eq(test_routes.thing_deep_path(1, 2, forth_optional: 4, third_required: 3))
