@@ -240,8 +240,7 @@ describe JsRoutes, "compatibility with Rails"  do
 
     context "and including them" do
       it "should fail when insufficient arguments are given" do
-        expect { evaljs("Routes.thing_deep_path(1)")}
-          .to raise_error('Route parameter missing: third_required')
+        expect { evaljs("Routes.thing_deep_path(2)") }.to raise_error('Route parameter missing: third_required')
       end
 
       it "should include the optional parts" do
