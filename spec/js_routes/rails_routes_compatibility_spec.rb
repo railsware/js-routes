@@ -111,6 +111,9 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should support route with parameters" do
       expect(evaljs("Routes.blog_app_post_path(1)")).to eq(blog_routes.post_path(1))
     end
+    it "should support route with parameters containing symbols that need URI-encoding" do
+      expect(evaljs("Routes.blog_app_post_path('#hello')")).to eq(blog_routes.post_path('#hello'))
+    end
     it "should support root path" do
       expect(evaljs("Routes.blog_app_root_path()")).to eq(blog_routes.root_path)
     end
