@@ -121,6 +121,7 @@ class JsRoutes
       "GEM_VERSION"         => JsRoutes::VERSION,
       "ROUTES"              => js_routes,
       "NODE_TYPES"          => json(NODE_TYPES),
+      "RAILS_VERSION"       => Rails::VERSION,
       "DEPRECATED_GLOBBING_BEHAVIOR" => Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR == 0,
 
       "APP_CLASS"           => application.class.to_s,
