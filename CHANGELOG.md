@@ -1,5 +1,9 @@
 ## master
 
+## v1.4.5
+
+* Fix escaping inside route parameters and globbing #244
+
 ## v1.4.4
 
 * More informative stack trace for ParameterMissing error #235
