@@ -212,7 +212,7 @@ Utils =
         value = parameters[left]
         delete parameters[left]
         if value?
-          return @path_identifier(value)
+          return encodeURIComponent(@path_identifier(value))
         if optional
           "" # missing parameter
         else
@@ -260,12 +260,14 @@ Utils =
     route[1] = left = left.replace(/^\*/i, "") if left.replace(/^\*/i, "") isnt left
     value = parameters[left]
     return @visit(route, parameters, optional) unless value?
-    parameters[left] = switch @get_object_type(value)
+    value = switch @get_object_type(value)
       when "array"
         value.join("/")
       else
         value
-    @visit route, parameters, optional
+
+    delete parameters[left]
+    @path_identifier(value)
 
   #
   # This method check and return prefix from options
