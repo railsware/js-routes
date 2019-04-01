@@ -259,6 +259,7 @@ Utils =
     # fix for rails 4 globbing
     route[1] = left = left.replace(/^\*/i, "") if left.replace(/^\*/i, "") isnt left
     value = parameters[left]
+    delete parameters[left]
     return @visit(route, parameters, optional) unless value?
     value = switch @get_object_type(value)
       when "array"
@@ -266,7 +267,6 @@ Utils =
       else
         value
 
-    delete parameters[left]
     encodeURI(@path_identifier(value))
 
   #
