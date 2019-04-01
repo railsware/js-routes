@@ -53,6 +53,7 @@ describe "after Rails initialization" do
     # Change content of existed routes file (add space to the end of file).
     File.open(NAME, 'a') { |f| f << ' ' }
     routes_file_mtime = File.mtime(NAME)
+    sleep(1)
     JsRoutes.generate!(NAME)
     expect(File.mtime(NAME)).not_to eq(routes_file_mtime)
   end

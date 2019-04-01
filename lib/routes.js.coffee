@@ -210,8 +210,8 @@ Utils =
         "#{left_part}#{right_part}"
       when NodeTypes.SYMBOL
         value = parameters[left]
+        delete parameters[left]
         if value?
-          delete parameters[left]
           return @path_identifier(value)
         if optional
           "" # missing parameter
