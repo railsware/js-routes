@@ -70,6 +70,10 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.inbox_path(1, {expanded: true, anchor: 'hello'})")).to eq(test_routes.inbox_path(1, :expanded => true, :anchor => "hello"))
   end
 
+  it "should support required paramters given as options hash" do
+    expect(evaljs("Routes.search_path({q: 'hello'})")).to eq(test_routes.search_path(:q => 'hello'))
+  end
+
   it "should use irregular ActiveSupport pluralizations" do
     expect(evaljs("Routes.budgies_path()")).to eq(test_routes.budgies_path)
     expect(evaljs("Routes.budgie_path(1)")).to eq(test_routes.budgie_path(1))
@@ -161,6 +165,9 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.inboxes_path({uri: 'http://example.com'})")).to eq(test_routes.inboxes_path(:uri => 'http://example.com'))
     end
 
+    it "should support nested object null parameters" do
+      expect(evaljs("Routes.inboxes_path({hello: {world: null}})")).to eq(test_routes.inboxes_path(:hello => {:world => nil}))
+    end
   end
 
 
@@ -195,14 +202,6 @@ describe JsRoutes, "compatibility with Rails"  do
 
     it "should support routes globbing in book_title route as array with optional params" do
       expect(evaljs("Routes.book_title_path('john', ['thrillers', 'comedian'], {some_key: 'some_value'})")).to eq(test_routes.book_title_path('john', ['thrillers', 'comedian'], {:some_key => 'some_value'}))
-    end
-
-    it "should support required paramters given as options hash" do
-      expect(evaljs("Routes.search_path({q: 'hello'})")).to eq(test_routes.search_path(:q => 'hello'))
-    end
-
-    it "should support nested object null parameters" do
-      expect(evaljs("Routes.inboxes_path({hello: {world: null}})")).to eq(test_routes.inboxes_path(:hello => {:world => nil}))
     end
   end
 
