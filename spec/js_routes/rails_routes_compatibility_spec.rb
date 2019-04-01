@@ -173,12 +173,16 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.book_path(['thrillers'], 1)")).to eq(test_routes.book_path(['thrillers'], 1))
     end
 
-    it "should bee support routes globbing as array" do
+    it "should support routes globbing as array" do
       expect(evaljs("Routes.book_path([1, 2, 3], 1)")).to eq(test_routes.book_path([1, 2, 3], 1))
     end
 
-    it "should bee support routes globbing as hash" do
+    it "should support routes globbing with slash" do
       expect(evaljs("Routes.book_path('a_test/b_test/c_test', 1)")).to eq(test_routes.book_path('a_test/b_test/c_test', 1))
+    end
+
+    it "should support routes globbing as hash" do
+      expect(evaljs("Routes.book_path('a%b', 1)")).to eq(test_routes.book_path('a%b', 1))
     end
 
     it "should support routes globbing as array with optional params" do

@@ -267,7 +267,7 @@ Utils =
         value
 
     delete parameters[left]
-    @path_identifier(value)
+    encodeURI(@path_identifier(value))
 
   #
   # This method check and return prefix from options
