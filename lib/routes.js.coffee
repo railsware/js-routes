@@ -29,6 +29,7 @@ else
 NodeTypes = NODE_TYPES
 DeprecatedGlobbingBehavior = DEPRECATED_GLOBBING_BEHAVIOR
 SpecialOptionsKey = SPECIAL_OPTIONS_KEY
+UriEncoderSegmentRegex = URI_ENCODER_SEGMENT
 
 ReservedOptions = [
   'anchor'
@@ -212,7 +213,7 @@ Utils =
         value = parameters[left]
         delete parameters[left]
         if value?
-          return encodeURIComponent(@path_identifier(value))
+          return @encode_segment(@path_identifier(value))
         if optional
           "" # missing parameter
         else
@@ -225,6 +226,11 @@ Utils =
       else
         throw new Error("Unknown Rails node type")
 
+  encode_segment: (segment) ->
+    if UriEncoderSegmentRegex.test(segment)
+      segment.replace(UriEncoderSegmentRegex, (str) -> encodeURIComponent(str))
+    else
+      segment
 
   is_optional_node: (node) -> @indexOf([NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT], node) >= 0
 
@@ -401,7 +407,7 @@ Utils =
     routes.default_serializer = (object, prefix) ->
       Utils.default_serializer(object, prefix)
     Utils.namespace(root, NAMESPACE, routes)
-  
+
 # Set up Routes appropriately for the environment.
 if typeof define is "function" and define.amd
   # AMD

@@ -118,6 +118,12 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should support route with parameters containing symbols that need URI-encoding" do
       expect(evaljs("Routes.blog_app_post_path('#hello')")).to eq(blog_routes.post_path('#hello'))
     end
+    it "should support route with parameters containing symbols not need URI-encoding" do
+      expect(evaljs("Routes.blog_app_post_path(':some_id')")).to eq(blog_routes.post_path(':some_id'))
+    end
+    it "should support route with parameters containing symbols not need URI-encoding, like regex" do
+      expect(evaljs("Routes.blog_app_post_path('.+')")).to eq(blog_routes.post_path('.+'))
+    end
     it "should support root path" do
       expect(evaljs("Routes.blog_app_root_path()")).to eq(blog_routes.root_path)
     end

@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.summary = %q{Brings Rails named routes to javascript}
 
+  s.add_runtime_dependency(%q<js_regex>, [">= 3.1.0"])
   s.add_runtime_dependency(%q<railties>, [">= 4"])
   s.add_runtime_dependency(%q<sprockets-rails>)
   s.add_development_dependency(%q<rspec>, [">= 3.0.0"])
