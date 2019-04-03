@@ -118,12 +118,14 @@ class JsRoutes
       application.reload_routes!
     end
 
+    deprecated_globbing_behavior = ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0
+
     {
       "GEM_VERSION"         => JsRoutes::VERSION,
       "ROUTES"              => js_routes,
       "NODE_TYPES"          => json(NODE_TYPES),
       "RAILS_VERSION"       => ActionPack.version,
-      "DEPRECATED_GLOBBING_BEHAVIOR" => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
+      "DEPRECATED_GLOBBING_BEHAVIOR" => deprecated_globbing_behavior,
 
       "APP_CLASS"           => application.class.to_s,
       "NAMESPACE"           => json(@configuration.namespace),
@@ -131,7 +133,11 @@ class JsRoutes
       "PREFIX"              => json(@configuration.prefix),
       "SPECIAL_OPTIONS_KEY" => json(@configuration.special_options_key),
       "SERIALIZER"          => @configuration.serializer || json(nil),
-      "URI_ENCODER_SEGMENT" => JsRegex.new(ActionDispatch::Journey::Router::Utils::UriEncoder::SEGMENT),
+      "URI_ENCODER_SEGMENT" => (JsRegex.new(
+        deprecated_globbing_behavior ?
+          ActionDispatch::Journey::Router::Utils::UriEscape::UNSAFE_SEGMENT :
+          ActionDispatch::Journey::Router::Utils::UriEncoder::SEGMENT
+      )),
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
       js.gsub!(key, value.to_s)
     end
