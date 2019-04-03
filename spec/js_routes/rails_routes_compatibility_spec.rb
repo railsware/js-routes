@@ -14,15 +14,15 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.inbox_path(1)")).to eq(test_routes.inbox_path(1))
   end
 
-  it "should raise error if required argument is not passed" do
+  it "should raise error if required argument is not passed", :aggregate_failures do
     expect { evaljs("Routes.thing_path()") }
-      .to raise_error('Route parameter missing: id')
+      .to raise_error(/parameter missing: id/)
     expect { evaljs("Routes.search_path()") }
-      .to raise_error('Route parameter missing: q')
+      .to raise_error(/parameter missing: q/)
     expect { evaljs("Routes.book_path()") }
-      .to raise_error('Route parameter missing: title')
+      .to raise_error(/parameter missing: title/)
     expect { evaljs("Routes.book_title_path()") }
-      .to raise_error('Route parameter missing: title')
+      .to raise_error(/parameter missing: title/)
   end
 
   it "should produce error stacktraces including function names" do
@@ -115,13 +115,12 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should support route with parameters" do
       expect(evaljs("Routes.blog_app_post_path(1)")).to eq(blog_routes.post_path(1))
     end
-    it "should support route with parameters containing symbols that need URI-encoding" do
+    it "should support route with parameters containing symbols that need URI-encoding", :aggregate_failures do
       expect(evaljs("Routes.blog_app_post_path('#hello')")).to eq(blog_routes.post_path('#hello'))
+      expect(evaljs("Routes.blog_app_post_path('some param')")).to eq(blog_routes.post_path('some param'))
     end
-    it "should support route with parameters containing symbols not need URI-encoding" do
+    it "should support route with parameters containing symbols not need URI-encoding", :aggregate_failures do
       expect(evaljs("Routes.blog_app_post_path(':some_id')")).to eq(blog_routes.post_path(':some_id'))
-    end
-    it "should support route with parameters containing symbols not need URI-encoding, like regex" do
       expect(evaljs("Routes.blog_app_post_path('.+')")).to eq(blog_routes.post_path('.+'))
     end
     it "should support root path" do
@@ -234,7 +233,7 @@ describe JsRoutes, "compatibility with Rails"  do
 
       it "should raise error when passing non-full list of arguments and some query params" do
         expect { evaljs("Routes.thing_path(5, {q: 'hello'})") }
-          .to raise_error('Route parameter missing: id')
+          .to raise_error(/parameter missing: id/)
       end
 
       it "should treat null as non-given optional part" do
@@ -252,7 +251,7 @@ describe JsRoutes, "compatibility with Rails"  do
 
     context "and including them" do
       it "should fail when insufficient arguments are given" do
-        expect { evaljs("Routes.thing_deep_path(2)") }.to raise_error('Route parameter missing: third_required')
+        expect { evaljs("Routes.thing_deep_path(2)") }.to raise_error(/parameter missing: third_required/)
       end
 
       it "should include the optional parts" do

@@ -12,8 +12,8 @@ if defined?(JRUBY_VERSION)
   require 'rhino'
   JS_LIB_CLASS = Rhino
 else
-  require 'v8'
-  JS_LIB_CLASS = V8
+  require 'mini_racer'
+  JS_LIB_CLASS = MiniRacer
 end
 
 def jscontext(force = false)
@@ -25,7 +25,11 @@ def jscontext(force = false)
 end
 
 def js_error_class
-  JS_LIB_CLASS::JSError
+  if defined?(JRUBY_VERSION)
+    JS_LIB_CLASS::JSError
+  else
+    JS_LIB_CLASS::Error
+  end
 end
 
 def evaljs(string, force = false)
@@ -89,25 +93,14 @@ RSpec.configure do |config|
   config.before :each do
     evaljs("var window = this;", true)
 
-    def inspectify(value)
-      case value
-      when V8::Array
-        value.map do |v|
-          inspectify(v)
-        end
-      when V8::Object
-        value.to_h.map do |k,v|
-          [k, inspectify(v)]
-        end.to_h
-      when String, nil, Integer, FalseClass, TrueClass
-        value
-      else
-        raise "wtf #{value.class}?"
+    if defined?(JRUBY_VERSION)
+      jscontext[:log] = lambda do |context, value|
+        puts value
       end
-
-    end
-    jscontext[:log] = lambda do |context, value|
-      puts inspectify(value).to_json
+    else
+      jscontext.attach("log", proc do |value|
+        puts value
+      end)
     end
   end
 end

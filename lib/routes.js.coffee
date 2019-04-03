@@ -29,7 +29,7 @@ else
 NodeTypes = NODE_TYPES
 DeprecatedGlobbingBehavior = DEPRECATED_GLOBBING_BEHAVIOR
 SpecialOptionsKey = SPECIAL_OPTIONS_KEY
-UriEncoderSegmentRegex = URI_ENCODER_SEGMENT
+UriEncoderSegmentRegex = URI_ENCODER_SEGMENT_REGEX
 
 ReservedOptions = [
   'anchor'
