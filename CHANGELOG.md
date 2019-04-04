@@ -1,5 +1,9 @@
 ## master
 
+## v1.4.6
+
+* Fix regression of #244 in #243
+
 ## v1.4.5
 
 * Fix escaping inside route parameters and globbing #244
