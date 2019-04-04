@@ -29,7 +29,7 @@ else
 NodeTypes = NODE_TYPES
 DeprecatedGlobbingBehavior = DEPRECATED_GLOBBING_BEHAVIOR
 SpecialOptionsKey = SPECIAL_OPTIONS_KEY
-UriEncoderSegmentRegex = URI_ENCODER_SEGMENT_REGEX
+UriEncoderSegmentRegex = /[^a-zA-Z0-9\-\._~!\$&'\(\)\*\+,;=:@]/g # this is ActionDispatch::Journey::Router::Utils::UriEncoder::SEGMENT
 
 ReservedOptions = [
   'anchor'
@@ -226,11 +226,7 @@ Utils =
       else
         throw new Error("Unknown Rails node type")
 
-  encode_segment: (segment) ->
-    if UriEncoderSegmentRegex.test(segment)
-      segment.replace(UriEncoderSegmentRegex, (str) -> encodeURIComponent(str))
-    else
-      segment
+  encode_segment: (segment) -> segment.replace(UriEncoderSegmentRegex, (str) -> encodeURIComponent(str))
 
   is_optional_node: (node) -> @indexOf([NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT], node) >= 0
 
