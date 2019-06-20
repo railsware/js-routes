@@ -146,7 +146,7 @@ class JsRoutes
 
       # We don't need to rewrite file if it already exist and have same content.
       # It helps asset pipeline or webpack understand that file wasn't changed.
-      return if File.exist?(file_path) && File.read(file_path) == js_content
+      next if File.exist?(file_path) && File.read(file_path) == js_content
 
       File.open(file_path, 'w') do |f|
         f.write js_content
