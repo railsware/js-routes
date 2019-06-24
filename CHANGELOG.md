@@ -1,5 +1,9 @@
 ## master
 
+## v1.4.7
+
+* Fix a LocalJumpError on secondary initialization of the app #248
+
 ## v1.4.6
 
 * Fix regression of #244 in #243
