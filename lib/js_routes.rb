@@ -118,18 +118,18 @@ class JsRoutes
     end
 
     {
-      "GEM_VERSION"         => JsRoutes::VERSION,
-      "ROUTES"              => js_routes,
-      "NODE_TYPES"          => json(NODE_TYPES),
-      "RAILS_VERSION"       => ActionPack.version,
-      "DEPRECATED_GLOBBING_BEHAVIOR" => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
+      'GEM_VERSION'         => JsRoutes::VERSION,
+      'ROUTES'              => js_routes,
+      'NODE_TYPES'          => json(NODE_TYPES),
+      'RAILS_VERSION'       => ActionPack.version,
+      'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
 
-      "APP_CLASS"           => application.class.to_s,
-      "NAMESPACE"           => json(@configuration.namespace),
-      "DEFAULT_URL_OPTIONS" => json(@configuration.default_url_options),
-      "PREFIX"              => json(@configuration.prefix),
-      "SPECIAL_OPTIONS_KEY" => json(@configuration.special_options_key),
-      "SERIALIZER"          => @configuration.serializer || json(nil),
+      'APP_CLASS'           => application.class.to_s,
+      'NAMESPACE'           => json(@configuration.namespace),
+      'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
+      'PREFIX'              => json(@configuration.prefix),
+      'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
+      'SERIALIZER'          => @configuration.serializer || json(nil),
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
       js.gsub!(key, value.to_s)
     end
@@ -173,7 +173,8 @@ class JsRoutes
 
   def mounted_app_routes(route)
     rails_engine_app = get_app_from_route(route)
-    if rails_engine_app.respond_to?(:superclass) && rails_engine_app.superclass == Rails::Engine && !route.path.anchored
+    if rails_engine_app.respond_to?(:superclass) &&
+       rails_engine_app.superclass == Rails::Engine && !route.path.anchored
       rails_engine_app.routes.named_routes.map do |_, engine_route|
         build_route_if_match(engine_route, route)
       end
@@ -183,7 +184,8 @@ class JsRoutes
   end
 
   def get_app_from_route(route)
-    # rails engine in Rails 4.2 use additional ActionDispatch::Routing::Mapper::Constraints, which contain app
+    # rails engine in Rails 4.2 use additional
+    # ActionDispatch::Routing::Mapper::Constraints, which contain app
     if route.app.respond_to?(:app) && route.app.respond_to?(:constraints)
       route.app.app
     else
@@ -191,8 +193,9 @@ class JsRoutes
     end
   end
 
-  def build_route_if_match(route, parent_route=nil)
-    if any_match?(route, parent_route, @configuration[:exclude]) || !any_match?(route, parent_route, @configuration[:include])
+  def build_route_if_match(route, parent_route = nil)
+    if any_match?(route, parent_route, @configuration[:exclude]) ||
+       !any_match?(route, parent_route, @configuration[:include])
       nil
     else
       build_js(route, parent_route)
@@ -203,7 +206,7 @@ class JsRoutes
     full_route = [parent_route.try(:name), route.name].compact.join('_')
 
     matchers = Array(matchers)
-    matchers.any? {|regex| full_route =~ regex}
+    matchers.any? { |regex| full_route =~ regex }
   end
 
   def build_js(route, parent_route)
@@ -211,7 +214,7 @@ class JsRoutes
     route_name = generate_route_name(name, (:path unless @configuration[:compact]))
     parent_spec = parent_route.try(:path).try(:spec)
     route_arguments = route_js_arguments(route, parent_spec)
-    url_link = generate_url_link(name, route_name, route_arguments, route)
+    url_link = generate_url_link(name, route_arguments)
     _ = <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   // function(#{build_params(route.required_parts)})
@@ -225,7 +228,8 @@ class JsRoutes
       hash[part] = required_parts.include?(part)
     end
     default_options = route.defaults.select do |part, _|
-      FILTERED_DEFAULT_PARTS.exclude?(part) && URL_OPTIONS.include?(part) || parts_table[part]
+      FILTERED_DEFAULT_PARTS.exclude?(part) &&
+        URL_OPTIONS.include?(part) || parts_table[part]
     end
     [
       # JS objects don't preserve the order of properties which is crucial,
@@ -235,19 +239,19 @@ class JsRoutes
       serialize(route.path.spec, parent_spec)
     ].map do |argument|
       json(argument)
-    end.join(", ")
+    end.join(', ')
   end
 
-  def generate_url_link(name, route_name, route_arguments, route)
-    return "" unless @configuration[:url_links]
+  def generate_url_link(name, route_arguments)
+    return '' unless @configuration[:url_links]
+
     <<-JS.strip!
     #{generate_route_name(name, :url)}: Utils.route(#{route_arguments}, true)
     JS
   end
 
-  def generate_route_name(name, suffix)
-    route_name = name.join('_')
-    route_name << "_#{ suffix }" if suffix
+  def generate_route_name(*parts)
+    route_name = parts.compact.join('_')
     @configuration[:camel_case] ? route_name.camelize(:lower) : route_name
   end
 
@@ -257,7 +261,7 @@ class JsRoutes
 
   def build_params(required_parts)
     params = required_parts + [LAST_OPTIONS_KEY]
-    params.join(", ")
+    params.join(', ')
   end
 
   # This function serializes Journey route into JSON structure
@@ -267,6 +271,7 @@ class JsRoutes
   def serialize(spec, parent_spec=nil)
     return nil unless spec
     return spec.tr(':', '') if spec.is_a?(String)
+
     result = serialize_spec(spec, parent_spec)
     if parent_spec && result[1].is_a?(String)
       result = [
@@ -280,7 +285,7 @@ class JsRoutes
     result
   end
 
-  def serialize_spec(spec, parent_spec=nil)
+  def serialize_spec(spec, parent_spec = nil)
     [
       NODE_TYPES[spec.type],
       serialize(spec.left, parent_spec),
@@ -288,4 +293,3 @@ class JsRoutes
     ]
   end
 end
-
