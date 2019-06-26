@@ -258,8 +258,6 @@ Utils =
   #
   visit_globbing: (route, parameters, optional) ->
     [type, left, right] = route
-    # fix for rails 4 globbing
-    route[1] = left = left.replace(/^\*/i, "") if left.replace(/^\*/i, "") isnt left
     value = parameters[left]
     delete parameters[left]
     return @visit(route, parameters, optional) unless value?

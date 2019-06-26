@@ -270,7 +270,8 @@ class JsRoutes
   # Routes.js file will be smaller.
   def serialize(spec, parent_spec=nil)
     return nil unless spec
-    return spec.tr(':', '') if spec.is_a?(String)
+    # Rails 4 globbing requires * removal
+    return spec.tr(':*', '') if spec.is_a?(String)
 
     result = serialize_spec(spec, parent_spec)
     if parent_spec && result[1].is_a?(String)
