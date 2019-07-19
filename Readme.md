@@ -40,7 +40,7 @@ JsRoutes.setup do |config|
 end
 ```
 
-Or dynamically in JavaScript, although not all configuration options are supported (see the availability in JS level in the "Available Options")
+Or dynamically in JavaScript, although only "Formatter Options" are supported (see below)
 
 ``` js
 Routes.configure({
@@ -52,6 +52,8 @@ Routes.config(); // current config
 #### Available Options
 
 ##### Generator Options
+
+Options to configure JavaScript file generator:
 
 * `exclude` - Array of regexps to exclude from routes.
   * Default: `[]`
@@ -76,6 +78,8 @@ Routes.config(); // current config
   * Default: `Rails.application`
 
 ##### Formatter Options
+
+Options to configure routes formatting:
 
 * `default_url_options` - default parameters used when generating URLs
   * Option is configurable at JS level with `Routes.configure()`
