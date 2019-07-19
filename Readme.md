@@ -130,9 +130,9 @@ If you want to generate the routes files outside of the asset pipeline, you can 
 
 ``` ruby
 path = "app/assets/javascripts"
-JsRoutes.generate!("#{path}/app_routes.js", :namespace => "AppRoutes", :exclude => [/^admin_/, /^api_/])
-JsRoutes.generate!("#{path}/adm_routes.js", :namespace => "AdmRoutes", :include => /^admin_/)
-JsRoutes.generate!("#{path}/api_routes.js", :namespace => "ApiRoutes", :include => /^api_/, :default_url_options => {:format => "json"})
+JsRoutes.generate!("#{path}/app_routes.js", namespace: "AppRoutes", exclude: [/^admin_/, /^api_/])
+JsRoutes.generate!("#{path}/adm_routes.js", namespace: "AdmRoutes", include: /^admin_/)
+JsRoutes.generate!("#{path}/api_routes.js", namespace: "ApiRoutes", include: /^api_/, default_url_options: {format: "json"})
 ```
 
 ### Rails relative URL root
