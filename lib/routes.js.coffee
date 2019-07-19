@@ -403,9 +403,9 @@ Utils =
     # Browser globals
     Utils.namespace(root, NAMESPACE, routes)
 
+result = Utils.make()
 # Set up Routes appropriately for the environment.
 if typeof define is "function" and define.amd
   # AMD
-  define [], -> Utils.make()
-else
-  return Utils.make()
+  define [], -> result
+return result
