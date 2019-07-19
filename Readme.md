@@ -40,7 +40,7 @@ JsRoutes.setup do |config|
 end
 ```
 
-Or dynamically in JavaScript, although not all configuration options are supported:
+Or dynamically in JavaScript, although not all configuration options are supported (see the availability in JS level in the "Available Options")
 
 ``` js
 Routes.configure({
@@ -49,47 +49,51 @@ Routes.configure({
 Routes.config(); // current config
 ```
 
-Available options:
+#### Available Options
 
-* `default_url_options` - default parameters used when generating URLs
-  * Option is configurable at JS level with `Routes.configure()`
-  * Example: {:format => "json", :trailing\_slash => true, :protocol => "https", :subdomain => "api", :host => "example.com", :port => 3000}
-  * Default: {}
+##### Generator Options
+
 * `exclude` - Array of regexps to exclude from routes.
-  * Default: []
+  * Default: `[]`
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
 * `include` - Array of regexps to include in routes.
-  * Default: []
+  * Default: `[]`
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
 * `namespace` - global object used to access routes.
   * Supports nested namespace like `MyProject.routes`
   * Default: `Routes`
+* `camel_case` - Generate camel case route names.
+  * Default: `false`
+* `url_links` - Generate `*_url` helpers (in addition to the default `*_path` helpers).
+  * Example: `true`
+  * Default: `false`
+  * Note: generated URLs will first use the protocol, host, and port options specified in the route definition. Otherwise, the URL will be based on the option specified in the `default_url_options` config. If no default option has been set, then the URL will fallback to the current URL based on `window.location`.
+* `compact` - Remove `_path` suffix in path routes(`*_url` routes stay untouched if they were enabled)
+  * Default: `false`
+  * Sample route call when option is set to true: Routes.users() => `/users`
+* `application` - a key to specify which rails engine you want to generate routes too.
+  * This option allows to only generate routes for a specific rails engine, that is mounted into routes instead of all Rails app routes
+  * Default: `Rails.application`
+
+##### Formatter Options
+
+* `default_url_options` - default parameters used when generating URLs
+  * Option is configurable at JS level with `Routes.configure()`
+  * Example: `{format: "json", trailing_slash: true, protocol: "https", subdomain: "api", host: "example.com", port: 3000}`
+  * Default: `{}`
 * `prefix` - String representing a url path to prepend to all paths.
   * Option is configurable at JS level with `Routes.configure()`
   * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only.
   * Default: `Rails.application.config.relative_url_root`
-* `camel_case` (version >= 0.8.8) - Generate camel case route names.
-  * Default: false
-* `url_links` (version >= 0.8.9) - Generate `*_url` helpers (in addition to the default `*_path` helpers).
-  * Example: true
-  * Default: false
-  * Note: generated URLs will first use the protocol, host, and port options specified in the route definition. Otherwise, the URL will be based on the option specified in the `default_url_options` config. If no default option has been set, then the URL will fallback to the current URL based on `window.location`.
-* `compact` (version > 0.9.9) - Remove `_path` suffix in path routes(`*_url` routes stay untouched if they were enabled)
-  * Default: false
-  * Sample route call when option is set to true: Routes.users() => `/users`
-* `serializer` (version >= 1.1.0) - Puts a JS function here that serializes a Javascript Hash object into URL paramters: `{a: 1, b: 2} => "a=1&b=2"`.
-  * Default: `nil`. Uses built-in serializer
+* `serializer` - a JS function that serializes a Javascript Hash object into URL paramters like `{a: 1, b: 2} => "a=1&b=2"`.
+  * Default: `nil`. Uses built-in serializer compatible with Rails
   * Option is configurable at JS level with `Routes.configure()`
   * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
-  * Example: `MyApp.custom_serialize` - use completely custom serializer of your application.
-
+  * Example: `function (object) { ... }` - use completely custom serializer of your application.
 * `special_options_key` - a special key that helps JsRoutes to destinguish serialized model from options hash
-  * This option is required because JS doesn't provide a difference between an object and a hash
+  * This option exists because JS doesn't provide a difference between an object and a hash
   * Option is configurable at JS level with `Routes.configure()`
   * Default: `_options`
-* `application` - a key to specify which rails engine you want to generate routes too.
-  * This option allows to only generate routes for a specific rails engine, that is mounted into routes instead of all Rails app routes
-  * Default: `Rails.application`
 
 ### Very Advanced Setup
 
