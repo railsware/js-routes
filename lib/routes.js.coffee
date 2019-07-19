@@ -393,11 +393,6 @@ Utils =
     routes = ROUTES
     routes.configure = (config) -> Utils.configure(config)
     routes.config = -> Utils.config()
-    Object.defineProperty routes, 'defaults',
-      get: ->
-        throw new Error("#{NAMESPACE}.defaults is removed. Use #{NAMESPACE}.configure() instead.")
-      set: (value) ->
-
     routes.default_serializer = (object, prefix) ->
       Utils.default_serializer(object, prefix)
     # Browser globals
