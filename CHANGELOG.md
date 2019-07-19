@@ -1,6 +1,6 @@
 ## master
 
-## v1.4.8
+## v1.4.9
 
 * Allow to specify null namespace and receive routes as an object without assigning it anywhere #247
 
