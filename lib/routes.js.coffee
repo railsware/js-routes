@@ -375,7 +375,7 @@ Utils =
     result
 
   namespace: (root, namespace, routes) ->
-    parts = namespace.split(".")
+    parts = if namespace then namespace.split(".") else []
     return routes if parts.length == 0
     for part, index in parts
       if index < parts.length - 1
@@ -400,6 +400,7 @@ Utils =
 
     routes.default_serializer = (object, prefix) ->
       Utils.default_serializer(object, prefix)
+    # Browser globals
     Utils.namespace(root, NAMESPACE, routes)
 
 # Set up Routes appropriately for the environment.
@@ -407,5 +408,4 @@ if typeof define is "function" and define.amd
   # AMD
   define [], -> Utils.make()
 else
-  # Browser globals
-  Utils.make()
+  return Utils.make()

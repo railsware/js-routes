@@ -1,5 +1,9 @@
 ## master
 
+## v1.4.8
+
+* Allow to specify null namespace and receive routes as an object without assigning it anywhere #247
+
 ## v1.4.7
 
 * Fix a LocalJumpError on secondary initialization of the app #248

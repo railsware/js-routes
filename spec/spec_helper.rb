@@ -95,11 +95,11 @@ RSpec.configure do |config|
 
     if defined?(JRUBY_VERSION)
       jscontext[:log] = lambda do |context, value|
-        puts value
+        puts value.inspect
       end
     else
       jscontext.attach("log", proc do |value|
-        puts value
+        puts value.inspect
       end)
     end
   end

@@ -167,36 +167,46 @@ describe JsRoutes, "options" do
     expect(evaljs("Routes.no_format_path({format: 'json'})")).to eq(test_routes.no_format_path(format: 'json'))
   end
 
-  describe "when namespace option is specified" do
+  describe "namespace option" do
     let(:_options) { {:namespace => "PHM"} }
     it "should use this namespace for routing" do
       expect(evaljs("window.Routes")).to be_nil
       expect(evaljs("PHM.inbox_path")).not_to be_nil
     end
-  end
 
-  describe "when nested namespace option is specified" do
-    context "and defined on client" do
-      let(:_presetup) { "window.PHM = {}" }
-      let(:_options) { {:namespace => "PHM.Routes"} }
+    context "is nil" do
+      let(:_options) { {:namespace => nil} }
       it "should use this namespace for routing" do
-        expect(evaljs("PHM.Routes.inbox_path")).not_to be_nil
+        evaljs("window.zz = #{JsRoutes.generate(namespace: nil)}")
+        expect(evaljs("window.Routes")).to be_nil
+        expect(evaljs("window.zz.inbox_path")).not_to be_nil
       end
+
     end
 
-    context "but undefined on client" do
-      let(:_options) { {:namespace => "PHM.Routes"} }
-      it "should initialize namespace" do
-        expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
+    describe "is nested" do
+      context "and defined on client" do
+        let(:_presetup) { "window.PHM = {}" }
+        let(:_options) { {:namespace => "PHM.Routes"} }
+        it "should use this namespace for routing" do
+          expect(evaljs("PHM.Routes.inbox_path")).not_to be_nil
+        end
       end
-    end
 
-    context "and some parts are defined" do
-      let(:_presetup) { "window.PHM = { Utils: {} };" }
-      let(:_options) { {:namespace => "PHM.Routes"} }
-      it "should not overwrite existing parts" do
-        expect(evaljs("window.PHM.Utils")).not_to be_nil
-        expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
+      context "but undefined on client" do
+        let(:_options) { {:namespace => "PHM.Routes"} }
+        it "should initialize namespace" do
+          expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
+        end
+      end
+
+      context "and some parts are defined" do
+        let(:_presetup) { "window.PHM = { Utils: {} };" }
+        let(:_options) { {:namespace => "PHM.Routes"} }
+        it "should not overwrite existing parts" do
+          expect(evaljs("window.PHM.Utils")).not_to be_nil
+          expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
+        end
       end
     end
   end
