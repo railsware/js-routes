@@ -214,7 +214,7 @@ Routes.company_project_path({company_id: 1, id: 2, _options: true}) // => "/comp
 
 ## What about security?
 
-JsRoutes itself do not have security holes. It makes URLs
+JsRoutes itself does not have security holes. It makes URLs
 without access protection more reachable by potential attacker.
 In order to prevent this use `:exclude` option for sensitive urls like `/admin_/`
 
