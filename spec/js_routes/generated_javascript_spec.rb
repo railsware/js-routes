@@ -60,11 +60,6 @@ describe JsRoutes do
     end
 
     it "should not generate file before initialization" do
-      # This method is alread fixed in Rails master
-      # But in 3.2 stable we need to hack it like this
-      if Rails.application.instance_variable_get("@initialized")
-        pending
-      end
       expect(File.exists?(name)).to be_falsey
     end
 

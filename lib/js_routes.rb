@@ -8,13 +8,11 @@ class JsRoutes
   # OPTIONS
   #
 
-  DEFAULT_PATH = File.join('app','assets','javascripts','routes.js')
-
   DEFAULTS = {
     namespace: "Routes",
     exclude: [],
     include: //,
-    file: DEFAULT_PATH,
+    file: -> { Rails.root.join('app','assets','javascripts','routes.js') },
     prefix: -> { Rails.application.config.relative_url_root || "" },
     url_links: false,
     camel_case: false,
