@@ -1,5 +1,7 @@
 ## master
 
+## v1.4.10
+
 * Require engine only when sprockets is loaded #257.
 
 ## v1.4.9
