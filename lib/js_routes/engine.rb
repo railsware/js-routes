@@ -47,7 +47,6 @@ class Engine < ::Rails::Engine
       when  -> (v) { v2.match?('', v) },
             -> (v) { vgte3.match?('', v) }
 
-      # Other rails version, assumed newer
       Rails.application.config.assets.configure do |config|
         config.register_preprocessor(
           "application/javascript",
