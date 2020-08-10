@@ -1,5 +1,7 @@
 require 'uri'
-require 'js_routes/engine' if defined?(::Rails) && defined?(::Sprockets::Railtie)
+if defined?(::Rails) && defined?(::Sprockets::Railtie)
+  require 'js_routes/engine'
+end
 require 'js_routes/version'
 
 class JsRoutes
@@ -12,7 +14,12 @@ class JsRoutes
     namespace: "Routes",
     exclude: [],
     include: //,
-    file: -> { Rails.root.join('app','assets','javascripts','routes.js') },
+    file: -> do
+      sprockets_dir = Rails.root.join('app','assets','javascripts')
+      sprockets_file = sprockets_dir.join('routes.js') #:nodoc:
+      webpacker_file = Rails.root.join('app', 'javascript', 'routes.js') #:nodoc:
+      Dir.exists?(sprockets_dir) ? sprockets_file : webpacker_file
+    end,
     prefix: -> { Rails.application.config.relative_url_root || "" },
     url_links: false,
     camel_case: false,
@@ -21,7 +28,7 @@ class JsRoutes
     serializer: nil,
     special_options_key: "_options",
     application: -> { Rails.application }
-  }
+  } #:nodoc:
 
   NODE_TYPES = {
     GROUP: 1,
@@ -32,11 +39,11 @@ class JsRoutes
     LITERAL: 6,
     SLASH: 7,
     DOT: 8
-  }
+  } #:nodoc:
 
-  LAST_OPTIONS_KEY = "options".freeze
-  FILTERED_DEFAULT_PARTS = [:controller, :action]
-  URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain]
+  LAST_OPTIONS_KEY = "options".freeze #:nodoc:
+  FILTERED_DEFAULT_PARTS = [:controller, :action] #:nodoc:
+  URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain] #:nodoc:
 
   class Configuration < Struct.new(*DEFAULTS.keys)
     def initialize(attributes = nil)
@@ -213,7 +220,7 @@ class JsRoutes
     parent_spec = parent_route.try(:path).try(:spec)
     route_arguments = route_js_arguments(route, parent_spec)
     url_link = generate_url_link(name, route_arguments)
-    _ = <<-JS.strip!
+    <<-JS.strip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   // function(#{build_params(route.required_parts)})
   #{route_name}: Utils.route(#{route_arguments})#{",\n" + url_link if url_link.length > 0}
