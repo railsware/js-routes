@@ -40,7 +40,7 @@ JsRoutes.setup do |config|
 end
 ```
 
-Or dynamically in JavaScript, although only "Formatter Options" are supported (see below)
+Or dynamically in JavaScript, although only [Formatter Options](#formatter-options) are supported (see below)
 
 ``` js
 Routes.configure({
