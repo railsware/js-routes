@@ -1,5 +1,9 @@
 ## master
 
+* Use app/javascript/routes.js as a default file location if app/javascript directory exists
+* Add `default` export for better experience when used as es6 module
+
+
 ## v1.4.10
 
 * Require engine only when sprockets is loaded #257.
