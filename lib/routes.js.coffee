@@ -397,6 +397,7 @@ Utils =
       Utils.default_serializer(object, prefix)
     # Browser globals
     Utils.namespace(root, NAMESPACE, routes)
+    Object.assign({default: routes}, routes)
 
 result = Utils.make()
 # Set up Routes appropriately for the environment.

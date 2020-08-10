@@ -39,4 +39,7 @@ EOF
     expect(evaljs("require(['js-routes'], function(r){ return r.inboxes_path(); })")).to eq(test_routes.inboxes_path())
   end
 
+  it "should define default export for es6 modules" do
+    expect(evaljs("require(['js-routes'], function(r){ return r.default.inboxes_path(); })")).to eq(test_routes.inboxes_path())
+  end
 end

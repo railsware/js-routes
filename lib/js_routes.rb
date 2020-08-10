@@ -11,13 +11,13 @@ class JsRoutes
   #
 
   DEFAULTS = {
-    namespace: "Routes",
+    namespace: -> { defined?(Webpacker) ? nil : "Routes" },
     exclude: [],
     include: //,
     file: -> do
       sprockets_dir = Rails.root.join('app','assets','javascripts')
-      sprockets_file = sprockets_dir.join('routes.js') #:nodoc:
-      webpacker_file = Rails.root.join('app', 'javascript', 'routes.js') #:nodoc:
+      sprockets_file = sprockets_dir.join('routes.js')
+      webpacker_file = Rails.root.join('app', 'javascript', 'routes.js')
       Dir.exists?(sprockets_dir) ? sprockets_file : webpacker_file
     end,
     prefix: -> { Rails.application.config.relative_url_root || "" },
