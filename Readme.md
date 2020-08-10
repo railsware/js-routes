@@ -76,6 +76,8 @@ Options to configure JavaScript file generator:
 * `application` - a key to specify which rails engine you want to generate routes too.
   * This option allows to only generate routes for a specific rails engine, that is mounted into routes instead of all Rails app routes
   * Default: `Rails.application`
+* `file` - a file location where generated routes are stored
+  * Default: `app/assets/javascripts/routes.js` if `app/assets/javascripts` directory exists, otherwise `app/javascript/routes.js`.
 
 ##### Formatter Options
 
