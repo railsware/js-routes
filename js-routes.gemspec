@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Brings Rails named routes to javascript}
 
   s.add_runtime_dependency(%q<railties>, [">= 4"])
-  s.add_runtime_dependency(%q<sprockets-rails>)
+  s.add_development_dependency(%q<sprockets-rails>)
   s.add_development_dependency(%q<rspec>, [">= 3.0.0"])
   s.add_development_dependency(%q<bundler>, [">= 1.1.0"])
   s.add_development_dependency(%q<coffee-script>, [">= 0"])
