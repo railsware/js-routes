@@ -12,9 +12,80 @@ Your Rails Gemfile:
 gem "js-routes"
 ```
 
-### Basic Setup
+## Setup
 
-Require JsRoutes in `application.js` or other bundle
+Run:
+
+```
+rake js:routes 
+```
+
+Make routes available globally in `app/javascript/packs/application.js`: 
+
+``` javascript
+window.Routes = require('routes');
+```
+
+Individual routes can be imported using:
+
+``` javascript
+import {edit_post_path, new_post_path} from 'routes';
+```
+
+**Note**: that this setup requires `rake js:routes` to be run each time routes file is updated.
+
+#### Webpacker + automatic updates
+
+This setup can automatically update your routes without `rake js:routes` being called manually.
+It requires [rails-erb-loader](https://github.com/usabilityhub/rails-erb-loader) npm package to work.
+
+Add `erb` loader to webpacker:
+
+```
+yarn add rails-erb-loader
+rm -f app/javascript/routes.js // delete static file if any
+```
+
+Create webpack ERB config `config/webpack/loaders/erb.js`:
+
+``` javascript
+module.exports = {
+  test: /\.js\.erb$/,
+  enforce: 'pre',
+  exclude: /node_modules/,
+  use: [{
+    loader: 'rails-erb-loader',
+    options: {
+      runner: (/^win/.test(process.platform) ? 'ruby ' : '') + 'bin/rails runner'
+    }
+  }]
+}
+```
+
+Enable `erb` extension in `config/webpacker/environment.js`:
+
+```
+const erb =  require('./loaders/erb')
+environment.loaders.append('erb', erb)
+```
+
+Create routes file `app/javascript/routes.js.erb`:
+
+``` erb
+<%= JsRoutes.generate() %>
+```
+
+Use routes wherever you need them `app/javascript/packs/application.js`: 
+
+``` javascript
+window.Routes = require('routes.js.erb');
+```
+
+#### Sprockets (Deprecated)
+
+If you are using [Sprockets](https://github.com/rails/sprockets-rails) you may configure js-routes in the following way.
+
+Require JsRoutes in `app/assets/javascripts/application.js` or other bundle
 
 ``` js
 //= require js-routes
@@ -32,7 +103,7 @@ This cache is not flushed on server restart in development environment.
 
 ### Configuration
 
-You can configure JsRoutes in two main ways. Either with an initializer (e.g. `config/initializers/jsroutes.rb`):
+You can configure JsRoutes in two main ways. Either with an initializer (e.g. `config/initializers/js_routes.rb`):
 
 ``` ruby
 JsRoutes.setup do |config|
@@ -53,7 +124,7 @@ Routes.config(); // current config
 
 ##### Generator Options
 
-Options to configure JavaScript file generator:
+Options to configure JavaScript file generator. These options are only available in Ruby context but not JavaScript.
 
 * `exclude` - Array of regexps to exclude from routes.
   * Default: `[]`
@@ -81,50 +152,40 @@ Options to configure JavaScript file generator:
 
 ##### Formatter Options
 
-Options to configure routes formatting:
+Options to configure routes formatting. These options are available both in Ruby and JavaScript context.
 
 * `default_url_options` - default parameters used when generating URLs
-  * Option is configurable at JS level with `Routes.configure()`
   * Example: `{format: "json", trailing_slash: true, protocol: "https", subdomain: "api", host: "example.com", port: 3000}`
   * Default: `{}`
-* `prefix` - String representing a url path to prepend to all paths.
-  * Option is configurable at JS level with `Routes.configure()`
-  * Example: `http://yourdomain.com`. This will cause route helpers to generate full path only.
+* `prefix` - string that will prepend any generated URL. Usually used when app URL root includes a path component.
+  * Example: `/rails-app`
   * Default: `Rails.application.config.relative_url_root`
 * `serializer` - a JS function that serializes a Javascript Hash object into URL paramters like `{a: 1, b: 2} => "a=1&b=2"`.
   * Default: `nil`. Uses built-in serializer compatible with Rails
-  * Option is configurable at JS level with `Routes.configure()`
   * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
   * Example: `function (object) { ... }` - use completely custom serializer of your application.
 * `special_options_key` - a special key that helps JsRoutes to destinguish serialized model from options hash
   * This option exists because JS doesn't provide a difference between an object and a hash
-  * Option is configurable at JS level with `Routes.configure()`
   * Default: `_options`
 
-### Very Advanced Setup
+### Advanced Setup
 
 In case you need multiple route files for different parts of your application, you have to create the files manually.
 If your application has an `admin` and an `application` namespace for example:
 
 ```
-# app/assets/javascripts/admin/routes.js.erb
+# app/javascript/admin/routes.js.erb
 <%= JsRoutes.generate(namespace: "AdminRoutes", include: /admin/) %>
-
-# app/assets/javascripts/admin.js.coffee
-#= require admin/routes
 ```
 
 ```
-# app/assets/javascripts/application/routes.js.erb
-<%= JsRoutes.generate(namespace: "AppRoutes", exclude: /admin/) %>
-
-# app/assets/javascripts/application.js.coffee
-#= require application/routes
+# app/javascript/customer/routes.js.erb
+<%= JsRoutes.generate(namespace: "CustomerRoutes", exclude: /admin/) %>
 ```
 
 In order to generate the routes JS code to a string:
 
-```ruby
+``` ruby
 routes_js = JsRoutes.generate(options)
 ```
 
@@ -136,15 +197,6 @@ JsRoutes.generate!("#{path}/app_routes.js", namespace: "AppRoutes", exclude: [/^
 JsRoutes.generate!("#{path}/adm_routes.js", namespace: "AdmRoutes", include: /^admin_/)
 JsRoutes.generate!("#{path}/api_routes.js", namespace: "ApiRoutes", include: /^api_/, default_url_options: {format: "json"})
 ```
-
-### Rails relative URL root
-
-If you've installed your application in a sub-path or sub-URI of your server instead of at the root, you need to set the `RAILS_RELATIVE_URL_ROOT` environment variable to the correct path prefix for your application when you precompile assets. Eg., if your application's base URL is "https://appl.example.com/Application1", the command to precompile assets would be:
-```
-RAILS_RELATIVE_URL_ROOT=/Application1 RAILS_ENV=production bundle exec rake assets:precompile
-```
-The environment variable is only needed for precompilation of assets, at any other time (eg. when assets are compiled on-the-fly as in the development environment) Rails will set the relative URL root correctly on it's own.
-
 
 ## Usage
 
