@@ -374,6 +374,23 @@ Utils =
     (result = i for el, i in array when el is element)
     result
 
+  # assign helper
+  assign: (target, sources...) -> if typeof Object.assign == 'function' then Object.assign(target, sources...) else @assignImplementation(target, sources...)
+  assignImplementation: (target, sources...) ->
+    if target == null or target == undefined
+      throw new TypeError('Cannot convert undefined or null to object')
+    to = Object(target)
+    index = 1
+    while index < arguments.length
+      nextSource = arguments[index]
+      if nextSource != null and nextSource != undefined
+        for nextKey of nextSource
+          # Avoid bugs when hasOwnProperty is shadowed
+          if Object::hasOwnProperty.call(nextSource, nextKey)
+            to[nextKey] = nextSource[nextKey]
+      index++
+    to
+
   namespace: (root, namespace, routes) ->
     parts = if namespace then namespace.split(".") else []
     return routes if parts.length == 0
@@ -397,7 +414,7 @@ Utils =
       Utils.default_serializer(object, prefix)
     # Browser globals
     Utils.namespace(root, NAMESPACE, routes)
-    Object.assign({default: routes}, routes)
+    @assign({default: routes}, routes)
 
 result = Utils.make()
 # Set up Routes appropriately for the environment.
