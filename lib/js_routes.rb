@@ -15,10 +15,11 @@ class JsRoutes
     exclude: [],
     include: //,
     file: -> do
+      webpacker_dir = Rails.root.join('app', 'javascript')
       sprockets_dir = Rails.root.join('app','assets','javascripts')
       sprockets_file = sprockets_dir.join('routes.js')
-      webpacker_file = Rails.root.join('app', 'javascript', 'routes.js')
-      Dir.exists?(sprockets_dir) ? sprockets_file : webpacker_file
+      webpacker_file = webpacker_dir.join('routes.js')
+      !Dir.exists?(webpacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
     end,
     prefix: -> { Rails.application.config.relative_url_root || "" },
     url_links: false,

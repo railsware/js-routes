@@ -41,9 +41,9 @@ It requires [rails-erb-loader](https://github.com/usabilityhub/rails-erb-loader)
 
 Add `erb` loader to webpacker:
 
-```
+``` sh
 yarn add rails-erb-loader
-rm -f app/javascript/routes.js // delete static file if any
+rm -f app/javascript/routes.js # delete static file if any
 ```
 
 Create webpack ERB config `config/webpack/loaders/erb.js`:
@@ -148,7 +148,7 @@ Options to configure JavaScript file generator. These options are only available
   * This option allows to only generate routes for a specific rails engine, that is mounted into routes instead of all Rails app routes
   * Default: `Rails.application`
 * `file` - a file location where generated routes are stored
-  * Default: `app/assets/javascripts/routes.js` if `app/assets/javascripts` directory exists, otherwise `app/javascript/routes.js`.
+  * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
 
 ##### Formatter Options
 

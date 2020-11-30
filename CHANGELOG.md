@@ -1,5 +1,7 @@
 ## master
 
+* Change default file location configuration to Webpacker if both Webpacker and Sprockets are loaded
+
 ## v1.4.11
 
 * Use app/javascript/routes.js as a default file location if app/javascript directory exists
