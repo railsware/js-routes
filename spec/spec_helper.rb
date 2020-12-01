@@ -34,6 +34,14 @@ end
 
 def evaljs(string, force = false)
   jscontext(force).eval(string)
+rescue MiniRacer::ParseError => e
+  message = e.message
+  _, _, line, _ = message.split(':')
+  code = line && string.split("\n")[line.to_i]
+  raise "#{message}. Code: #{code.strip}";
+rescue MiniRacer::RuntimeError => e
+  # puts string
+  raise e
 end
 
 def test_routes
@@ -81,11 +89,11 @@ RSpec.configure do |config|
 
   config.before(:all) do
     # compile all js files begin
-    Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))}/**/*.coffee"].each do |coffee|
-      File.open(coffee.gsub(/\.coffee$/, ""), 'w') do |f|
-        f.write(CoffeeScript.compile(File.read(coffee)).lstrip)
-      end
-    end
+    # Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))}/**/*.coffee"].each do |coffee|
+      # File.open(coffee.gsub(/\.coffee$/, ""), 'w') do |f|
+        # f.write(CoffeeScript.compile(File.read(coffee)).lstrip)
+      # end
+    # end
     # compile all js files end
     draw_routes
   end

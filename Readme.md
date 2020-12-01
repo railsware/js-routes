@@ -295,6 +295,15 @@ Advantages of this one are:
 * Support Rails `#to_param` convention for seo optimized paths
 * Well tested
 
+## Typescript TODO
+
+* Cleanup coffeescript
+* Automatic compilation in test env
+* Fix indexOfImplementation
+* Add static types to Utils
+* Add routes generation .d.ts file
+* Add config option on the output format: js, ts, d.ts
+
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)
 
 #### Have fun

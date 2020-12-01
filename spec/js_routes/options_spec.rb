@@ -178,7 +178,6 @@ describe JsRoutes, "options" do
       let(:_options) { {:namespace => nil} }
       it "should use this namespace for routing" do
         evaljs("window.zz = #{JsRoutes.generate(namespace: nil)}")
-        expect(evaljs("window.Routes")).to be_nil
         expect(evaljs("window.zz.inbox_path")).not_to be_nil
       end
 
