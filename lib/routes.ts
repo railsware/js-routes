@@ -15,10 +15,7 @@ declare var RubyVariables: {
 };
 
 declare var exports: any
-declare var define: undefined | (Function & {amd?: any});
-
-declare function zz(): string;
-
+declare var define: undefined | (Function & {amd?: (args: any[], callback: () => any) => void});
 
 type Configuration = {
   prefix: string,
@@ -100,8 +97,7 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
       return s.join("&");
     },
     serialize: function(object: any) {
-      var custom_serializer;
-      custom_serializer = this.configuration.serializer;
+      var custom_serializer = this.configuration.serializer;
       if ((custom_serializer != null) && this.get_object_type(custom_serializer) === "function") {
         return custom_serializer(object);
       } else {
@@ -403,8 +399,9 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
       }
     },
     indexOf: function(array, element) {
-        return this.indexOfImplementation(array, element);
+      return this.indexOfImplementation(array, element);
     },
+
     indexOfImplementation: function(array, element) {
       var el, i, result, _i, _len;
       result = -1;
