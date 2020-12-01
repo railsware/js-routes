@@ -6,7 +6,6 @@ require 'rspec'
 require 'rails/all'
 require 'js-routes'
 require 'active_support/core_ext/hash/slice'
-require 'coffee-script'
 
 if defined?(JRUBY_VERSION)
   require 'rhino'
@@ -87,14 +86,8 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before(:all) do
-    # compile all js files begin
-    # Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))}/**/*.coffee"].each do |coffee|
-      # File.open(coffee.gsub(/\.coffee$/, ""), 'w') do |f|
-        # f.write(CoffeeScript.compile(File.read(coffee)).lstrip)
-      # end
-    # end
-    # compile all js files end
+  config.before(:suite) do
+    system("yarn tsc")
     draw_routes
   end
 

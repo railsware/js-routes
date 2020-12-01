@@ -137,7 +137,7 @@ class JsRoutes
       'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
       'SERIALIZER'          => @configuration.serializer || json(nil),
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
-      js.gsub!("RubyVariables.#{key}", value.to_s)
+      js.gsub!("RubyVariables.#{key}", value.to_s) || raise("Missing key #{key} in JS template")
     end
   end
 

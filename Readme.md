@@ -297,7 +297,6 @@ Advantages of this one are:
 
 ## Typescript TODO
 
-* Cleanup coffeescript
 * Automatic compilation in test env
 * Fix indexOfImplementation
 * Add static types to Utils
