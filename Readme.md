@@ -306,6 +306,7 @@ Advantages of this one are:
 * Add eslint
 * Refactor `get_object_type`
 * Enable tsconfig strict settings
+* Add development guide
 
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)
 
