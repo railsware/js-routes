@@ -222,7 +222,7 @@ type RouterExposedMethods = {
         const value = options[key];
         if (!hasProp.call(options, key)) continue;
         use_all_parts = true;
-        if (this.indexOf(parts, key) >= 0) {
+        if (parts.includes(key)) {
           parts_options[key] = value;
         }
       }
@@ -237,7 +237,7 @@ type RouterExposedMethods = {
       for (const key in options) {
         if (!hasProp.call(options, key)) continue;
         const value = options[key];
-        if (this.indexOf(ReservedOptions, key) >= 0) {
+        if (ReservedOptions.includes(key as any)) {
           result[key] = value;
         } else {
           url_parameters[key] = value;
@@ -336,8 +336,7 @@ type RouterExposedMethods = {
     }
     is_optional_node(node: NodeTypes): boolean {
       return (
-        this.indexOf([NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT], node) >=
-        0
+        [NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT].includes(node)
       );
     }
     build_path_spec(route: RouteTree, wildcard: boolean = false): string {
@@ -497,23 +496,6 @@ type RouterExposedMethods = {
       } else {
         return typeof obj;
       }
-    }
-    indexOf<T>(array: readonly T[], element: T): number {
-      if (array.indexOf) {
-        return array.indexOf(element);
-      } else {
-        return this.indexOfImplementation(array, element);
-      }
-    }
-
-    indexOfImplementation<T>(array: readonly T[], element: T): number {
-      let result = -1;
-      array.forEach((el, i) => {
-        if (el === element && result === -1) {
-          result = i;
-        }
-      });
-      return result;
     }
 
     namespace(
