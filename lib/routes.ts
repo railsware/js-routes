@@ -205,7 +205,7 @@ type RouterExposedMethods = {
 
     normalize_options(
       parts: string[],
-      required_parts: string[],
+      required_params: string[],
       default_options: RouteParameters,
       call_arguments: RouteParameter[]
     ) {
@@ -214,7 +214,7 @@ type RouterExposedMethods = {
       if (call_arguments.length > parts.length) {
         throw new Error("Too many parameters provided for path");
       }
-      let use_all_parts = call_arguments.length > required_parts.length;
+      let use_all_parts = call_arguments.length > required_params.length;
       const parts_options: RouteParameters = {};
       for (const key in options) {
         const value = options[key];
@@ -241,7 +241,7 @@ type RouterExposedMethods = {
           url_parameters[key] = value;
         }
       }
-      const route_parts = use_all_parts ? parts : required_parts;
+      const route_parts = use_all_parts ? parts : required_params;
       let i = 0;
       for (const part of route_parts) {
         if (i < call_arguments.length) {
@@ -255,7 +255,7 @@ type RouterExposedMethods = {
     }
     build_route(
       parts: string[],
-      required_parts: string[],
+      required_params: string[],
       default_options: RouteParameters,
       route: RouteTree,
       full_url: boolean,
@@ -263,7 +263,7 @@ type RouterExposedMethods = {
     ): string {
       const options = this.normalize_options(
         parts,
-        required_parts,
+        required_params,
         default_options,
         args
       );
@@ -393,25 +393,25 @@ type RouterExposedMethods = {
       route_spec: RouteTree,
       full_url: boolean
     ): RouteHelper {
-      const required_parts: string[] = [];
+      const required_params: string[] = [];
       const parts: string[] = [];
       for (const [part, required] of parts_table) {
         parts.push(part);
         if (required) {
-          required_parts.push(part);
+          required_params.push(part);
         }
       }
       const result = (...args: RouteParameter[]): string => {
         return this.build_route(
           parts,
-          required_parts,
+          required_params,
           default_options,
           route_spec,
           full_url,
           args
         );
       };
-      result.required_params = required_parts;
+      result.required_params = required_params;
       result.toString = () => {
         return this.build_path_spec(route_spec);
       };
