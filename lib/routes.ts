@@ -63,7 +63,6 @@ type RouterExposedMethods = {
     | [NodeTypes.CAT, RouteTree, RouteTree]
     | [NodeTypes.SYMBOL, string, never];
 
-  const hasProp = {}.hasOwnProperty;
   const Root = typeof exports === "object" ? exports : that;
 
   class ParameterMissing extends Error {
@@ -114,7 +113,7 @@ type RouterExposedMethods = {
           break;
         case "object":
           for (let key in object) {
-            if (!hasProp.call(object, key)) continue;
+            if (!object.hasOwnProperty(key)) continue;
             let prop = object[key];
             if (prop == null && prefix) {
               prop = "";
@@ -208,8 +207,9 @@ type RouterExposedMethods = {
       parts: string[],
       required_parts: string[],
       default_options: RouteParameters,
-      call_arguments: any[]
+      call_arguments: RouteParameter[]
     ) {
+      call_arguments = [...call_arguments];
       let options = this.extract_options(parts.length, call_arguments);
       if (call_arguments.length > parts.length) {
         throw new Error("Too many parameters provided for path");
@@ -218,7 +218,7 @@ type RouterExposedMethods = {
       const parts_options: RouteParameters = {};
       for (const key in options) {
         const value = options[key];
-        if (!hasProp.call(options, key)) continue;
+        if (!options.hasOwnProperty(key)) continue;
         use_all_parts = true;
         if (parts.includes(key)) {
           parts_options[key] = value;
@@ -233,7 +233,7 @@ type RouterExposedMethods = {
       const url_parameters: RouteParameters = {};
       result["url_parameters"] = url_parameters;
       for (const key in options) {
-        if (!hasProp.call(options, key)) continue;
+        if (!options.hasOwnProperty(key)) continue;
         const value = options[key];
         if (ReservedOptions.includes(key as any)) {
           result[key] = value;
@@ -261,7 +261,6 @@ type RouterExposedMethods = {
       full_url: boolean,
       args: RouteParameter[]
     ): string {
-      args = [...args];
       const options = this.normalize_options(
         parts,
         required_parts,
