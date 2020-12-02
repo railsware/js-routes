@@ -57,8 +57,6 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
   }
 
 
-  // const NodeTypes  = RubyVariables.NODE_TYPES;
-
   const DeprecatedGlobbingBehavior = RubyVariables.DEPRECATED_GLOBBING_BEHAVIOR;
 
   const SpecialOptionsKey = RubyVariables.SPECIAL_OPTIONS_KEY;

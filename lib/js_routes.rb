@@ -126,7 +126,6 @@ class JsRoutes
     {
       'GEM_VERSION'         => JsRoutes::VERSION,
       'ROUTES'              => js_routes,
-      'NODE_TYPES'          => json(NODE_TYPES),
       'RAILS_VERSION'       => ActionPack.version,
       'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
 
@@ -137,7 +136,8 @@ class JsRoutes
       'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
       'SERIALIZER'          => @configuration.serializer || json(nil),
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
-      js.gsub!("RubyVariables.#{key}", value.to_s) || raise("Missing key #{key} in JS template")
+      js.gsub!("RubyVariables.#{key}", value.to_s) ||
+        raise("Missing key #{key} in JS template")
     end
   end
 
