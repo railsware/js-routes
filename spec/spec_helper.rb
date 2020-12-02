@@ -7,6 +7,12 @@ require 'rails/all'
 require 'js-routes'
 require 'active_support/core_ext/hash/slice'
 
+code = system("yarn tsc")
+unless code
+  exit(1)
+end
+
+
 if defined?(JRUBY_VERSION)
   require 'rhino'
   JS_LIB_CLASS = Rhino
@@ -87,7 +93,6 @@ RSpec.configure do |config|
   end
 
   config.before(:suite) do
-    system("yarn tsc")
     draw_routes
   end
 

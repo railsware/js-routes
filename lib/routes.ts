@@ -4,14 +4,17 @@ Based on Rails RubyVariables.RAILS_VERSION routes of RubyVariables.APP_CLASS
  */
 
 type NodeType = number;
+type RouteParameter = any;
+type RouteParameters = Record<string, RouteParameter>;
+type Serializer = (object: any) => string;
 
 declare var RubyVariables: {
   PREFIX: string;
   NODE_TYPES: Record<string, NodeType>;
   DEPRECATED_GLOBBING_BEHAVIOR: boolean;
   SPECIAL_OPTIONS_KEY: string;
-  DEFAULT_URL_OPTIONS: Record<string, any>;
-  SERIALIZER: (object: any) => string,
+  DEFAULT_URL_OPTIONS: RouteParameters;
+  SERIALIZER: Serializer,
   NAMESPACE: string,
   ROUTES: any,
 };
@@ -21,10 +24,11 @@ declare var define: undefined | (Function & {amd?: (args: any[], callback: () =>
 
 type Configuration = {
   prefix: string,
-  default_url_options: Record<string, any>,
+  default_url_options: RouteParameters,
   special_options_key: string,
-  serializer: (object: any) => string
+  serializer: Serializer,
 }
+
 
 (function() {
   enum NodeTypes {
@@ -128,10 +132,10 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
       tokens[last_index] = tokens[last_index].replace(/\/+/g, "/");
       return tokens.join("://");
     },
-    extract_options: function(number_of_params: number, args: object[]): Record<string, any> {
+    extract_options: function(number_of_params: number, args: object[]): RouteParameters {
       const last_el = args[args.length - 1];
       if ((args.length > number_of_params && last_el === void 0) || ((last_el != null) && "object" === this.get_object_type(last_el) && !this.looks_like_serialized_model(last_el))) {
-        const options: Record<string, any> = args.pop() || {};
+        const options: RouteParameters = args.pop() || {};
         delete options[this.configuration.special_options_key];
         return options;
       } else {
@@ -141,7 +145,7 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
     looks_like_serialized_model: function(object: any): object is {id: any} | {to_param: any} {
       return !object[this.configuration.special_options_key] && ("id" in object || "to_param" in object);
     },
-    path_identifier: function(object: 0 | Record<string, any>): string {
+    path_identifier: function(object: 0 | Record<string, any> | {toString() : string}): string {
       if (object === 0) {
         return "0";
       }
@@ -170,13 +174,18 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
       return property.toString();
     },
 
-    normalize_options: function(parts: string[], required_parts: string[], default_options: Record<string, any>, actual_parameters: any[]) {
-      let options = this.extract_options(parts.length, actual_parameters);
-      if (actual_parameters.length > parts.length) {
+    normalize_options: function(
+      parts: string[],
+      required_parts: string[],
+      default_options: RouteParameters,
+      call_arguments: any[],
+    ) {
+      let options = this.extract_options(parts.length, call_arguments);
+      if (call_arguments.length > parts.length) {
         throw new Error("Too many parameters provided for path");
       }
-      let use_all_parts = actual_parameters.length > required_parts.length;
-      const parts_options: Record<string, any> = {};
+      let use_all_parts = call_arguments.length > required_parts.length;
+      const parts_options: RouteParameters = {};
       for (const key in options) {
         const value = options[key]
         if (!hasProp.call(options, key)) continue;
@@ -186,8 +195,8 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
         }
       }
       options = {...this.configuration.default_url_options, ...default_options, ...options};
-      const result: Record<string, any>  = {};
-      const url_parameters: Record<string, any> = {};
+      const result: RouteParameters  = {};
+      const url_parameters: RouteParameters = {};
       result['url_parameters'] = url_parameters;
       for (const key in options) {
         if (!hasProp.call(options, key)) continue;
@@ -201,16 +210,16 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
       const route_parts = use_all_parts ? parts : required_parts;
       let i = 0;
       for (const part of route_parts) {
-        if (i < actual_parameters.length) {
+        if (i < call_arguments.length) {
           if (!parts_options.hasOwnProperty(part)) {
-            url_parameters[part] = actual_parameters[i];
+            url_parameters[part] = call_arguments[i];
             ++i;
           }
         }
       }
       return result;
     },
-    build_route: function(parts: any, required_parts: any, default_options: any, route: any, full_url: any, args: any) {
+    build_route: function(parts: string[], required_parts: string[], default_options: RouteParameters, route: Route, full_url: boolean, args: RouteParameter[]) {
       var options, parameters, result, url, url_params;
       args = Array.prototype.slice.call(args);
       options = this.normalize_options(parts, required_parts, default_options, args);
@@ -300,7 +309,7 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
           throw new Error("Unknown Rails node type");
       }
     },
-    visit_globbing: function(route: Route , parameters: Record<string, any>, optional: boolean) {
+    visit_globbing: function(route: Route , parameters: RouteParameters, optional: boolean) {
       var left, right, type, value;
       type = route[0], left = route[1], right = route[2];
       value = parameters[left];
@@ -341,8 +350,8 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
           required_parts.push(part);
         }
       }
-      path_fn = function() {
-        return Utils.build_route(parts, required_parts, default_options, route_spec, full_url, arguments);
+      path_fn = function(...args: RouteParameter[]) {
+        return Utils.build_route(parts, required_parts, default_options, route_spec, full_url, args);
       };
       path_fn.required_params = required_parts;
       path_fn.toString = function() {
@@ -428,7 +437,7 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
       }
       return result;
     },
-    namespace: function(object: Record<string, any>, namespace: string, routes: unknown) {
+    namespace: function(object: object, namespace: string, routes: unknown) {
       var index, part, parts, _i, _len;
       parts = namespace ? namespace.split(".") : [];
       if (parts.length === 0) {
@@ -444,7 +453,7 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
       }
     },
     configure: function(new_config: Partial<Configuration>) {
-      return (this as any).configuration = {...this.configuration, ...new_config};
+      return this.configuration = {...this.configuration, ...new_config};
     },
     config: function() {
       return {...this.configuration}
