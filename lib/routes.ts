@@ -33,10 +33,10 @@ type Configuration = {
   prefix: string;
   default_url_options: RouteParameters;
   special_options_key: string;
-  serializer: Serializer;
+  serializer?: Serializer;
 };
 
-type Optional<T> = {[P in keyof T]?: T[P] | null}
+type Optional<T> = { [P in keyof T]?: T[P] | null };
 
 (function () {
   enum NodeTypes {
@@ -140,7 +140,7 @@ type Optional<T> = {[P in keyof T]?: T[P] | null}
       return s.join("&");
     }
     serialize(object: any): string {
-      var custom_serializer = this.configuration.serializer;
+      const custom_serializer = this.configuration.serializer;
       if (
         custom_serializer != null &&
         this.get_object_type(custom_serializer) === "function"
@@ -280,7 +280,7 @@ type Optional<T> = {[P in keyof T]?: T[P] | null}
       if (options["trailing_slash"] === true) {
         url = url.replace(/(.*?)[\/]?$/, "$1/");
       }
-      const url_params = this.serialize(parameters)
+      const url_params = this.serialize(parameters);
       if (url_params.length) {
         url += "?" + url_params;
       }
@@ -427,7 +427,14 @@ type Optional<T> = {[P in keyof T]?: T[P] | null}
       };
       return result;
     }
-    route_url(route_defaults: Optional<{host: string, protocol: string, subdomain: string, port: string}>): string {
+    route_url(
+      route_defaults: Optional<{
+        host: string;
+        protocol: string;
+        subdomain: string;
+        port: string;
+      }>
+    ): string {
       const hostname = route_defaults.host || this.current_host();
       if (!hostname) {
         return "";
@@ -516,14 +523,13 @@ type Optional<T> = {[P in keyof T]?: T[P] | null}
       return result;
     }
 
-    namespace(object: object, namespace: string, routes: unknown): unknown {
-      var index, part, parts, _i, _len;
-      parts = namespace ? namespace.split(".") : [];
+    namespace(object: object, namespace: string | null | undefined, routes: unknown): unknown {
+      const parts = namespace ? namespace.split(".") : [];
       if (parts.length === 0) {
         return routes;
       }
-      for (index = _i = 0, _len = parts.length; _i < _len; index = ++_i) {
-        part = parts[index];
+      for (let index = 0; index < parts.length; index++) {
+        const part = parts[index];
         if (index < parts.length - 1) {
           object = object[part] || (object[part] = {});
         } else {
