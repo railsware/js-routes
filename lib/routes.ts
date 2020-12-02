@@ -97,7 +97,7 @@ type RouterExposedMethods = {
   class UtilsClass {
     configuration: Configuration = DefaultConfiguration;
 
-    default_serializer(object: any, prefix?: string): string {
+    default_serializer(object: any, prefix?: string | null): string {
       if (object == null) {
         return "";
       }
@@ -529,8 +529,8 @@ type RouterExposedMethods = {
         config: () => {
           return this.config();
         },
-        default_serializer: (object: object, prefix: string = "") => {
-          return this.default_serializer(object, prefix);
+        default_serializer: (object: object) => {
+          return this.default_serializer(object);
         },
       };
       this.namespace(Root, RubyVariables.NAMESPACE, routes);
