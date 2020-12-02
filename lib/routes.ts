@@ -95,25 +95,24 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
     configuration: Configuration = DefaultConfiguration;
 
     default_serializer(object: any, prefix?: string): string {
-      var element, i, key, prop, s, _i, _len;
       if (object == null) {
         return "";
       }
       if (!prefix && !(this.get_object_type(object) === "object")) {
         throw new Error("Url parameters should be a javascript hash");
       }
-      s = [];
+      const s: string[] = [];
       switch (this.get_object_type(object)) {
         case "array":
-          for (i = _i = 0, _len = object.length; _i < _len; i = ++_i) {
-            element = object[i];
+          for (const element of object) {
             s.push(this.default_serializer(element, prefix + "[]"));
+
           }
           break;
         case "object":
-          for (key in object) {
+          for (let key in object) {
             if (!hasProp.call(object, key)) continue;
-            prop = object[key];
+            let prop = object[key];
             if (prop == null && prefix) {
               prop = "";
             }
@@ -141,10 +140,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
     }
     serialize(object: any): string {
       const custom_serializer = this.configuration.serializer;
-      if (
-        custom_serializer != null &&
-        this.get_object_type(custom_serializer) === "function"
-      ) {
+      if (custom_serializer) {
         return custom_serializer(object);
       } else {
         return this.default_serializer(object);
@@ -580,4 +576,4 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
   }
 
   return result;
-}(this));
+})(this);
