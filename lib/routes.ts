@@ -59,8 +59,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
     | [NodeTypes.SYMBOL, string, never];
 
   const hasProp = {}.hasOwnProperty;
-  const Root: { jQuery?: { type(arg: any): string } } =
-    typeof exports === "object" ? exports : that;
+  const Root = typeof exports === "object" ? exports : that;
 
   class ParameterMissing extends Error {
     constructor(message: string) {
@@ -482,9 +481,6 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
       );
 
     get_object_type(obj: any) {
-      if (Root.jQuery && Root.jQuery.type != null) {
-        return Root.jQuery.type(obj);
-      }
       if (obj == null) {
         return "" + obj;
       }
