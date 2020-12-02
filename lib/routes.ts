@@ -138,6 +138,7 @@ type RouterExposedMethods = {
       }
       return result.join("&");
     }
+
     serialize(object: any): string {
       const custom_serializer = this.configuration.serializer;
       if (custom_serializer) {
@@ -146,12 +147,7 @@ type RouterExposedMethods = {
         return this.default_serializer(object);
       }
     }
-    clean_path(path: string): string {
-      const tokens = path.split("://");
-      const last_index = tokens.length - 1;
-      tokens[last_index] = tokens[last_index].replace(/\/+/g, "/");
-      return tokens.join("://");
-    }
+
     extract_options(number_of_params: number, args: object[]): RouteParameters {
       const last_el = args[args.length - 1];
       if (
@@ -167,6 +163,7 @@ type RouterExposedMethods = {
         return {};
       }
     }
+
     looks_like_serialized_model(
       object: any
     ): object is { id: any } | { to_param: any } {
@@ -175,6 +172,7 @@ type RouterExposedMethods = {
         ("id" in object || "to_param" in object)
       );
     }
+
     path_identifier(
       object: 0 | Record<string, any> | { toString(): string }
     ): string {
@@ -184,26 +182,26 @@ type RouterExposedMethods = {
       if (!object) {
         return "";
       }
-      let property: any = object;
+      let result: any = object;
       if (this.get_object_type(object) === "object") {
         if ("to_param" in object) {
           if (object.to_param == null) {
             throw new ParameterMissing("Route parameter missing: to_param");
           }
-          property = object.to_param;
+          result = object.to_param;
         } else if ("id" in object) {
           if (object.id == null) {
             throw new ParameterMissing("Route parameter missing: id");
           }
-          property = object.id;
+          result = object.id;
         } else {
-          property = object;
+          result = object;
         }
-        if (this.get_object_type(property) === "function") {
-          property = property.call(object);
+        if (this.get_object_type(result) === "function") {
+          result = result.call(object);
         }
       }
-      return property.toString();
+      return result.toString();
     }
 
     normalize_options(
@@ -271,20 +269,19 @@ type RouterExposedMethods = {
         args
       );
       const parameters = options["url_parameters"];
-      const result = this.get_prefix() + this.visit(route, parameters);
-      let url = this.clean_path(result);
+      let result = this.get_prefix() + this.visit(route, parameters);
       if (options["trailing_slash"] === true) {
-        url = url.replace(/(.*?)[\/]?$/, "$1/");
+        result = result.replace(/(.*?)[\/]?$/, "$1/");
       }
       const url_params = this.serialize(parameters);
       if (url_params.length) {
-        url += "?" + url_params;
+        result += "?" + url_params;
       }
-      url += options.anchor ? "#" + options.anchor : "";
+      result += options.anchor ? "#" + options.anchor : "";
       if (full_url) {
-        url = this.route_url(options) + url;
+        result = this.route_url(options) + result;
       }
-      return url;
+      return result;
     }
     visit(
       route: RouteTree,
@@ -385,13 +382,12 @@ type RouterExposedMethods = {
         return encodeURI(this.path_identifier(value));
       }
     }
+
     get_prefix(): string {
       const prefix = this.configuration.prefix;
-      if (prefix !== "") {
-        return prefix.match("/$") ? prefix : prefix + "/";
-      }
-      return prefix;
+        return prefix.match("/$") ? prefix.substring(0, prefix.length - 1) : prefix;
     }
+
     route(
       parts_table: [string, boolean][],
       default_options: RouteParameters,
