@@ -113,6 +113,7 @@ type KeywordUrlOptions = Optional<{
       if (!prefix && !(this.get_object_type(object) === "object")) {
         throw new Error("Url parameters should be a javascript hash");
       }
+      prefix = prefix || "";
       const result: string[] = [];
       switch (this.get_object_type(object)) {
         case "array":
@@ -136,9 +137,9 @@ type KeywordUrlOptions = Optional<{
           }
           break;
         default:
-          if (object != null) {
+          if (object !== null && object !== undefined) {
             result.push(
-              encodeURIComponent(prefix!.toString()) +
+              encodeURIComponent(prefix) +
                 "=" +
                 encodeURIComponent(object.toString())
             );
