@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:railsware/js-routes.git",
-  "author": "Bogdan Gusiev <agresso@gmail.com>",
+  "author": "Bogdan Gusiev <agresso@gmail.com>, Alexey Vasiliev <https://leopard.in.ua> ",
   "license": "MIT",
   "private": false,
   "devDependencies": {
