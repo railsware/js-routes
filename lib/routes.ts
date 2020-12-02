@@ -82,15 +82,15 @@ type Configuration = {
     "protocol",
   ] as const;
 
-  const DefaultConfiguration = {
-      prefix: RubyVariables.PREFIX,
-      default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
-      special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
-      serializer: RubyVariables.SERIALIZER,
-    }
+  const DefaultConfiguration: Configuration = {
+    prefix: RubyVariables.PREFIX,
+    default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
+    special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
+    serializer: RubyVariables.SERIALIZER,
+  };
 
   class UtilsClass {
-    configuration:  Configuration = DefaultConfiguration;
+    configuration: Configuration = DefaultConfiguration;
 
     default_serializer(object: any, prefix?: string): string {
       var element, i, key, prop, s, _i, _len;
@@ -137,7 +137,7 @@ type Configuration = {
       }
       return s.join("&");
     }
-      serialize(object: any): string {
+    serialize(object: any): string {
       var custom_serializer = this.configuration.serializer;
       if (
         custom_serializer != null &&
@@ -154,10 +154,7 @@ type Configuration = {
       tokens[last_index] = tokens[last_index].replace(/\/+/g, "/");
       return tokens.join("://");
     }
-    extract_options(
-      number_of_params: number,
-      args: object[]
-    ): RouteParameters {
+    extract_options(number_of_params: number, args: object[]): RouteParameters {
       const last_el = args[args.length - 1];
       if (
         (args.length > number_of_params && last_el === void 0) ||
@@ -345,19 +342,18 @@ type Configuration = {
         0
       );
     }
-    build_path_spec(
-      route: RouteTree,
-      wildcard: boolean = false
-    ): string {
+    build_path_spec(route: RouteTree, wildcard: boolean = false): string {
       switch (route[0]) {
         case NodeTypes.GROUP:
           return "(" + this.build_path_spec(route[1]) + ")";
         case NodeTypes.CAT:
-          return this.build_path_spec(route[1]) + this.build_path_spec(route[2]);
+          return (
+            this.build_path_spec(route[1]) + this.build_path_spec(route[2])
+          );
         case NodeTypes.STAR:
           return this.build_path_spec(route[1], true);
         case NodeTypes.SYMBOL:
-          const key = route[1]
+          const key = route[1];
           if (wildcard === true) {
             return (key.startsWith("*") ? "" : "*") + key;
           } else {
@@ -521,11 +517,7 @@ type Configuration = {
       return result;
     }
 
-    namespace(
-      object: object,
-      namespace: string,
-      routes: unknown
-    ): unknown {
+    namespace(object: object, namespace: string, routes: unknown): unknown {
       var index, part, parts, _i, _len;
       parts = namespace ? namespace.split(".") : [];
       if (parts.length === 0) {
@@ -542,7 +534,7 @@ type Configuration = {
     }
 
     configure(new_config: Partial<Configuration>): Configuration {
-      this.configuration = { ...this.configuration, ...new_config }
+      this.configuration = { ...this.configuration, ...new_config };
       return this.configuration;
     }
 
@@ -558,10 +550,7 @@ type Configuration = {
       routes.config = () => {
         return this.config();
       };
-      routes.default_serializer = (
-        object: object,
-        prefix: string = ""
-      ) => {
+      routes.default_serializer = (object: object, prefix: string = "") => {
         return this.default_serializer(object, prefix);
       };
       this.namespace(root, RubyVariables.NAMESPACE, routes);
@@ -574,7 +563,7 @@ type Configuration = {
     }
   }
 
-  const Utils = new UtilsClass()
+  const Utils = new UtilsClass();
   const result = Utils.make();
 
   if (typeof define === "function" && define.amd) {
