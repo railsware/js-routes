@@ -7,7 +7,11 @@ type NodeType = number;
 type RouteParameter = any;
 type RouteParameters = Record<string, RouteParameter>;
 type Serializer = (object: any) => string;
-type RouteHelper = {(...args: RouteParameter[]): string, required_params: string[], toString(): string}
+type RouteHelper = {
+  (...args: RouteParameter[]): string;
+  required_params: string[];
+  toString(): string;
+};
 
 declare var RubyVariables: {
   PREFIX: string;
@@ -340,8 +344,11 @@ type Configuration = {
         0
       );
     },
-    build_path_spec: function (route: RouteTree, wildcard: boolean = false): string {
-      const [type, left, right] = route
+    build_path_spec: function (
+      route: RouteTree,
+      wildcard: boolean = false
+    ): string {
+      const [type, left, right] = route;
       switch (type) {
         case NodeTypes.GROUP:
           return "(" + this.build_path_spec(left) + ")";
@@ -369,15 +376,14 @@ type Configuration = {
       parameters: RouteParameters,
       optional: boolean
     ): string {
-
       const key = route[1];
       let value = parameters[key];
       delete parameters[key];
       if (value == null) {
         return this.visit(route, parameters, optional);
       }
-      if (this.get_object_type(value) === 'array') {
-        value =  value.join("/");
+      if (this.get_object_type(value) === "array") {
+        value = value.join("/");
       }
       if (DeprecatedGlobbingBehavior) {
         return this.path_identifier(value);
@@ -392,12 +398,15 @@ type Configuration = {
       }
       return prefix;
     },
-    route: function (parts_table, default_options, route_spec, full_url): RouteHelper {
-      var part, parts, path_fn, required, _i, _len, _ref;
+    route: function (
+      parts_table: [string, boolean][],
+      default_options: RouteParameters,
+      route_spec: RouteTree,
+      full_url: boolean
+    ): RouteHelper {
       const required_parts: string[] = [];
-      parts = [];
-      for (_i = 0, _len = parts_table.length; _i < _len; _i++) {
-        (_ref = parts_table[_i]), (part = _ref[0]), (required = _ref[1]);
+      const parts: string[] = [];
+      for (const [part, required] of parts_table) {
         parts.push(part);
         if (required) {
           required_parts.push(part);
