@@ -7,6 +7,7 @@ type NodeType = number;
 type RouteParameter = any;
 type RouteParameters = Record<string, RouteParameter>;
 type Serializer = (object: any) => string;
+type RouteHelper = {(...args: RouteParameter[]): string, required_params: string[], toString(): string}
 
 declare var RubyVariables: {
   PREFIX: string;
@@ -42,9 +43,10 @@ type Configuration = {
     SLASH = 7,
     DOT = 8,
   }
+  type StartRouteLeaf = [NodeTypes.STAR, string, never];
   type RouteTree =
     | [NodeTypes.GROUP, RouteTree, never]
-    | [NodeTypes.STAR, string, never]
+    | StartRouteLeaf
     | [NodeTypes.LITERAL, string, never]
     | [NodeTypes.SLASH, "/", never]
     | [NodeTypes.DOT, ".", never]
@@ -260,7 +262,7 @@ type Configuration = {
       route: RouteTree,
       full_url: boolean,
       args: RouteParameter[]
-    ) {
+    ): string {
       var options, parameters, result, url, url_params;
       args = Array.prototype.slice.call(args);
       options = this.normalize_options(
@@ -286,7 +288,7 @@ type Configuration = {
     },
     visit: function (
       route: RouteTree,
-      parameters: Record<string, any>,
+      parameters: RouteParameters,
       optional: boolean = false
     ): string {
       switch (route[0]) {
@@ -332,28 +334,24 @@ type Configuration = {
         return encodeURIComponent(str);
       });
     },
-    is_optional_node: function (node: Node) {
+    is_optional_node: function (node: NodeTypes): boolean {
       return (
         this.indexOf([NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT], node) >=
         0
       );
     },
-    build_path_spec: function (route: any, wildcard: boolean = false): string {
-      var left, right, type;
-      if (wildcard == null) {
-        wildcard = false;
-      }
-      (type = route[0]), (left = route[1]), (right = route[2]);
+    build_path_spec: function (route: RouteTree, wildcard: boolean = false): string {
+      const [type, left, right] = route
       switch (type) {
         case NodeTypes.GROUP:
           return "(" + this.build_path_spec(left) + ")";
         case NodeTypes.CAT:
-          return "" + this.build_path_spec(left) + this.build_path_spec(right);
+          return this.build_path_spec(left) + this.build_path_spec(right);
         case NodeTypes.STAR:
           return this.build_path_spec(left, true);
         case NodeTypes.SYMBOL:
           if (wildcard === true) {
-            return "" + (left[0] === "*" ? "" : "*") + left;
+            return (left[0] === "*" ? "" : "*") + left;
           } else {
             return ":" + left;
           }
@@ -361,46 +359,40 @@ type Configuration = {
         case NodeTypes.SLASH:
         case NodeTypes.DOT:
         case NodeTypes.LITERAL:
-          return left;
+          return left.toString();
         default:
           throw new Error("Unknown Rails node type");
       }
     },
     visit_globbing: function (
-      route: RouteTree,
+      route: StartRouteLeaf,
       parameters: RouteParameters,
       optional: boolean
-    ) {
-      var left, right, type, value;
-      (type = route[0]), (left = route[1]), (right = route[2]);
-      value = parameters[left];
-      delete parameters[left];
+    ): string {
+
+      const key = route[1];
+      let value = parameters[key];
+      delete parameters[key];
       if (value == null) {
         return this.visit(route, parameters, optional);
       }
-      value = (() => {
-        switch (this.get_object_type(value)) {
-          case "array":
-            return value.join("/");
-          default:
-            return value;
-        }
-      }).call(this);
+      if (this.get_object_type(value) === 'array') {
+        value =  value.join("/");
+      }
       if (DeprecatedGlobbingBehavior) {
         return this.path_identifier(value);
       } else {
         return encodeURI(this.path_identifier(value));
       }
     },
-    get_prefix: function () {
-      var prefix;
-      prefix = this.configuration.prefix;
+    get_prefix: function (): string {
+      const prefix = this.configuration.prefix;
       if (prefix !== "") {
-        prefix = prefix.match("/$") ? prefix : prefix + "/";
+        return prefix.match("/$") ? prefix : prefix + "/";
       }
       return prefix;
     },
-    route: function (parts_table, default_options, route_spec, full_url) {
+    route: function (parts_table, default_options, route_spec, full_url): RouteHelper {
       var part, parts, path_fn, required, _i, _len, _ref;
       const required_parts: string[] = [];
       parts = [];
@@ -411,7 +403,7 @@ type Configuration = {
           required_parts.push(part);
         }
       }
-      path_fn = function (...args: RouteParameter[]) {
+      const result = function (...args: RouteParameter[]): string {
         return Utils.build_route(
           parts,
           required_parts,
@@ -421,11 +413,11 @@ type Configuration = {
           args
         );
       };
-      path_fn.required_params = required_parts;
-      path_fn.toString = function () {
+      result.required_params = required_parts;
+      result.toString = function () {
         return Utils.build_path_spec(route_spec);
       };
-      return path_fn;
+      return result;
     },
     route_url: function (route_defaults) {
       var hostname, port, protocol, subdomain;
