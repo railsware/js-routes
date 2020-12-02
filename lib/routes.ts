@@ -21,7 +21,7 @@ declare const RubyVariables: {
   DEFAULT_URL_OPTIONS: RouteParameters;
   SERIALIZER: Serializer;
   NAMESPACE: string;
-  ROUTES: RouteHelpers
+  ROUTES: RouteHelpers;
 };
 
 declare const exports: any;
@@ -38,10 +38,19 @@ type Configuration = {
 
 type Optional<T> = { [P in keyof T]?: T[P] | null };
 type RouterExposedMethods = {
-  config(): Configuration,
-  configure(arg: Partial<Configuration>): Configuration,
-  default_serializer: Serializer,
+  config(): Configuration;
+  configure(arg: Partial<Configuration>): Configuration;
+  default_serializer: Serializer;
 };
+
+type KeywordUrlOptions = Optional<{
+  host: string;
+  protocol: string;
+  subdomain: string;
+  port: string;
+  anchor: string;
+  trailing_slash: boolean;
+}>;
 
 (function (that: any): RouterExposedMethods {
   enum NodeTypes {
@@ -203,12 +212,12 @@ type RouterExposedMethods = {
       return result.toString();
     }
 
-    normalize_options(
+    partition_parameters(
       parts: string[],
       required_params: string[],
       default_options: RouteParameters,
       call_arguments: RouteParameter[]
-    ) {
+    ): [KeywordUrlOptions, RouteParameters] {
       call_arguments = [...call_arguments];
       let options = this.extract_options(parts.length, call_arguments);
       if (call_arguments.length > parts.length) {
@@ -229,16 +238,15 @@ type RouterExposedMethods = {
         ...default_options,
         ...options,
       };
-      const result: RouteParameters = {};
-      const url_parameters: RouteParameters = {};
-      result["url_parameters"] = url_parameters;
+      const url_parameters: KeywordUrlOptions = {};
+      const query_parameters: RouteParameters = {};
       for (const key in options) {
         if (!options.hasOwnProperty(key)) continue;
         const value = options[key];
         if (ReservedOptions.includes(key as any)) {
-          result[key] = value;
+          url_parameters[key as keyof KeywordUrlOptions] = value;
         } else {
-          url_parameters[key] = value;
+          query_parameters[key] = value;
         }
       }
       const route_parts = use_all_parts ? parts : required_params;
@@ -246,12 +254,12 @@ type RouterExposedMethods = {
       for (const part of route_parts) {
         if (i < call_arguments.length) {
           if (!parts_options.hasOwnProperty(part)) {
-            url_parameters[part] = call_arguments[i];
+            query_parameters[part] = call_arguments[i];
             ++i;
           }
         }
       }
-      return result;
+      return [url_parameters, query_parameters];
     }
     build_route(
       parts: string[],
@@ -261,27 +269,27 @@ type RouterExposedMethods = {
       full_url: boolean,
       args: RouteParameter[]
     ): string {
-      const options = this.normalize_options(
+      const [url_parameters, query_parameters] = this.partition_parameters(
         parts,
         required_params,
         default_options,
         args
       );
-      const parameters = options["url_parameters"];
-      let result = this.get_prefix() + this.visit(route, parameters);
-      if (options["trailing_slash"] === true) {
+      let result = this.get_prefix() + this.visit(route, query_parameters);
+      if (url_parameters.trailing_slash) {
         result = result.replace(/(.*?)[\/]?$/, "$1/");
       }
-      const url_params = this.serialize(parameters);
+      const url_params = this.serialize(query_parameters);
       if (url_params.length) {
         result += "?" + url_params;
       }
-      result += options.anchor ? "#" + options.anchor : "";
+      result += url_parameters.anchor ? "#" + url_parameters.anchor : "";
       if (full_url) {
-        result = this.route_url(options) + result;
+        result = this.route_url(url_parameters) + result;
       }
       return result;
     }
+
     visit(
       route: RouteTree,
       parameters: RouteParameters,
@@ -325,16 +333,17 @@ type RouterExposedMethods = {
           throw new Error("Unknown Rails node type");
       }
     }
+
     encode_segment(segment: string): string {
       return segment.replace(UriEncoderSegmentRegex, function (str) {
         return encodeURIComponent(str);
       });
     }
+
     is_optional_node(node: NodeTypes): boolean {
-      return (
-        [NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT].includes(node)
-      );
+      return [NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT].includes(node);
     }
+
     build_path_spec(route: RouteTree, wildcard: boolean = false): string {
       switch (route[0]) {
         case NodeTypes.GROUP:
@@ -361,6 +370,7 @@ type RouterExposedMethods = {
           throw new Error("Unknown Rails node type");
       }
     }
+
     visit_globbing(
       route: RouteTree,
       parameters: RouteParameters,
@@ -384,7 +394,9 @@ type RouterExposedMethods = {
 
     get_prefix(): string {
       const prefix = this.configuration.prefix;
-        return prefix.match("/$") ? prefix.substring(0, prefix.length - 1) : prefix;
+      return prefix.match("/$")
+        ? prefix.substring(0, prefix.length - 1)
+        : prefix;
     }
 
     route(
@@ -417,14 +429,8 @@ type RouterExposedMethods = {
       };
       return result;
     }
-    route_url(
-      route_defaults: Optional<{
-        host: string;
-        protocol: string;
-        subdomain: string;
-        port: string;
-      }>
-    ): string {
+
+    route_url(route_defaults: KeywordUrlOptions): string {
       const hostname = route_defaults.host || this.current_host();
       if (!hostname) {
         return "";
