@@ -13,7 +13,7 @@ type RouteHelper = {
   toString(): string;
 };
 
-declare var RubyVariables: {
+declare const RubyVariables: {
   PREFIX: string;
   NODE_TYPES: Record<string, NodeType>;
   DEPRECATED_GLOBBING_BEHAVIOR: boolean;
@@ -24,8 +24,8 @@ declare var RubyVariables: {
   ROUTES: any;
 };
 
-declare var exports: any;
-declare var define:
+declare const exports: any;
+declare const define:
   | undefined
   | (Function & { amd?: (args: any[], callback: () => any) => void });
 
@@ -47,10 +47,9 @@ type Configuration = {
     SLASH = 7,
     DOT = 8,
   }
-  type StartRouteLeaf = [NodeTypes.STAR, string, never];
   type RouteTree =
     | [NodeTypes.GROUP, RouteTree, never]
-    | StartRouteLeaf
+    | [NodeTypes.STAR, RouteTree, never]
     | [NodeTypes.LITERAL, string, never]
     | [NodeTypes.SLASH, "/", never]
     | [NodeTypes.DOT, ".", never]
@@ -58,7 +57,7 @@ type Configuration = {
     | [NodeTypes.SYMBOL, string, never];
 
   const hasProp = {}.hasOwnProperty;
-  let root: { jQuery?: { type(arg: any): string } } =
+  const root: { jQuery?: { type(arg: any): string } } =
     typeof exports === "object" ? exports : this;
 
   class ParameterMissing extends Error {
@@ -83,15 +82,17 @@ type Configuration = {
     "protocol",
   ] as const;
 
-  const Utils = {
-    configuration: {
+  const DefaultConfiguration = {
       prefix: RubyVariables.PREFIX,
       default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
       special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
       serializer: RubyVariables.SERIALIZER,
-    } as Configuration,
+    }
 
-    default_serializer: function (object: any, prefix?: string): string {
+  class UtilsClass {
+    configuration:  Configuration = DefaultConfiguration;
+
+    default_serializer(object: any, prefix?: string): string {
       var element, i, key, prop, s, _i, _len;
       if (object == null) {
         return "";
@@ -135,8 +136,8 @@ type Configuration = {
         return "";
       }
       return s.join("&");
-    },
-    serialize: function (object: any) {
+    }
+      serialize(object: any): string {
       var custom_serializer = this.configuration.serializer;
       if (
         custom_serializer != null &&
@@ -146,14 +147,14 @@ type Configuration = {
       } else {
         return this.default_serializer(object);
       }
-    },
-    clean_path: function (path: string): string {
+    }
+    clean_path(path: string): string {
       const tokens = path.split("://");
       const last_index = tokens.length - 1;
       tokens[last_index] = tokens[last_index].replace(/\/+/g, "/");
       return tokens.join("://");
-    },
-    extract_options: function (
+    }
+    extract_options(
       number_of_params: number,
       args: object[]
     ): RouteParameters {
@@ -170,16 +171,16 @@ type Configuration = {
       } else {
         return {};
       }
-    },
-    looks_like_serialized_model: function (
+    }
+    looks_like_serialized_model(
       object: any
     ): object is { id: any } | { to_param: any } {
       return (
         !object[this.configuration.special_options_key] &&
         ("id" in object || "to_param" in object)
       );
-    },
-    path_identifier: function (
+    }
+    path_identifier(
       object: 0 | Record<string, any> | { toString(): string }
     ): string {
       if (object === 0) {
@@ -208,9 +209,9 @@ type Configuration = {
         }
       }
       return property.toString();
-    },
+    }
 
-    normalize_options: function (
+    normalize_options(
       parts: string[],
       required_parts: string[],
       default_options: RouteParameters,
@@ -258,8 +259,8 @@ type Configuration = {
         }
       }
       return result;
-    },
-    build_route: function (
+    }
+    build_route(
       parts: string[],
       required_parts: string[],
       default_options: RouteParameters,
@@ -277,7 +278,7 @@ type Configuration = {
       );
       parameters = options["url_parameters"];
       result = "" + this.get_prefix() + this.visit(route, parameters);
-      url = Utils.clean_path(result);
+      url = this.clean_path(result);
       if (options["trailing_slash"] === true) {
         url = url.replace(/(.*?)[\/]?$/, "$1/");
       }
@@ -289,8 +290,8 @@ type Configuration = {
         url = this.route_url(options) + url;
       }
       return url;
-    },
-    visit: function (
+    }
+    visit(
       route: RouteTree,
       parameters: RouteParameters,
       optional: boolean = false
@@ -332,51 +333,51 @@ type Configuration = {
         default:
           throw new Error("Unknown Rails node type");
       }
-    },
-    encode_segment: function (segment: string): string {
+    }
+    encode_segment(segment: string): string {
       return segment.replace(UriEncoderSegmentRegex, function (str) {
         return encodeURIComponent(str);
       });
-    },
-    is_optional_node: function (node: NodeTypes): boolean {
+    }
+    is_optional_node(node: NodeTypes): boolean {
       return (
         this.indexOf([NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT], node) >=
         0
       );
-    },
-    build_path_spec: function (
+    }
+    build_path_spec(
       route: RouteTree,
       wildcard: boolean = false
     ): string {
-      const [type, left, right] = route;
-      switch (type) {
+      switch (route[0]) {
         case NodeTypes.GROUP:
-          return "(" + this.build_path_spec(left) + ")";
+          return "(" + this.build_path_spec(route[1]) + ")";
         case NodeTypes.CAT:
-          return this.build_path_spec(left) + this.build_path_spec(right);
+          return this.build_path_spec(route[1]) + this.build_path_spec(route[2]);
         case NodeTypes.STAR:
-          return this.build_path_spec(left, true);
+          return this.build_path_spec(route[1], true);
         case NodeTypes.SYMBOL:
+          const key = route[1]
           if (wildcard === true) {
-            return (left[0] === "*" ? "" : "*") + left;
+            return (key.startsWith("*") ? "" : "*") + key;
           } else {
-            return ":" + left;
+            return ":" + key;
           }
           break;
         case NodeTypes.SLASH:
         case NodeTypes.DOT:
         case NodeTypes.LITERAL:
-          return left.toString();
+          return route[1];
         default:
           throw new Error("Unknown Rails node type");
       }
-    },
-    visit_globbing: function (
-      route: StartRouteLeaf,
+    }
+    visit_globbing(
+      route: RouteTree,
       parameters: RouteParameters,
       optional: boolean
     ): string {
-      const key = route[1];
+      const key = route[1] as string;
       let value = parameters[key];
       delete parameters[key];
       if (value == null) {
@@ -390,15 +391,15 @@ type Configuration = {
       } else {
         return encodeURI(this.path_identifier(value));
       }
-    },
-    get_prefix: function (): string {
+    }
+    get_prefix(): string {
       const prefix = this.configuration.prefix;
       if (prefix !== "") {
         return prefix.match("/$") ? prefix : prefix + "/";
       }
       return prefix;
-    },
-    route: function (
+    }
+    route(
       parts_table: [string, boolean][],
       default_options: RouteParameters,
       route_spec: RouteTree,
@@ -412,8 +413,8 @@ type Configuration = {
           required_parts.push(part);
         }
       }
-      const result = function (...args: RouteParameter[]): string {
-        return Utils.build_route(
+      const result = (...args: RouteParameter[]): string => {
+        return this.build_route(
           parts,
           required_parts,
           default_options,
@@ -423,60 +424,59 @@ type Configuration = {
         );
       };
       result.required_params = required_parts;
-      result.toString = function () {
-        return Utils.build_path_spec(route_spec);
+      result.toString = () => {
+        return this.build_path_spec(route_spec);
       };
       return result;
-    },
-    route_url: function (route_defaults) {
+    }
+    route_url(route_defaults: RouteParameters): string {
       var hostname, port, protocol, subdomain;
       if (typeof route_defaults === "string") {
         return route_defaults;
       }
-      hostname = route_defaults.host || Utils.current_host();
+      hostname = route_defaults.host || this.current_host();
       if (!hostname) {
         return "";
       }
       subdomain = route_defaults.subdomain
         ? route_defaults.subdomain + "."
         : "";
-      protocol = route_defaults.protocol || Utils.current_protocol();
+      protocol = route_defaults.protocol || this.current_protocol();
       port =
         route_defaults.port ||
-        (!route_defaults.host ? Utils.current_port() : void 0);
+        (!route_defaults.host ? this.current_port() : void 0);
       port = port ? ":" + port : "";
       return protocol + "://" + subdomain + hostname + port;
-    },
-    has_location: function () {
+    }
+    has_location() {
       return (
         (typeof window !== "undefined" && window !== null
           ? window.location
           : void 0) != null
       );
-    },
-    current_host: function (): string | null {
+    }
+    current_host(): string | null {
       if (this.has_location()) {
         return window.location.hostname;
       } else {
         return null;
       }
-    },
-    current_protocol: function (): string {
+    }
+    current_protocol(): string {
       if (this.has_location() && window.location.protocol !== "") {
         return window.location.protocol.replace(/:$/, "");
       } else {
         return "http";
       }
-    },
-    current_port: function (): string {
+    }
+    current_port(): string {
       if (this.has_location() && window.location.port !== "") {
         return window.location.port;
       } else {
         return "";
       }
-    },
-    _classToTypeCache: null,
-    _classToType: function () {
+    }
+    _classToType() {
       var name, _i, _len, _ref;
       const _classToTypeCache = {};
       _ref = "Boolean Number String Function Array Date RegExp Object Error".split(
@@ -487,8 +487,8 @@ type Configuration = {
         _classToTypeCache["[object " + name + "]"] = name.toLowerCase();
       }
       return _classToTypeCache;
-    },
-    get_object_type: function (obj: any) {
+    }
+    get_object_type(obj: any) {
       if (root.jQuery && root.jQuery.type != null) {
         return root.jQuery.type(obj);
       }
@@ -502,16 +502,16 @@ type Configuration = {
       } else {
         return typeof obj;
       }
-    },
-    indexOf: function <T>(array: T[], element: T): number {
+    }
+    indexOf<T>(array: readonly T[], element: T): number {
       if (array.indexOf) {
         return array.indexOf(element);
       } else {
         return this.indexOfImplementation(array, element);
       }
-    },
+    }
 
-    indexOfImplementation: function <T>(array: T[], element: T): number {
+    indexOfImplementation<T>(array: readonly T[], element: T): number {
       let result = -1;
       array.forEach((el, i) => {
         if (el === element && result === -1) {
@@ -519,9 +519,9 @@ type Configuration = {
         }
       });
       return result;
-    },
+    }
 
-    namespace: function (
+    namespace(
       object: object,
       namespace: string,
       routes: unknown
@@ -539,38 +539,42 @@ type Configuration = {
           return (object[part] = routes);
         }
       }
-    },
-    configure: function (new_config: Partial<Configuration>): Configuration {
-      return (this.configuration = { ...this.configuration, ...new_config });
-    },
-    config: function (): Configuration {
+    }
+
+    configure(new_config: Partial<Configuration>): Configuration {
+      this.configuration = { ...this.configuration, ...new_config }
+      return this.configuration;
+    }
+
+    config(): Configuration {
       return { ...this.configuration };
-    },
-    make: function (): void {
+    }
+    make(): void {
       var routes;
       routes = RubyVariables.ROUTES;
-      routes.configure = function (config: Partial<Configuration>) {
-        return Utils.configure(config);
+      routes.configure = (config: Partial<Configuration>) => {
+        return this.configure(config);
       };
-      routes.config = function () {
-        return Utils.config();
+      routes.config = () => {
+        return this.config();
       };
-      routes.default_serializer = function (
+      routes.default_serializer = (
         object: object,
         prefix: string = ""
-      ) {
-        return Utils.default_serializer(object, prefix);
+      ) => {
+        return this.default_serializer(object, prefix);
       };
-      Utils.namespace(root, RubyVariables.NAMESPACE, routes);
+      this.namespace(root, RubyVariables.NAMESPACE, routes);
       return Object.assign(
         {
           default: routes,
         },
         routes
       );
-    },
-  } as const;
+    }
+  }
 
+  const Utils = new UtilsClass()
   const result = Utils.make();
 
   if (typeof define === "function" && define.amd) {
