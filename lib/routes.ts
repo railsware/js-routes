@@ -106,7 +106,6 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
         case "array":
           for (const element of object) {
             s.push(this.default_serializer(element, prefix + "[]"));
-
           }
           break;
         case "object":
@@ -472,18 +471,16 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
         return "";
       }
     }
-    _classToType() {
-      var name, _i, _len, _ref;
-      const _classToTypeCache = {};
-      _ref = "Boolean Number String Function Array Date RegExp Object Error".split(
-        " "
+    _classToTypeCache = "Boolean Number String Function Array Date RegExp Object Error"
+      .split(" ")
+      .reduce(
+        (result, name) => ({
+          ...result,
+          [`[object ${name}]`]: name.toLowerCase(),
+        }),
+        {}
       );
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        name = _ref[_i];
-        _classToTypeCache["[object " + name + "]"] = name.toLowerCase();
-      }
-      return _classToTypeCache;
-    }
+
     get_object_type(obj: any) {
       if (Root.jQuery && Root.jQuery.type != null) {
         return Root.jQuery.type(obj);
@@ -493,7 +490,8 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
       }
       if (typeof obj === "object" || typeof obj === "function") {
         return (
-          this._classToType()[Object.prototype.toString.call(obj)] || "object"
+          this._classToTypeCache[Object.prototype.toString.call(obj)] ||
+          "object"
         );
       } else {
         return typeof obj;
@@ -545,8 +543,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
       return { ...this.configuration };
     }
     make(): void {
-      var routes;
-      routes = RubyVariables.ROUTES;
+      const routes = RubyVariables.ROUTES;
       routes.configure = (config: Partial<Configuration>) => {
         return this.configure(config);
       };
