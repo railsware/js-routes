@@ -21,7 +21,7 @@ declare const RubyVariables: {
   DEFAULT_URL_OPTIONS: RouteParameters;
   SERIALIZER: Serializer;
   NAMESPACE: string;
-  ROUTES: any;
+  ROUTES: Record<string, RouteHelper>;
 };
 
 declare const exports: any;
@@ -37,8 +37,13 @@ type Configuration = {
 };
 
 type Optional<T> = { [P in keyof T]?: T[P] | null };
+type RouterExposedMethods = {
+  config(): Configuration,
+  configure(arg: Partial<Configuration>): Configuration,
+  default_serializer: Serializer,
+};
 
-(function (that: any) {
+(function (that: any): RouterExposedMethods {
   enum NodeTypes {
     GROUP = 1,
     CAT = 2,
@@ -100,11 +105,11 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
       if (!prefix && !(this.get_object_type(object) === "object")) {
         throw new Error("Url parameters should be a javascript hash");
       }
-      const s: string[] = [];
+      const result: string[] = [];
       switch (this.get_object_type(object)) {
         case "array":
           for (const element of object) {
-            s.push(this.default_serializer(element, prefix + "[]"));
+            result.push(this.default_serializer(element, prefix + "[]"));
           }
           break;
         case "object":
@@ -118,23 +123,20 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
               if (prefix) {
                 key = prefix + "[" + key + "]";
               }
-              s.push(this.default_serializer(prop, key));
+              result.push(this.default_serializer(prop, key));
             }
           }
           break;
         default:
           if (object != null) {
-            s.push(
+            result.push(
               encodeURIComponent(prefix!.toString()) +
                 "=" +
                 encodeURIComponent(object.toString())
             );
           }
       }
-      if (!s.length) {
-        return "";
-      }
-      return s.join("&");
+      return result.join("&");
     }
     serialize(object: any): string {
       const custom_serializer = this.configuration.serializer;
@@ -309,7 +311,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
           ) {
             return "";
           }
-          return "" + left_part + right_part;
+          return left_part + right_part;
         case NodeTypes.SYMBOL:
           const key = route[1];
           const value = parameters[key];
@@ -470,7 +472,10 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
         return "";
       }
     }
-    _classToTypeCache: Record<string,string> = "Boolean Number String Function Array Date RegExp Object Error"
+    _classToTypeCache: Record<
+      string,
+      string
+    > = "Boolean Number String Function Array Date RegExp Object Error"
       .split(" ")
       .reduce(
         (result, name) => ({
@@ -480,7 +485,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
         {}
       );
 
-    get_object_type(obj: any) {
+    get_object_type(obj: any): string {
       if (obj == null) {
         return "" + obj;
       }
@@ -538,16 +543,18 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
     config(): Configuration {
       return { ...this.configuration };
     }
-    make(): void {
-      const routes = RubyVariables.ROUTES;
-      routes.configure = (config: Partial<Configuration>) => {
-        return this.configure(config);
-      };
-      routes.config = () => {
-        return this.config();
-      };
-      routes.default_serializer = (object: object, prefix: string = "") => {
-        return this.default_serializer(object, prefix);
+    make(): RouterExposedMethods {
+      const routes = {
+        ...RubyVariables.ROUTES,
+        configure: (config: Partial<Configuration>) => {
+          return this.configure(config);
+        },
+        config: () => {
+          return this.config();
+        },
+        default_serializer: (object: object, prefix: string = "") => {
+          return this.default_serializer(object, prefix);
+        },
       };
       this.namespace(Root, RubyVariables.NAMESPACE, routes);
       return Object.assign(
