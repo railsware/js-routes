@@ -377,21 +377,21 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
     has_location: function() {
       return (typeof window !== "undefined" && window !== null ? window.location : void 0) != null;
     },
-    current_host: function() {
+    current_host: function(): string | null {
       if (this.has_location()) {
         return window.location.hostname;
       } else {
         return null;
       }
     },
-    current_protocol: function() {
+    current_protocol: function(): string {
       if (this.has_location() && window.location.protocol !== '') {
         return window.location.protocol.replace(/:$/, '');
       } else {
         return 'http';
       }
     },
-    current_port: function() {
+    current_port: function(): string {
       if (this.has_location() && window.location.port !== '') {
         return window.location.port;
       } else {
@@ -422,22 +422,26 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
         return typeof obj;
       }
     },
-    indexOf: function(array, element) {
-      return this.indexOfImplementation(array, element);
+    indexOf: function<T>(array: T[], element: T): number {
+      if (array.indexOf) {
+        return array.indexOf(element)
+      } else {
+        return this.indexOfImplementation(array, element);
+      }
     },
 
-    indexOfImplementation: function(array, element) {
-      var el, i, result, _i, _len;
-      result = -1;
-      for (i = _i = 0, _len = array.length; _i < _len; i = ++_i) {
-        el = array[i];
-        if (el === element) {
+    indexOfImplementation: function<T>(array: T[], element: T): number {
+      let result = -1;
+      array.forEach((el, i) => {
+        if (el === element && result === -1) {
           result = i;
         }
-      }
+
+      })
       return result;
     },
-    namespace: function(object: object, namespace: string, routes: unknown) {
+
+    namespace: function(object: object, namespace: string, routes: unknown): unknown {
       var index, part, parts, _i, _len;
       parts = namespace ? namespace.split(".") : [];
       if (parts.length === 0) {
@@ -452,13 +456,13 @@ let root: {jQuery? : {type(arg: any): string}} = typeof exports === "object" ? e
         }
       }
     },
-    configure: function(new_config: Partial<Configuration>) {
+    configure: function(new_config: Partial<Configuration>): Configuration {
       return this.configuration = {...this.configuration, ...new_config};
     },
-    config: function() {
+    config: function(): Configuration {
       return {...this.configuration}
     },
-    make: function() {
+    make: function(): void {
       var routes;
       routes = RubyVariables.ROUTES;
       routes.configure = function(config: Partial<Configuration>) {
