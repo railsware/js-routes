@@ -38,7 +38,7 @@ type Configuration = {
 
 type Optional<T> = { [P in keyof T]?: T[P] | null };
 
-(function () {
+(function (that: any) {
   enum NodeTypes {
     GROUP = 1,
     CAT = 2,
@@ -59,8 +59,8 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
     | [NodeTypes.SYMBOL, string, never];
 
   const hasProp = {}.hasOwnProperty;
-  const root: { jQuery?: { type(arg: any): string } } =
-    typeof exports === "object" ? exports : this;
+  const Root: { jQuery?: { type(arg: any): string } } =
+    typeof exports === "object" ? exports : that;
 
   class ParameterMissing extends Error {
     constructor(message: string) {
@@ -450,11 +450,9 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
       return protocol + "://" + subdomain + hostname + port;
     }
 
-    has_location() {
+    has_location(): boolean {
       return (
-        (typeof window !== "undefined" && window !== null
-          ? window.location
-          : void 0) != null
+        typeof window !== "undefined" && window !== null && !!window.location
       );
     }
     current_host(): string | null {
@@ -491,8 +489,8 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
       return _classToTypeCache;
     }
     get_object_type(obj: any) {
-      if (root.jQuery && root.jQuery.type != null) {
-        return root.jQuery.type(obj);
+      if (Root.jQuery && Root.jQuery.type != null) {
+        return Root.jQuery.type(obj);
       }
       if (obj == null) {
         return "" + obj;
@@ -523,7 +521,11 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
       return result;
     }
 
-    namespace(object: object, namespace: string | null | undefined, routes: unknown): unknown {
+    namespace(
+      object: object,
+      namespace: string | null | undefined,
+      routes: unknown
+    ): unknown {
       const parts = namespace ? namespace.split(".") : [];
       if (parts.length === 0) {
         return routes;
@@ -558,7 +560,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
       routes.default_serializer = (object: object, prefix: string = "") => {
         return this.default_serializer(object, prefix);
       };
-      this.namespace(root, RubyVariables.NAMESPACE, routes);
+      this.namespace(Root, RubyVariables.NAMESPACE, routes);
       return Object.assign(
         {
           default: routes,
@@ -578,4 +580,4 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
   }
 
   return result;
-}.call(this));
+}(this));

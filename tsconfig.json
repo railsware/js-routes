@@ -12,7 +12,7 @@
 
     "strictNullChecks": true,
     "noImplicitAny": false,
-    "noImplicitThis": false,
+    "noImplicitThis": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
     "alwaysStrict": false,
