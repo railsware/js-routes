@@ -36,6 +36,8 @@ type Configuration = {
   serializer: Serializer;
 };
 
+type Optional<T> = {[P in keyof T]?: T[P] | null}
+
 (function () {
   enum NodeTypes {
     GROUP = 1,
@@ -265,21 +267,21 @@ type Configuration = {
       full_url: boolean,
       args: RouteParameter[]
     ): string {
-      var options, parameters, result, url, url_params;
-      args = Array.prototype.slice.call(args);
-      options = this.normalize_options(
+      args = [...args];
+      const options = this.normalize_options(
         parts,
         required_parts,
         default_options,
         args
       );
-      parameters = options["url_parameters"];
-      result = "" + this.get_prefix() + this.visit(route, parameters);
-      url = this.clean_path(result);
+      const parameters = options["url_parameters"];
+      const result = this.get_prefix() + this.visit(route, parameters);
+      let url = this.clean_path(result);
       if (options["trailing_slash"] === true) {
         url = url.replace(/(.*?)[\/]?$/, "$1/");
       }
-      if ((url_params = this.serialize(parameters)).length) {
+      const url_params = this.serialize(parameters)
+      if (url_params.length) {
         url += "?" + url_params;
       }
       url += options.anchor ? "#" + options.anchor : "";
@@ -425,25 +427,22 @@ type Configuration = {
       };
       return result;
     }
-    route_url(route_defaults: RouteParameters): string {
-      var hostname, port, protocol, subdomain;
-      if (typeof route_defaults === "string") {
-        return route_defaults;
-      }
-      hostname = route_defaults.host || this.current_host();
+    route_url(route_defaults: Optional<{host: string, protocol: string, subdomain: string, port: string}>): string {
+      const hostname = route_defaults.host || this.current_host();
       if (!hostname) {
         return "";
       }
-      subdomain = route_defaults.subdomain
+      const subdomain = route_defaults.subdomain
         ? route_defaults.subdomain + "."
         : "";
-      protocol = route_defaults.protocol || this.current_protocol();
-      port =
+      const protocol = route_defaults.protocol || this.current_protocol();
+      let port =
         route_defaults.port ||
-        (!route_defaults.host ? this.current_port() : void 0);
+        (!route_defaults.host ? this.current_port() : undefined);
       port = port ? ":" + port : "";
       return protocol + "://" + subdomain + hostname + port;
     }
+
     has_location() {
       return (
         (typeof window !== "undefined" && window !== null
