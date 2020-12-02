@@ -470,7 +470,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
         return "";
       }
     }
-    _classToTypeCache = "Boolean Number String Function Array Date RegExp Object Error"
+    _classToTypeCache: Record<string,string> = "Boolean Number String Function Array Date RegExp Object Error"
       .split(" ")
       .reduce(
         (result, name) => ({
@@ -512,7 +512,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
     }
 
     namespace(
-      object: object,
+      object: any,
       namespace: string | null | undefined,
       routes: unknown
     ): unknown {
