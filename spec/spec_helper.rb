@@ -7,9 +7,11 @@ require 'rails/all'
 require 'js-routes'
 require 'active_support/core_ext/hash/slice'
 
-code = system("yarn tsc")
-unless code
-  exit(1)
+unless ENV['TRAVIS_CI']
+  code = system("yarn tsc")
+  unless code
+    exit(1)
+  end
 end
 
 
