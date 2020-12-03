@@ -16,13 +16,13 @@ describe JsRoutes, "compatibility with Rails"  do
 
   it "should raise error if required argument is not passed", :aggregate_failures do
     expect { evaljs("Routes.thing_path()") }
-      .to raise_error(/Route parameter missing: id/)
+      .to raise_error(/Route missing required keys: id/)
     expect { evaljs("Routes.search_path()") }
-      .to raise_error(/Route parameter missing: q/)
+      .to raise_error(/Route missing required keys: q/)
     expect { evaljs("Routes.book_path()") }
-      .to raise_error(/Route parameter missing: title/)
+      .to raise_error(/Route missing required keys: section, title/)
     expect { evaljs("Routes.book_title_path()") }
-      .to raise_error(/Route parameter missing: title/)
+      .to raise_error(/Route missing required keys: title/)
   end
 
   it "should produce error stacktraces including function names" do
@@ -235,7 +235,7 @@ describe JsRoutes, "compatibility with Rails"  do
 
       it "should raise error when passing non-full list of arguments and some query params" do
         expect { evaljs("Routes.thing_path(5, {q: 'hello'})") }
-          .to raise_error(/Route parameter missing: id/)
+          .to raise_error(/Route missing required keys: id/)
       end
 
       it "should treat null as non-given optional part" do
@@ -253,7 +253,7 @@ describe JsRoutes, "compatibility with Rails"  do
 
     context "and including them" do
       it "should fail when insufficient arguments are given" do
-        expect { evaljs("Routes.thing_deep_path(2)") }.to raise_error(/Route parameter missing: third_required/)
+        expect { evaljs("Routes.thing_deep_path(2)") }.to raise_error(/Route missing required keys: third_required/)
       end
 
       it "should include the optional parts" do
