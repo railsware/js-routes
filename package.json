@@ -21,12 +21,12 @@
     "prettier": "^2.2.1"
   },
   "scripts": {
-    "lint:fix": "yarn eslint --fix && yarn prettier --write lib",
+    "lint:fix": "yarn eslint --fix && yarn prettier --write lib/routes.ts",
     "postinstall": "yarn husky-upgrade"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "yarn lint:fix"
     }
   },
   "lint-staged": {
