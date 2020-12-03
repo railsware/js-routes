@@ -297,15 +297,11 @@ Advantages of this one are:
 
 ## Typescript TODO
 
-* Automatic compilation in test env
-* Fix indexOfImplementation
-* Add static types to Utils
 * Add routes generation .d.ts file
 * Add config option on the output format: js, ts, d.ts
 * Add prettier
 * Add eslint
 * Refactor `get_object_type`
-* Enable tsconfig strict settings
 * Add development guide
 
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)

@@ -192,6 +192,14 @@ type KeywordUrlOptions = Optional<{
       if (!object) {
         return "";
       }
+      const result = this.unwrap_path_identifier(object);
+      if (this.is_nullable(result)) {
+        throw new ParametersMissing(key);
+      }
+      return "" + result;
+    }
+
+    unwrap_path_identifier(object: any): unknown {
       let result: any = object;
       if (this.get_object_type(object) === "object") {
         if ("to_param" in object) {
@@ -201,14 +209,12 @@ type KeywordUrlOptions = Optional<{
         } else {
           result = object;
         }
-        if (this.get_object_type(result) === "function") {
-          result = result.call(object);
-        }
+        return this.get_object_type(result) === "function"
+          ? result.call(object)
+          : result;
+      } else {
+        return object;
       }
-      if (this.is_nullable(result)) {
-        throw new ParametersMissing(key);
-      }
-      return "" + result;
     }
 
     partition_parameters(
@@ -418,7 +424,7 @@ type KeywordUrlOptions = Optional<{
       if (this.get_object_type(value) === "array") {
         value = value.join("/");
       }
-      value = this.path_identifier(key, value)
+      value = this.path_identifier(key, value);
 
       return DeprecatedGlobbingBehavior ? value : encodeURI(value);
     }

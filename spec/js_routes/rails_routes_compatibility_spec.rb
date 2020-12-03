@@ -302,9 +302,16 @@ describe JsRoutes, "compatibility with Rails"  do
         evaljs("Routes.inbox_path()")
       }.to raise_error(js_error_class)
     end
+
     it "should throw Exception if required parameter is not defined" do
       expect {
         evaljs("Routes.inbox_path(null)")
+      }.to raise_error(js_error_class)
+    end
+
+    it "should throw Exception if required parameter is not defined" do
+      expect {
+        evaljs("Routes.inbox_path(undefined)")
       }.to raise_error(js_error_class)
     end
 
