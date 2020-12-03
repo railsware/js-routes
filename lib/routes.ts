@@ -109,7 +109,7 @@ type KeywordUrlOptions = Optional<{
     configuration: Configuration = DefaultConfiguration;
 
     default_serializer(object: any, prefix?: string | null): string {
-      if (object == null) {
+      if (this.is_nullable(object)) {
         return "";
       }
       if (!prefix && !(this.get_object_type(object) === "object")) {
@@ -127,10 +127,10 @@ type KeywordUrlOptions = Optional<{
           for (let key in object) {
             if (!hasProp(object, key)) continue;
             let prop = object[key];
-            if (prop == null && prefix) {
+            if (this.is_nullable(prop) && prefix) {
               prop = "";
             }
-            if (prop != null) {
+            if (this.is_not_nullable(prop)) {
               if (prefix) {
                 key = prefix + "[" + key + "]";
               }
@@ -139,7 +139,7 @@ type KeywordUrlOptions = Optional<{
           }
           break;
         default:
-          if (object !== null && object !== undefined) {
+          if (this.is_not_nullable(object)) {
             result.push(
               encodeURIComponent(prefix) + "=" + encodeURIComponent("" + object)
             );
@@ -164,7 +164,7 @@ type KeywordUrlOptions = Optional<{
       const last_el = args[args.length - 1];
       if (
         (args.length > number_of_params && last_el === void 0) ||
-        (last_el != null &&
+        (this.is_not_nullable(last_el) &&
           "object" === this.get_object_type(last_el) &&
           !this.looks_like_serialized_model(last_el))
       ) {
@@ -195,12 +195,12 @@ type KeywordUrlOptions = Optional<{
       let result: any = object;
       if (this.get_object_type(object) === "object") {
         if ("to_param" in object) {
-          if (object.to_param == null) {
+          if (this.is_nullable(object.to_param)) {
             throw new ParametersMissing("to_param");
           }
           result = object.to_param;
         } else if ("id" in object) {
-          if (object.id == null) {
+          if (this.is_nullable(object.id)) {
             throw new ParametersMissing("id");
           }
           result = object.id;
@@ -415,7 +415,7 @@ type KeywordUrlOptions = Optional<{
       const key = route[1] as string;
       let value: any = parameters[key];
       delete parameters[key];
-      if (value == null) {
+      if (this.is_nullable(value)) {
         return this.visit(route, parameters, optional);
       }
       if (this.get_object_type(value) === "array") {
@@ -483,10 +483,9 @@ type KeywordUrlOptions = Optional<{
     }
 
     has_location(): boolean {
-      return (
-        typeof window !== "undefined" && window !== null && !!window.location
-      );
+      return this.is_not_nullable(window) && !!window.location;
     }
+
     current_host(): string | null {
       if (this.has_location()) {
         return window.location.hostname;
@@ -494,6 +493,7 @@ type KeywordUrlOptions = Optional<{
         return null;
       }
     }
+
     current_protocol(): string {
       if (this.has_location() && window.location.protocol !== "") {
         return window.location.protocol.replace(/:$/, "");
