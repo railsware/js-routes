@@ -185,7 +185,7 @@ type KeywordUrlOptions = Optional<{
       );
     }
 
-    path_identifier(object: 0 | Record<string, any>): string {
+    path_identifier(key: string, object: 0 | Record<string, any>): string {
       if (object === 0) {
         return "0";
       }
@@ -195,14 +195,8 @@ type KeywordUrlOptions = Optional<{
       let result: any = object;
       if (this.get_object_type(object) === "object") {
         if ("to_param" in object) {
-          if (this.is_nullable(object.to_param)) {
-            throw new ParametersMissing("to_param");
-          }
           result = object.to_param;
         } else if ("id" in object) {
-          if (this.is_nullable(object.id)) {
-            throw new ParametersMissing("id");
-          }
           result = object.id;
         } else {
           result = object;
@@ -210,6 +204,9 @@ type KeywordUrlOptions = Optional<{
         if (this.get_object_type(result) === "function") {
           result = result.call(object);
         }
+      }
+      if (this.is_nullable(result)) {
+        throw new ParametersMissing(key);
       }
       return "" + result;
     }
@@ -360,7 +357,7 @@ type KeywordUrlOptions = Optional<{
       const value: any = parameters[key];
       delete parameters[key];
       if (this.is_not_nullable(value)) {
-        return this.encode_segment(this.path_identifier(value));
+        return this.encode_segment(this.path_identifier(key, value));
       }
       if (optional) {
         return "";
@@ -421,11 +418,9 @@ type KeywordUrlOptions = Optional<{
       if (this.get_object_type(value) === "array") {
         value = value.join("/");
       }
-      if (DeprecatedGlobbingBehavior) {
-        return this.path_identifier(value);
-      } else {
-        return encodeURI(this.path_identifier(value));
-      }
+      value = this.path_identifier(key, value)
+
+      return DeprecatedGlobbingBehavior ? value : encodeURI(value);
     }
 
     get_prefix(): string {
