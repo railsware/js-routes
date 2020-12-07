@@ -405,5 +405,6 @@ if typeof define is "function" and define.amd
   # AMD
   define [], -> result
 if module?
+  # CommonJS
   module.exports = result
 return result
