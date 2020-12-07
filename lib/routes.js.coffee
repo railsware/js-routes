@@ -374,7 +374,6 @@ Utils =
     result
 
   namespace: (root, namespace, routes) ->
-    unless namespace? then throw new Error("namespace required for browser global usage")
     parts = if namespace then namespace.split(".") else []
     return routes if parts.length == 0
     for part, index in parts
@@ -409,3 +408,5 @@ else if module?
 else
   # Browser globals
   Utils.namespace(this, NAMESPACE, result)
+
+return result
