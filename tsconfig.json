@@ -5,11 +5,12 @@
     "module": "commonjs",
     "outDir": "lib",
     "sourceMap": true,
+    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "typeRoots": ["node_modules/@types", "./@types"],
-    "strict": true,
 
+    "strict": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
