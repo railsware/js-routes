@@ -5,7 +5,7 @@ Based on Rails RubyVariables.RAILS_VERSION routes of RubyVariables.APP_CLASS
 
 type RouteParameter = unknown;
 type RouteParameters = Record<string, RouteParameter>;
-type Serializer = (object: unknown) => string;
+type Serializer = (value: unknown) => string;
 type RouteHelper = {
   (...args: RouteParameter[]): string;
   required_params: string[];
@@ -55,8 +55,8 @@ type KeywordUrlOptions = Optional<{
 }>;
 
 (function (that: unknown): RouterExposedMethods {
-  const hasProp = (object: unknown, key: string) =>
-    Object.prototype.hasOwnProperty.call(object, key);
+  const hasProp = (value: unknown, key: string) =>
+    Object.prototype.hasOwnProperty.call(value, key);
   enum NodeTypes {
     GROUP = 1,
     CAT = 2,
@@ -110,23 +110,23 @@ type KeywordUrlOptions = Optional<{
   class UtilsClass {
     configuration: Configuration = DefaultConfiguration;
 
-    default_serializer(object: any, prefix?: string | null): string {
-      if (this.is_nullable(object)) {
+    default_serializer(value: any, prefix?: string | null): string {
+      if (this.is_nullable(value)) {
         return "";
       }
-      if (!prefix && !(this.get_object_type(object) === "object")) {
+      if (!prefix && !this.is_object(value)) {
         throw new Error("Url parameters should be a javascript hash");
       }
       prefix = prefix || "";
       const result: string[] = [];
-      if (this.is_array(object)) {
-        for (const element of object) {
+      if (this.is_array(value)) {
+        for (const element of value) {
           result.push(this.default_serializer(element, prefix + "[]"));
         }
-      } else if (this.get_object_type(object) === "object") {
-        for (let key in object) {
-          if (!hasProp(object, key)) continue;
-          let prop = object[key];
+      } else if (this.is_object(value)) {
+        for (let key in value) {
+          if (!hasProp(value, key)) continue;
+          let prop = value[key];
           if (this.is_nullable(prop) && prefix) {
             prop = "";
           }
@@ -138,9 +138,9 @@ type KeywordUrlOptions = Optional<{
           }
         }
       } else {
-        if (this.is_not_nullable(object)) {
+        if (this.is_not_nullable(value)) {
           result.push(
-            encodeURIComponent(prefix) + "=" + encodeURIComponent("" + object)
+            encodeURIComponent(prefix) + "=" + encodeURIComponent("" + value)
           );
         }
       }
@@ -163,9 +163,7 @@ type KeywordUrlOptions = Optional<{
       const last_el = args[args.length - 1];
       if (
         (args.length > number_of_params && last_el === void 0) ||
-        (this.is_not_nullable(last_el) &&
-          "object" === this.get_object_type(last_el) &&
-          !this.looks_like_serialized_model(last_el))
+        (this.is_object(last_el) && !this.looks_like_serialized_model(last_el))
       ) {
         const options = (args.pop() || {}) as RouteParameters;
         delete options[this.configuration.special_options_key];
@@ -179,6 +177,7 @@ type KeywordUrlOptions = Optional<{
       object: any
     ): object is { id: unknown } | { to_param: unknown } {
       return (
+        this.is_object(object) &&
         !object[this.configuration.special_options_key] &&
         ("id" in object || "to_param" in object)
       );
@@ -200,7 +199,7 @@ type KeywordUrlOptions = Optional<{
 
     unwrap_path_identifier(object: any): unknown {
       let result: any = object;
-      if (this.get_object_type(object) === "object") {
+      if (this.is_object(object)) {
         if ("to_param" in object) {
           result = object.to_param;
         } else if ("id" in object) {
@@ -208,9 +207,7 @@ type KeywordUrlOptions = Optional<{
         } else {
           result = object;
         }
-        return this.get_object_type(result) === "function"
-          ? result.call(object)
-          : result;
+        return this.is_callable(result) ? result.call(object) : result;
       } else {
         return object;
       }
@@ -425,7 +422,7 @@ type KeywordUrlOptions = Optional<{
       }
       value = this.path_identifier(key, value as any);
 
-      return DeprecatedGlobbingBehavior ? '' + value : encodeURI('' + value);
+      return DeprecatedGlobbingBehavior ? "" + value : encodeURI("" + value);
     }
 
     get_prefix(): string {
@@ -508,35 +505,17 @@ type KeywordUrlOptions = Optional<{
         return "";
       }
     }
-    _classToTypeCache: Record<
-      string,
-      string
-    > = "Boolean Number String Function Array Date RegExp Object Error"
-      .split(" ")
-      .reduce(
-        (result, name) => ({
-          ...result,
-          [`[object ${name}]`]: name.toLowerCase(),
-        }),
-        {}
-      );
 
-    get_object_type(obj: any): string {
-      if (obj == null) {
-        return "" + obj;
-      }
-      if (typeof obj === "object" || typeof obj === "function") {
-        return (
-          this._classToTypeCache[Object.prototype.toString.call(obj)] ||
-          "object"
-        );
-      } else {
-        return typeof obj;
-      }
+    is_object(value: unknown): value is Record<string, unknown> {
+      return typeof value === "object" && "" + value === "[object Object]";
     }
 
     is_array<T>(object: unknown | T[]): object is T[] {
       return object instanceof Array;
+    }
+
+    is_callable(object: unknown): object is Function {
+      return typeof object === "function" && !!object.call;
     }
 
     namespace(
@@ -544,7 +523,7 @@ type KeywordUrlOptions = Optional<{
       namespace: string | null | undefined,
       routes: unknown
     ): unknown {
-      const parts = namespace ? namespace.split(".") : [];
+      const parts = namespace?.split(".") || [];
       if (parts.length === 0) {
         return routes;
       }
@@ -598,7 +577,7 @@ type KeywordUrlOptions = Optional<{
     });
   }
 
-  if (typeof module === 'object') {
+  if (typeof module === "object") {
     module.exports = result;
   }
 
