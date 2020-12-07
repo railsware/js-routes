@@ -376,7 +376,8 @@ Utils =
 
   namespace: (root, namespace, routes) ->
     parts = if namespace then namespace.split(".") else []
-    return routes if parts.length == 0
+    if parts.length == 0
+      return root = routes
     for part, index in parts
       if index < parts.length - 1
         root = (root[part] or= {})
