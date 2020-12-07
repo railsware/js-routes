@@ -158,8 +158,8 @@ type KeywordUrlOptions = Optional<{
 
     extract_options(
       number_of_params: number,
-      args: unknown[]
-    ): { args: unknown[]; options: KeywordUrlOptions & RouteParameters } {
+      args: RouteParameter[]
+    ): { args: RouteParameter[]; options: KeywordUrlOptions & RouteParameters } {
       const last_el = args[args.length - 1];
       if (
         (args.length > number_of_params && last_el === 0) ||
