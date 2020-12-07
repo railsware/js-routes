@@ -16,13 +16,6 @@ declare const RubyVariables: {
     NAMESPACE: string;
     ROUTES: RouteHelpers;
 };
-declare const exports: unknown;
-declare const define: undefined | (((arg: unknown[], callback: () => unknown) => void) & {
-    amd?: unknown;
-});
-declare const module: {
-    exports: any;
-} | undefined;
 declare type Configuration = {
     prefix: string;
     default_url_options: RouteParameters;
@@ -45,3 +38,10 @@ declare type KeywordUrlOptions = Optional<{
     anchor: string;
     trailing_slash: boolean;
 }>;
+declare const exports: unknown;
+declare const define: undefined | (((arg: unknown[], callback: () => unknown) => void) & {
+    amd?: unknown;
+});
+declare const module: {
+    exports: any;
+} | undefined;

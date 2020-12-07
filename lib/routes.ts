@@ -24,13 +24,6 @@ declare const RubyVariables: {
   ROUTES: RouteHelpers;
 };
 
-declare const exports: unknown;
-declare const define:
-  | undefined
-  | (((arg: unknown[], callback: () => unknown) => void) & { amd?: unknown });
-
-declare const module: { exports: any } | undefined;
-
 type Configuration = {
   prefix: string;
   default_url_options: RouteParameters;
@@ -53,6 +46,13 @@ type KeywordUrlOptions = Optional<{
   anchor: string;
   trailing_slash: boolean;
 }>;
+
+declare const exports: unknown;
+declare const define:
+  | undefined
+  | (((arg: unknown[], callback: () => unknown) => void) & { amd?: unknown });
+
+declare const module: { exports: any } | undefined;
 
 (function (that: unknown): RouterExposedMethods {
   const hasProp = (value: unknown, key: string) =>

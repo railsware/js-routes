@@ -30,8 +30,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": ["yarn lint:fix"
-]
+    "*.ts": ["yarn lint:fix" ]
   }
 
 }
