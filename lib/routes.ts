@@ -42,7 +42,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
 type RouterExposedMethods = {
   config(): Configuration;
   configure(arg: Partial<Configuration>): Configuration;
-  serialize: Serializer,
+  serialize: Serializer;
 };
 
 type KeywordUrlOptions = Optional<{
@@ -558,6 +558,7 @@ type KeywordUrlOptions = Optional<{
     config(): Configuration {
       return { ...this.configuration };
     }
+
     make(): RouterExposedMethods {
       const routes = {
         ...RubyVariables.ROUTES,
@@ -571,7 +572,9 @@ type KeywordUrlOptions = Optional<{
           return this.serialize(object);
         },
         default_serializer: (object: object) => {
-          console.warn(`js-routes default_serializer method is deprecated. Use #serialize instead.`)
+          console.warn(
+            `js-routes default_serializer method is deprecated. Use #serialize instead.`
+          );
           return this.default_serializer(object);
         },
       };
