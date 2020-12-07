@@ -222,7 +222,10 @@ type KeywordUrlOptions = Optional<{
       required_params: string[],
       default_options: RouteParameters,
       call_arguments: RouteParameter[]
-    ): {url_parameters: KeywordUrlOptions, query_parameters: RouteParameters} {
+    ): {
+      url_parameters: KeywordUrlOptions;
+      query_parameters: RouteParameters;
+    } {
       // eslint-disable-next-line prefer-const
       let { args, options } = this.extract_options(
         parts.length,
@@ -267,7 +270,7 @@ type KeywordUrlOptions = Optional<{
           }
         }
       }
-      return {url_parameters, query_parameters};
+      return { url_parameters, query_parameters };
     }
     build_route(
       parts: string[],
@@ -277,7 +280,7 @@ type KeywordUrlOptions = Optional<{
       full_url: boolean,
       args: RouteParameter[]
     ): string {
-      const {url_parameters, query_parameters} = this.partition_parameters(
+      const { url_parameters, query_parameters } = this.partition_parameters(
         parts,
         required_params,
         default_options,
