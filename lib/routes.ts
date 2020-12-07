@@ -159,17 +159,21 @@ type KeywordUrlOptions = Optional<{
     extract_options(
       number_of_params: number,
       args: unknown[]
-    ): KeywordUrlOptions & RouteParameters {
+    ): { args: unknown[]; options: KeywordUrlOptions & RouteParameters } {
       const last_el = args[args.length - 1];
       if (
-        (args.length > number_of_params && last_el === void 0) ||
+        (args.length > number_of_params && last_el === 0) ||
         (this.is_object(last_el) && !this.looks_like_serialized_model(last_el))
       ) {
-        const options = (args.pop() || {}) as RouteParameters;
-        delete options[this.configuration.special_options_key];
-        return options;
+        if (this.is_object(last_el)) {
+          delete last_el[this.configuration.special_options_key];
+        }
+        return {
+          args: args.slice(0, args.length - 1),
+          options: last_el as KeywordUrlOptions & RouteParameters,
+        };
       } else {
-        return {};
+        return { args, options: {} };
       }
     }
 
@@ -218,13 +222,16 @@ type KeywordUrlOptions = Optional<{
       required_params: string[],
       default_options: RouteParameters,
       call_arguments: RouteParameter[]
-    ): [KeywordUrlOptions, RouteParameters] {
-      call_arguments = [...call_arguments];
-      let options = this.extract_options(parts.length, call_arguments);
-      if (call_arguments.length > parts.length) {
+    ): {url_parameters: KeywordUrlOptions, query_parameters: RouteParameters} {
+      // eslint-disable-next-line prefer-const
+      let { args, options } = this.extract_options(
+        parts.length,
+        call_arguments
+      );
+      if (args.length > parts.length) {
         throw new Error("Too many parameters provided for path");
       }
-      let use_all_parts = call_arguments.length > required_params.length;
+      let use_all_parts = args.length > required_params.length;
       const parts_options: RouteParameters = {};
       for (const key in options) {
         const value = options[key];
@@ -253,14 +260,14 @@ type KeywordUrlOptions = Optional<{
       const route_parts = use_all_parts ? parts : required_params;
       let i = 0;
       for (const part of route_parts) {
-        if (i < call_arguments.length) {
+        if (i < args.length) {
           if (!hasProp(parts_options, part)) {
-            query_parameters[part] = call_arguments[i];
+            query_parameters[part] = args[i];
             ++i;
           }
         }
       }
-      return [url_parameters, query_parameters];
+      return {url_parameters, query_parameters};
     }
     build_route(
       parts: string[],
@@ -270,7 +277,7 @@ type KeywordUrlOptions = Optional<{
       full_url: boolean,
       args: RouteParameter[]
     ): string {
-      const [url_parameters, query_parameters] = this.partition_parameters(
+      const {url_parameters, query_parameters} = this.partition_parameters(
         parts,
         required_params,
         default_options,
