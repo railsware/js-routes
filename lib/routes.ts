@@ -29,6 +29,8 @@ declare const define:
   | undefined
   | (((arg: unknown[], callback: () => unknown) => void) & { amd?: unknown });
 
+declare const module: { exports: any } | undefined;
+
 type Configuration = {
   prefix: string;
   default_url_options: RouteParameters;
@@ -117,33 +119,30 @@ type KeywordUrlOptions = Optional<{
       }
       prefix = prefix || "";
       const result: string[] = [];
-      switch (this.get_object_type(object)) {
-        case "array":
-          for (const element of object) {
-            result.push(this.default_serializer(element, prefix + "[]"));
+      if (this.is_array(object)) {
+        for (const element of object) {
+          result.push(this.default_serializer(element, prefix + "[]"));
+        }
+      } else if (this.get_object_type(object) === "object") {
+        for (let key in object) {
+          if (!hasProp(object, key)) continue;
+          let prop = object[key];
+          if (this.is_nullable(prop) && prefix) {
+            prop = "";
           }
-          break;
-        case "object":
-          for (let key in object) {
-            if (!hasProp(object, key)) continue;
-            let prop = object[key];
-            if (this.is_nullable(prop) && prefix) {
-              prop = "";
+          if (this.is_not_nullable(prop)) {
+            if (prefix) {
+              key = prefix + "[" + key + "]";
             }
-            if (this.is_not_nullable(prop)) {
-              if (prefix) {
-                key = prefix + "[" + key + "]";
-              }
-              result.push(this.default_serializer(prop, key));
-            }
+            result.push(this.default_serializer(prop, key));
           }
-          break;
-        default:
-          if (this.is_not_nullable(object)) {
-            result.push(
-              encodeURIComponent(prefix) + "=" + encodeURIComponent("" + object)
-            );
-          }
+        }
+      } else {
+        if (this.is_not_nullable(object)) {
+          result.push(
+            encodeURIComponent(prefix) + "=" + encodeURIComponent("" + object)
+          );
+        }
       }
       return result.join("&");
     }
@@ -416,17 +415,17 @@ type KeywordUrlOptions = Optional<{
       optional: boolean
     ): string {
       const key = route[1] as string;
-      let value: any = parameters[key];
+      let value = parameters[key];
       delete parameters[key];
       if (this.is_nullable(value)) {
         return this.visit(route, parameters, optional);
       }
-      if (this.get_object_type(value) === "array") {
+      if (this.is_array(value)) {
         value = value.join("/");
       }
-      value = this.path_identifier(key, value);
+      value = this.path_identifier(key, value as any);
 
-      return DeprecatedGlobbingBehavior ? value : encodeURI(value);
+      return DeprecatedGlobbingBehavior ? '' + value : encodeURI('' + value);
     }
 
     get_prefix(): string {
@@ -536,6 +535,10 @@ type KeywordUrlOptions = Optional<{
       }
     }
 
+    is_array<T>(object: unknown | T[]): object is T[] {
+      return object instanceof Array;
+    }
+
     namespace(
       object: any,
       namespace: string | null | undefined,
@@ -593,6 +596,10 @@ type KeywordUrlOptions = Optional<{
     define([], function () {
       return result;
     });
+  }
+
+  if (typeof module === 'object') {
+    module.exports = result;
   }
 
   return result;
