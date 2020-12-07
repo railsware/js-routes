@@ -6,7 +6,14 @@ require 'rspec'
 require 'rails/all'
 require 'js-routes'
 require 'active_support/core_ext/hash/slice'
-require 'coffee-script'
+
+unless ENV['TRAVIS_CI']
+  code = system("yarn tsc")
+  unless code
+    exit(1)
+  end
+end
+
 
 if defined?(JRUBY_VERSION)
   require 'rhino'
@@ -34,6 +41,14 @@ end
 
 def evaljs(string, force = false)
   jscontext(force).eval(string)
+rescue MiniRacer::ParseError => e
+  message = e.message
+  _, _, line, _ = message.split(':')
+  code = line && string.split("\n")[line.to_i]
+  raise "#{message}. Code: #{code.strip}";
+rescue MiniRacer::RuntimeError => e
+  # puts string
+  raise e
 end
 
 def test_routes
@@ -79,28 +94,22 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before(:all) do
-    # compile all js files begin
-    Dir["#{File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))}/**/*.coffee"].each do |coffee|
-      File.open(coffee.gsub(/\.coffee$/, ""), 'w') do |f|
-        f.write(CoffeeScript.compile(File.read(coffee)).lstrip)
-      end
-    end
-    # compile all js files end
+  config.before(:suite) do
     draw_routes
   end
 
   config.before :each do
     evaljs("var window = this;", true)
 
+    log = proc do |*values|
+      puts values.map(&:inspect).join(", ")
+    end
     if defined?(JRUBY_VERSION)
-      jscontext[:log] = lambda do |context, value|
-        puts value.inspect
+      jscontext[:"console.log"] = lambda do |context, *values|
+        log(*values)
       end
     else
-      jscontext.attach("log", proc do |value|
-        puts value.inspect
-      end)
+      jscontext.attach("console.log", log)
     end
   end
 end

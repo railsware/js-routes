@@ -37,9 +37,10 @@ describe JsRoutes, "options" do
       let(:_presetup){ %q(var myCustomSerializer = 1) }
       let(:_options) { {:serializer => "myCustomSerializer"} }
 
-      it "should set configurable serializer" do
-        # expect to use default
-        expect(evaljs(%q(Routes.inboxes_path({a: 1})))).to eql("/inboxes?a=1")
+      it "should throw error" do
+      expect {
+        evaljs(%q(Routes.inboxes_path({a: 1})))
+      }.to raise_error(js_error_class)
       end
     end
 
@@ -178,7 +179,6 @@ describe JsRoutes, "options" do
       let(:_options) { {:namespace => nil} }
       it "should use this namespace for routing" do
         evaljs("window.zz = #{JsRoutes.generate(namespace: nil)}")
-        expect(evaljs("window.Routes")).to be_nil
         expect(evaljs("window.zz.inbox_path")).not_to be_nil
       end
 

@@ -22,6 +22,8 @@ gemfile:
   - gemfiles/rails50_sprockets_3.gemfile
   - gemfiles/rails51_sprockets_3.gemfile
   - gemfiles/rails52_sprockets_3.gemfile
+env:
+  TRAVIS_CI: true
 
 sudo: false
 dist: xenial
