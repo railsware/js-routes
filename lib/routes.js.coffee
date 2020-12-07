@@ -404,6 +404,6 @@ result = Utils.make()
 if typeof define is "function" and define.amd
   # AMD
   define [], -> result
-if module
+if module?
   module.exports = result
 return result
