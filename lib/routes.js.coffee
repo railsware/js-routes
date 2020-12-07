@@ -376,8 +376,7 @@ Utils =
 
   namespace: (root, namespace, routes) ->
     parts = if namespace then namespace.split(".") else []
-    if parts.length == 0
-      return root = routes
+    return routes if parts.length == 0
     for part, index in parts
       if index < parts.length - 1
         root = (root[part] or= {})
@@ -405,4 +404,6 @@ result = Utils.make()
 if typeof define is "function" and define.amd
   # AMD
   define [], -> result
+if module
+  module.exports = result
 return result
