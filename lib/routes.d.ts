@@ -27,7 +27,7 @@ declare type Configuration = {
     prefix: string;
     default_url_options: RouteParameters;
     special_options_key: string;
-    serializer?: Serializer;
+    serializer: Serializer;
 };
 declare type Optional<T> = {
     [P in keyof T]?: T[P] | null;

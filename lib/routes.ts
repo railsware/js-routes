@@ -35,7 +35,7 @@ type Configuration = {
   prefix: string;
   default_url_options: RouteParameters;
   special_options_key: string;
-  serializer?: Serializer;
+  serializer: Serializer;
 };
 
 type Optional<T> = { [P in keyof T]?: T[P] | null };
@@ -100,15 +100,14 @@ type KeywordUrlOptions = Optional<{
     "protocol",
   ] as const;
 
-  const DefaultConfiguration: Configuration = {
-    prefix: RubyVariables.PREFIX,
-    default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
-    special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
-    serializer: RubyVariables.SERIALIZER,
-  };
-
   class UtilsClass {
-    configuration: Configuration = DefaultConfiguration;
+    configuration: Configuration = {
+      prefix: RubyVariables.PREFIX,
+      default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
+      special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
+      serializer:
+        RubyVariables.SERIALIZER || this.default_serializer.bind(this),
+    };
 
     default_serializer(value: any, prefix?: string | null): string {
       if (this.is_nullable(value)) {
@@ -148,12 +147,7 @@ type KeywordUrlOptions = Optional<{
     }
 
     serialize(object: unknown): string {
-      const custom_serializer = this.configuration.serializer;
-      if (custom_serializer) {
-        return custom_serializer(object);
-      } else {
-        return this.default_serializer(object);
-      }
+      return this.configuration.serializer(object);
     }
 
     extract_options(
