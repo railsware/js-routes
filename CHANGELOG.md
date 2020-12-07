@@ -1,5 +1,8 @@
 ## master
 
+## v1.4.12
+
+* Improve compatibility with node environment #269.
 * Change default file location configuration to Webpacker if both Webpacker and Sprockets are loaded
 
 ## v1.4.11
