@@ -42,7 +42,7 @@ type Optional<T> = { [P in keyof T]?: T[P] | null };
 type RouterExposedMethods = {
   config(): Configuration;
   configure(arg: Partial<Configuration>): Configuration;
-  default_serializer: Serializer;
+  serialize: Serializer,
 };
 
 type KeywordUrlOptions = Optional<{
@@ -159,7 +159,10 @@ type KeywordUrlOptions = Optional<{
     extract_options(
       number_of_params: number,
       args: RouteParameter[]
-    ): { args: RouteParameter[]; options: KeywordUrlOptions & RouteParameters } {
+    ): {
+      args: RouteParameter[];
+      options: KeywordUrlOptions & RouteParameters;
+    } {
       const last_el = args[args.length - 1];
       if (
         (args.length > number_of_params && last_el === 0) ||
@@ -561,10 +564,14 @@ type KeywordUrlOptions = Optional<{
         configure: (config: Partial<Configuration>) => {
           return this.configure(config);
         },
-        config: () => {
+        config: (): Configuration => {
           return this.config();
         },
+        serialize: (object: unknown): string => {
+          return this.serialize(object);
+        },
         default_serializer: (object: object) => {
+          console.warn(`js-routes default_serializer method is deprecated. Use #serialize instead.`)
           return this.default_serializer(object);
         },
       };
@@ -585,9 +592,7 @@ type KeywordUrlOptions = Optional<{
     define([], function () {
       return result;
     });
-  }
-
-  if (typeof module === "object") {
+  } else if (typeof module === "object") {
     module.exports = result;
   }
 
