@@ -14,16 +14,6 @@ type RouteHelper = {
 
 type RouteHelpers = Record<string, RouteHelper>;
 
-declare const RubyVariables: {
-  PREFIX: string;
-  DEPRECATED_GLOBBING_BEHAVIOR: boolean;
-  SPECIAL_OPTIONS_KEY: string;
-  DEFAULT_URL_OPTIONS: RouteParameters;
-  SERIALIZER: Serializer;
-  NAMESPACE: string;
-  ROUTES: RouteHelpers;
-};
-
 type Configuration = {
   prefix: string;
   default_url_options: RouteParameters;
@@ -46,6 +36,16 @@ type KeywordUrlOptions = Optional<{
   anchor: string;
   trailing_slash: boolean;
 }>;
+
+declare const RubyVariables: {
+  PREFIX: string;
+  DEPRECATED_GLOBBING_BEHAVIOR: boolean;
+  SPECIAL_OPTIONS_KEY: string;
+  DEFAULT_URL_OPTIONS: RouteParameters;
+  SERIALIZER: Serializer;
+  NAMESPACE: string;
+  ROUTES: RouteHelpers;
+};
 
 declare const exports: unknown;
 declare const define:
