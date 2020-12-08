@@ -84,6 +84,7 @@ declare const module: { exports: any } | undefined;
       super(`Route missing required keys: ${keys.join(", ")}`);
       this.keys = keys;
       Object.setPrototypeOf(this, Object.getPrototypeOf(this));
+      this.name = ParametersMissing.name;
     }
   }
 

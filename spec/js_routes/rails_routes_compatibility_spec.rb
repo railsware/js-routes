@@ -23,6 +23,9 @@ describe JsRoutes, "compatibility with Rails"  do
       .to raise_error(/Route missing required keys: section, title/)
     expect { evaljs("Routes.book_title_path()") }
       .to raise_error(/Route missing required keys: title/)
+
+    expect( evaljs("try {Routes.thing_path()} catch (e) { e.name }") ).to eq('ParametersMissing')
+    expect( evaljs("try {Routes.thing_path()} catch (e) { e.keys }") ).to eq(['id'])
   end
 
   it "should produce error stacktraces including function names" do
