@@ -295,13 +295,12 @@ Advantages of this one are:
 * Support Rails `#to_param` convention for seo optimized paths
 * Well tested
 
-## Typescript TODO
+## Version 2 TODO
 
 * Add routes generation .d.ts file
 * Add config option on the output format: js, ts, d.ts
 * Add prettier
 * Add eslint
-* Refactor `get_object_type`
 * Add development guide
 
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)
