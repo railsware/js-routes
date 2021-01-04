@@ -404,7 +404,11 @@ if typeof define is "function" and define.amd
   define [], -> result
 else if module?
   # CommonJS
-  module.exports = result
+  try
+    module.exports = result
+  catch error
+    unless error.name == 'TypeError'
+      throw error
 else
   # Browser globals
   Utils.namespace(this, NAMESPACE, result)
