@@ -591,7 +591,11 @@ declare const module: { exports: any } | undefined;
       return result;
     });
   } else if (typeof module === "object") {
-    module.exports = result;
+    try {
+      module.exports = result;
+    } catch (error) {
+      if (error.name !== "TypeError") throw error;
+    }
   }
 
   return result;

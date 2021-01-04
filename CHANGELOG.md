@@ -1,5 +1,9 @@
 ## master
 
+## v1.4.14
+
+* Fix compatibility with UMD modules #237 [Comment](https://github.com/railsware/js-routes/issues/237#issuecomment-752754679)
+
 ## v1.4.13
 
 * Improve compatibility with node environment #269.
