@@ -5,7 +5,7 @@ describe JsRoutes, "options" do
   before(:each) do
     evaljs(_presetup) if _presetup
     with_warnings(_warnings) do
-      evaljs(JsRoutes.generate(_options))
+      evaljs(JsRoutes.generate({module_type: nil, **_options}))
       App.routes.default_url_options = _options[:default_url_options] || {}
     end
   end
@@ -178,7 +178,7 @@ describe JsRoutes, "options" do
     context "is nil" do
       let(:_options) { {:namespace => nil} }
       it "should use this namespace for routing" do
-        evaljs("window.zz = #{JsRoutes.generate(namespace: nil)}")
+        evaljs("window.zz = #{JsRoutes.generate(module_type: nil, namespace: nil)}")
         expect(evaljs("window.zz.inbox_path")).not_to be_nil
       end
 

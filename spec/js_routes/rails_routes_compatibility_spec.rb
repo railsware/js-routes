@@ -3,7 +3,7 @@ require "spec_helper"
 describe JsRoutes, "compatibility with Rails"  do
 
   before(:each) do
-    evaljs(JsRoutes.generate({}))
+    evaljs(JsRoutes.generate({module_type: nil}))
   end
 
   it "should generate collection routing" do

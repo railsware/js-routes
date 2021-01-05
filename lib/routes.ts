@@ -37,6 +37,8 @@ type KeywordUrlOptions = Optional<{
   trailing_slash: boolean;
 }>;
 
+type ModuleType = "CJS" | "AMD" | "UMD";
+
 declare const RubyVariables: {
   PREFIX: string;
   DEPRECATED_GLOBBING_BEHAVIOR: boolean;
@@ -45,16 +47,16 @@ declare const RubyVariables: {
   SERIALIZER: Serializer;
   NAMESPACE: string;
   ROUTES: RouteHelpers;
+  MODULE_TYPE: ModuleType | null;
 };
 
-declare const exports: unknown;
 declare const define:
   | undefined
   | (((arg: unknown[], callback: () => unknown) => void) & { amd?: unknown });
 
 declare const module: { exports: any } | undefined;
 
-(function (that: unknown): RouterExposedMethods {
+(function (that: unknown): RouterExposedMethods | undefined {
   const hasProp = (value: unknown, key: string) =>
     Object.prototype.hasOwnProperty.call(value, key);
   enum NodeTypes {
@@ -76,7 +78,43 @@ declare const module: { exports: any } | undefined;
     | [NodeTypes.CAT, RouteTree, RouteTree]
     | [NodeTypes.SYMBOL, string, never];
 
-  const Root = typeof exports === "object" ? exports : that;
+  const Root = that;
+  type ModuleDefinition = {
+    define: (routes: unknown) => void;
+    support: () => boolean;
+  };
+  const ModuleReferences: Record<ModuleType, ModuleDefinition> = {
+    CJS: {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      define: (routes) => (module!.exports = routes),
+      support: () => typeof module === "object",
+    },
+    AMD: {
+      define: (routes) =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        define!([], function () {
+          return routes;
+        }),
+      support: () => typeof define === "function" && !!define.amd,
+    },
+    UMD: {
+      define: (routes) => {
+        if (ModuleReferences.AMD.support()) {
+          ModuleReferences.AMD.define(routes);
+        } else {
+          if (ModuleReferences.CJS.support()) {
+            try {
+              ModuleReferences.CJS.define(routes);
+            } catch (error) {
+              if (error.name !== "TypeError") throw error;
+            }
+          }
+        }
+      },
+      support: () =>
+        ModuleReferences.AMD.support() || ModuleReferences.CJS.support(),
+    },
+  };
 
   class ParametersMissing extends Error {
     readonly keys: string[];
@@ -554,6 +592,25 @@ declare const module: { exports: any } | undefined;
       return { ...this.configuration };
     }
 
+    is_module_supported(name: ModuleType): boolean {
+      return ModuleReferences[name].support();
+    }
+
+    ensure_module_supported(name: ModuleType): void {
+      if (!this.is_module_supported(name)) {
+        console.log(module);
+        throw new Error(`${name} is not supported by runtime`);
+      }
+    }
+
+    define_module(name: ModuleType | null): void {
+      if (!name) {
+        return;
+      }
+      this.ensure_module_supported(name);
+      ModuleReferences[name].define(this.make());
+    }
+
     make(): RouterExposedMethods {
       const routes = {
         ...RubyVariables.ROUTES,
@@ -566,14 +623,14 @@ declare const module: { exports: any } | undefined;
         serialize: (object: unknown): string => {
           return this.serialize(object);
         },
-        default_serializer: (object: object) => {
+        default_serializer: (object: object): string => {
           console.warn(
             `js-routes default_serializer method is deprecated. Use #serialize instead.`
           );
           return this.default_serializer(object);
         },
       };
-      this.namespace(Root, RubyVariables.NAMESPACE, routes);
+      this.namespace(Root, RubyVariables.NAMESPACE || "Routes", routes);
       return Object.assign(
         {
           default: routes,
@@ -584,19 +641,10 @@ declare const module: { exports: any } | undefined;
   }
 
   const Utils = new UtilsClass();
-  const result = Utils.make();
 
-  if (typeof define === "function" && define.amd) {
-    define([], function () {
-      return result;
-    });
-  } else if (typeof module === "object") {
-    try {
-      module.exports = result;
-    } catch (error) {
-      if (error.name !== "TypeError") throw error;
-    }
+  if (RubyVariables.MODULE_TYPE) {
+    Utils.define_module(RubyVariables.MODULE_TYPE);
+  } else {
+    return Utils.make();
   }
-
-  return result;
 })(this);

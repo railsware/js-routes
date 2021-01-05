@@ -28,7 +28,8 @@ class JsRoutes
     compact: false,
     serializer: nil,
     special_options_key: "_options",
-    application: -> { Rails.application }
+    application: -> { Rails.application },
+    module_type: 'UMD',
   } #:nodoc:
 
   NODE_TYPES = {
@@ -125,7 +126,7 @@ class JsRoutes
 
     {
       'GEM_VERSION'         => JsRoutes::VERSION,
-      'ROUTES'              => js_routes,
+      'ROUTES'              => routes_object,
       'RAILS_VERSION'       => ActionPack.version,
       'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
 
@@ -135,6 +136,7 @@ class JsRoutes
       'PREFIX'              => json(@configuration.prefix),
       'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
       'SERIALIZER'          => @configuration.serializer || json(nil),
+      'MODULE_TYPE'         => json(@configuration.module_type),
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
       js.gsub!("RubyVariables.#{key}", value.to_s) ||
         raise("Missing key #{key} in JS template")
@@ -170,11 +172,11 @@ class JsRoutes
     application.routes.named_routes.to_a
   end
 
-  def js_routes
-    js_routes = named_routes.sort_by(&:first).flat_map do |_, route|
+  def routes_object
+    result = named_routes.sort_by(&:first).flat_map do |_, route|
       [build_route_if_match(route)] + mounted_app_routes(route)
     end.compact
-    "{\n" + js_routes.join(",\n") + "}\n"
+    "{\n" + result.join(",\n") + "}\n"
   end
 
   def mounted_app_routes(route)

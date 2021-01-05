@@ -4,7 +4,7 @@ require "fileutils"
 
 describe JsRoutes do
   before(:each) do
-    evaljs(JsRoutes.generate)
+    evaljs(JsRoutes.generate({module_type: nil}))
   end
 
   describe "generated js" do

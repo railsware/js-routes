@@ -1,9 +1,9 @@
 require "spec_helper"
 
-describe JsRoutes, "compatibility with CommonJS (node)"  do
+describe JsRoutes, "compatibility with CJS"  do
   before(:each) do
     evaljs("module = { exports: null }")
-    evaljs(JsRoutes.generate({}))
+    evaljs(JsRoutes.generate({module_type: 'CJS'}))
   end
 
   it "should define module exports" do
