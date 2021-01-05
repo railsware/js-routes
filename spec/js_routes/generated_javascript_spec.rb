@@ -3,12 +3,12 @@ require "fileutils"
 
 
 describe JsRoutes do
-  before(:each) do
-    evaljs(JsRoutes.generate({module_type: nil}))
-  end
-
   describe "generated js" do
-    subject { JsRoutes.generate }
+    subject do
+      JsRoutes.generate(
+        include: /book|inboxes|inbox_message/,
+      )
+    end
 
     it "should include a comment in the header" do
       app_class = "App"
