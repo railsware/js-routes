@@ -219,14 +219,25 @@ class JsRoutes
 
   def build_js(route, parent_route)
     name = [parent_route.try(:name), route.name].compact
-    route_name = generate_route_name(name, (:path unless @configuration[:compact]))
     parent_spec = parent_route.try(:path).try(:spec)
     route_arguments = route_js_arguments(route, parent_spec)
-    url_link = generate_url_link(name, route_arguments)
-    <<-JS.strip!
+    return [false, true].map do |absolute|
+      route_js(name, parent_spec, route, route_arguments, absolute)
+    end.compact.join(",\n\n")
+  end
+
+  def route_js(name, parent_spec, route, route_arguments, absolute)
+    if absolute
+      return nil unless @configuration[:url_links]
+      route_arguments = route_arguments + [json(true)]
+    end
+    name_suffix = absolute ? :url : @configuration[:compact] ? nil : :path
+    route_name = generate_route_name(name, name_suffix)
+
+    <<-JS.rstrip!
   // #{name.join('.')} => #{parent_spec}#{route.path.spec}
   // function(#{build_params(route.required_parts)})
-  #{route_name}: Utils.route(#{route_arguments})#{",\n" + url_link if url_link.length > 0}
+  #{route_name}: Utils.route(#{route_arguments.join(', ')})
   JS
   end
 
@@ -247,15 +258,7 @@ class JsRoutes
       serialize(route.path.spec, parent_spec)
     ].map do |argument|
       json(argument)
-    end.join(', ')
-  end
-
-  def generate_url_link(name, route_arguments)
-    return '' unless @configuration[:url_links]
-
-    <<-JS.strip!
-    #{generate_route_name(name, :url)}: Utils.route(#{route_arguments}, true)
-    JS
+    end
   end
 
   def generate_route_name(*parts)
