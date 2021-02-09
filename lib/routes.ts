@@ -225,34 +225,24 @@ declare const module: { exports: any } | undefined;
       );
     }
 
-    path_identifier(key: string, object: 0 | Record<string, any>): string {
-      if (object === 0) {
-        return "0";
-      }
-      if (!object) {
-        return "";
-      }
+    path_identifier(object: unknown): string {
       const result = this.unwrap_path_identifier(object);
-      if (this.is_nullable(result)) {
-        throw new ParametersMissing(key);
-      }
-      return "" + result;
+      return this.is_nullable(result) ? "" : "" + result;
     }
 
     unwrap_path_identifier(object: any): unknown {
       let result: any = object;
-      if (this.is_object(object)) {
-        if ("to_param" in object) {
-          result = object.to_param;
-        } else if ("id" in object) {
-          result = object.id;
-        } else {
-          result = object;
-        }
-        return this.is_callable(result) ? result.call(object) : result;
-      } else {
+      if (!this.is_object(object)) {
         return object;
       }
+      if ("to_param" in object) {
+        result = object.to_param;
+      } else if ("id" in object) {
+        result = object.id;
+      } else {
+        result = object;
+      }
+      return this.is_callable(result) ? result.call(object) : result;
     }
 
     partition_parameters(
@@ -410,10 +400,10 @@ declare const module: { exports: any } | undefined;
       parameters: RouteParameters,
       optional: boolean
     ): string {
-      const value: any = parameters[key];
+      const value = this.path_identifier(parameters[key]);
       delete parameters[key];
-      if (this.is_not_nullable(value)) {
-        return this.encode_segment(this.path_identifier(key, value));
+      if (value.length) {
+        return this.encode_segment(value);
       }
       if (optional) {
         return "";
@@ -474,7 +464,7 @@ declare const module: { exports: any } | undefined;
       if (this.is_array(value)) {
         value = value.join("/");
       }
-      value = this.path_identifier(key, value as any);
+      value = this.path_identifier(value as any);
 
       return DeprecatedGlobbingBehavior ? "" + value : encodeURI("" + value);
     }

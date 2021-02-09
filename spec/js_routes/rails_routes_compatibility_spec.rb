@@ -324,18 +324,6 @@ describe JsRoutes, "compatibility with Rails"  do
         evaljs("Routes.inbox_path(1,2,3)")
       }.to raise_error(js_error_class)
     end
-
-    it "should throw Exceptions if when pass id with null" do
-      expect {
-        evaljs("Routes.inbox_path({id: null})")
-      }.to raise_error(js_error_class)
-    end
-
-    it "should throw Exceptions if when pass to_param with null" do
-      expect {
-        evaljs("Routes.inbox_path({to_param: null})")
-      }.to raise_error(js_error_class)
-    end
   end
 
   context "when javascript engine without Array#indexOf is used" do
@@ -352,8 +340,19 @@ describe JsRoutes, "compatibility with Rails"  do
     let(:klass) { Struct.new(:id, :to_param) }
     let(:inbox) { klass.new(1,"my") }
 
+    it "should throw Exceptions if when pass id with null" do
+      expect {
+        evaljs("Routes.inbox_path({id: null})")
+      }.to raise_error(js_error_class)
+    end
+
+    it "should throw Exceptions if when pass to_param with null" do
+      expect {
+        evaljs("Routes.inbox_path({to_param: null})")
+      }.to raise_error(js_error_class)
+    end
     it "should support 0 as a to_param option" do
-      expect(evaljs("Routes.inbox_path({to_param: 0})")).to eq(test_routes.inbox_path(0))
+      expect(evaljs("Routes.inbox_path({to_param: 0})")).to eq(test_routes.inbox_path(Struct.new(:to_param).new('0')))
     end
 
     it "should check for options special key" do
