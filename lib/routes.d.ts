@@ -29,6 +29,7 @@ declare type KeywordUrlOptions = Optional<{
   anchor: string;
   trailing_slash: boolean;
 }>;
+declare type PartDescriptor = [string, boolean | undefined, unknown];
 declare type ModuleType = "CJS" | "AMD" | "UMD";
 declare const RubyVariables: {
   PREFIX: string;

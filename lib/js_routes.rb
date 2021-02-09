@@ -243,18 +243,29 @@ class JsRoutes
 
   def route_js_arguments(route, parent_spec)
     required_parts = route.required_parts
-    parts_table = route.parts.each_with_object({}) do |part, hash|
-      hash[part] = required_parts.include?(part)
+    parts_table = {}
+    route.parts.each do |part, hash|
+      parts_table[part] = {required: required_parts.include?(part)}
     end
-    default_options = route.defaults.select do |part, _|
-      FILTERED_DEFAULT_PARTS.exclude?(part) &&
+    route.defaults.each do |part, value|
+      if FILTERED_DEFAULT_PARTS.exclude?(part) &&
         URL_OPTIONS.include?(part) || parts_table[part]
+        parts_table[part] ||= {}
+        parts_table[part][:default] = value
+      end
     end
     [
-      # JS objects don't preserve the order of properties which is crucial,
-      # so array is a better choice.
-      parts_table.to_a,
-      default_options,
+      parts_table.to_a.map do |key, config|
+        # Optmizing JS file size by using
+        # an Array with optional elements instead of Hash
+        # [key: string, required?: boolean, default?: any]
+        if config.has_key?(:default) && !config[:default].nil?
+          [key, config[:required], config[:default]]
+        else
+          config[:required] ? [key, config[:required]] : [key]
+        end
+      end,
+      # default_options,
       serialize(route.path.spec, parent_spec)
     ].map do |argument|
       json(argument)

@@ -37,6 +37,8 @@ type KeywordUrlOptions = Optional<{
   trailing_slash: boolean;
 }>;
 
+type PartDescriptor = [string, boolean | undefined, unknown];
+
 type ModuleType = "CJS" | "AMD" | "UMD";
 
 declare const RubyVariables: {
@@ -285,15 +287,21 @@ declare const module: { exports: any } | undefined;
         ...default_options,
         ...options,
       };
+
       const url_parameters: KeywordUrlOptions = {};
       const query_parameters: RouteParameters = {};
       for (const key in options) {
         if (!hasProp(options, key)) continue;
         const value = options[key];
-        if (ReservedOptions.includes(key as any)) {
-          url_parameters[key as keyof KeywordUrlOptions] = value as any;
+        if (this.is_reserved_option(key)) {
+          url_parameters[key] = value as any;
         } else {
-          query_parameters[key] = value;
+          if (
+            !this.is_nullable(value) &&
+            (value !== default_options[key] || required_params.includes(key))
+          ) {
+            query_parameters[key] = value;
+          }
         }
       }
       const route_parts = use_all_parts ? parts : required_params;
@@ -479,17 +487,20 @@ declare const module: { exports: any } | undefined;
     }
 
     route(
-      parts_table: [string, boolean][],
-      default_options: RouteParameters,
+      parts_table: PartDescriptor[],
       route_spec: RouteTree,
       full_url: boolean
     ): RouteHelper {
       const required_params: string[] = [];
       const parts: string[] = [];
-      for (const [part, required] of parts_table) {
+      const default_options: RouteParameters = {};
+      for (const [part, required, value] of parts_table) {
         parts.push(part);
         if (required) {
           required_params.push(part);
+        }
+        if (this.is_not_nullable(value)) {
+          default_options[part] = value;
         }
       }
       const result = (...args: RouteParameter[]): string => {
@@ -564,6 +575,10 @@ declare const module: { exports: any } | undefined;
       return typeof object === "function" && !!object.call;
     }
 
+    is_reserved_option(key: unknown): key is typeof ReservedOptions[any] {
+      return ReservedOptions.includes(key as any);
+    }
+
     namespace(
       object: any,
       namespace: string | null | undefined,
@@ -598,7 +613,6 @@ declare const module: { exports: any } | undefined;
 
     ensure_module_supported(name: ModuleType): void {
       if (!this.is_module_supported(name)) {
-        console.log(module);
         throw new Error(`${name} is not supported by runtime`);
       }
     }

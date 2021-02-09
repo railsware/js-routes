@@ -113,6 +113,7 @@ describe JsRoutes, "compatibility with Rails"  do
 
     it "doesn't apply defaults to path" do
       expect(evaljs("Routes.with_defaults_path()")).to eq(test_routes.with_defaults_path)
+      expect(evaljs("Routes.with_defaults_path({format: 'json'})")).to eq(test_routes.with_defaults_path(format: 'json'))
     end
   end
 
