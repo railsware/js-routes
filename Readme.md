@@ -126,6 +126,10 @@ Routes.config(); // current config
 
 Options to configure JavaScript file generator. These options are only available in Ruby context but not JavaScript.
 
+* `module_type` - JavaScript module type for generated code. [Article](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm)
+  * Options: `UMD`, `CJS`, `AMD`, `nil`.
+  * Default: `UMD`
+  * `nil` option can be used in case you don't want generated code to export anything.
 * `exclude` - Array of regexps to exclude from routes.
   * Default: `[]`
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
@@ -183,10 +187,10 @@ If your application has an `admin` and an `application` namespace for example:
 <%= JsRoutes.generate(namespace: "CustomerRoutes", exclude: /admin/) %>
 ```
 
-In order to generate the routes JS code to a string:
+You can manipulate the generated helper manually by injecting ruby into javascript:
 
-``` ruby
-routes_js = JsRoutes.generate(options)
+``` erb
+export const routes = <%= JsRoutes.generate(module_type: nil) %>
 ```
 
 If you want to generate the routes files outside of the asset pipeline, you can use `JsRoutes.generate!`:
@@ -302,6 +306,7 @@ Advantages of this one are:
 * Add prettier
 * Add eslint
 * Add development guide
+* Add ESM module support
 * Upgrade guide
 
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)
