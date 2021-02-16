@@ -175,7 +175,7 @@ class JsRoutes
 
   def routes_object
     result = named_routes.sort_by(&:first).flat_map do |_, route|
-      build_route_if_match(route) + mounted_app_routes(route)
+      build_routes_if_match(route) + mounted_app_routes(route)
     end.compact
     properties = result.map do |comment, name, body|
       "#{comment}\n#{name}: #{body}".indent(2)
@@ -188,7 +188,7 @@ class JsRoutes
     if rails_engine_app.respond_to?(:superclass) &&
        rails_engine_app.superclass == Rails::Engine && !route.path.anchored
       rails_engine_app.routes.named_routes.flat_map do |_, engine_route|
-        build_route_if_match(engine_route, route)
+        build_routes_if_match(engine_route, route)
       end
     else
       []
@@ -205,7 +205,7 @@ class JsRoutes
     end
   end
 
-  def build_route_if_match(route, parent_route = nil)
+  def build_routes_if_match(route, parent_route = nil)
     if any_match?(route, parent_route, @configuration[:exclude]) ||
        !any_match?(route, parent_route, @configuration[:include])
       []
@@ -215,7 +215,7 @@ class JsRoutes
       route_arguments = route_js_arguments(route, parent_spec)
       return [false, true].map do |absolute|
         route_js(name, parent_spec, route, route_arguments, absolute)
-      end.compact
+      end
     end
   end
 
@@ -224,15 +224,6 @@ class JsRoutes
 
     matchers = Array(matchers)
     matchers.any? { |regex| full_route =~ regex }
-  end
-
-  def build_js(route, parent_route)
-    name = [parent_route.try(:name), route.name].compact
-    parent_spec = parent_route.try(:path).try(:spec)
-    route_arguments = route_js_arguments(route, parent_spec)
-    return [false, true].map do |absolute|
-      route_js(name, parent_spec, route, route_arguments, absolute)
-    end.compact
   end
 
   def route_js(name_parts, parent_spec, route, route_arguments, absolute)
