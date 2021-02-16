@@ -3,6 +3,7 @@ if defined?(::Rails) && defined?(::Sprockets::Railtie)
   require 'js_routes/engine'
 end
 require 'js_routes/version'
+require 'active_support/core_ext/string/indent'
 
 class JsRoutes
 
@@ -174,16 +175,19 @@ class JsRoutes
 
   def routes_object
     result = named_routes.sort_by(&:first).flat_map do |_, route|
-      [build_route_if_match(route)] + mounted_app_routes(route)
+      build_route_if_match(route) + mounted_app_routes(route)
     end.compact
-    "{\n" + result.join(",\n") + "}\n"
+    properties = result.map do |comment, name, body|
+      "#{comment}\n#{name}: #{body}".indent(2)
+    end
+    "{\n" + properties.join(",\n\n") + "}\n"
   end
 
   def mounted_app_routes(route)
     rails_engine_app = get_app_from_route(route)
     if rails_engine_app.respond_to?(:superclass) &&
        rails_engine_app.superclass == Rails::Engine && !route.path.anchored
-      rails_engine_app.routes.named_routes.map do |_, engine_route|
+      rails_engine_app.routes.named_routes.flat_map do |_, engine_route|
         build_route_if_match(engine_route, route)
       end
     else
@@ -204,9 +208,14 @@ class JsRoutes
   def build_route_if_match(route, parent_route = nil)
     if any_match?(route, parent_route, @configuration[:exclude]) ||
        !any_match?(route, parent_route, @configuration[:include])
-      nil
+      []
     else
-      build_js(route, parent_route)
+      name = [parent_route.try(:name), route.name].compact
+      parent_spec = parent_route.try(:path).try(:spec)
+      route_arguments = route_js_arguments(route, parent_spec)
+      return [false, true].map do |absolute|
+        route_js(name, parent_spec, route, route_arguments, absolute)
+      end.compact
     end
   end
 
@@ -223,22 +232,23 @@ class JsRoutes
     route_arguments = route_js_arguments(route, parent_spec)
     return [false, true].map do |absolute|
       route_js(name, parent_spec, route, route_arguments, absolute)
-    end.compact.join(",\n\n")
+    end.compact
   end
 
-  def route_js(name, parent_spec, route, route_arguments, absolute)
+  def route_js(name_parts, parent_spec, route, route_arguments, absolute)
     if absolute
       return nil unless @configuration[:url_links]
       route_arguments = route_arguments + [json(true)]
     end
     name_suffix = absolute ? :url : @configuration[:compact] ? nil : :path
-    route_name = generate_route_name(name, name_suffix)
+    name = generate_route_name(name_parts, name_suffix)
+    body = "Utils.route(#{route_arguments.join(', ')})"
+    comment = <<-JS.rstrip!
+// #{name_parts.join('.')} => #{parent_spec}#{route.path.spec}
+// function(#{build_params(route.required_parts)})
+JS
 
-    <<-JS.rstrip!
-  // #{name.join('.')} => #{parent_spec}#{route.path.spec}
-  // function(#{build_params(route.required_parts)})
-  #{route_name}: Utils.route(#{route_arguments.join(', ')})
-  JS
+    [ comment, name, body ]
   end
 
   def route_js_arguments(route, parent_spec)
