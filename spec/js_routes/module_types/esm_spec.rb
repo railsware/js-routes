@@ -1,3 +1,4 @@
+require "active_support/core_ext/string/strip"
 require "spec_helper"
 
 describe JsRoutes, "compatibility with ESM"  do
