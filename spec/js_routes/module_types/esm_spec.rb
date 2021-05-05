@@ -1,9 +1,11 @@
 require "spec_helper"
 
 describe JsRoutes, "compatibility with ESM"  do
+
   let(:generated_js) {
     JsRoutes.generate(module_type: 'ESM')
   }
+
   before(:each) do
     # export keyword is not supported by a simulated js environment
     evaljs(generated_js.gsub("export const ", "const "))

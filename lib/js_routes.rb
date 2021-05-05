@@ -328,7 +328,7 @@ JS
     [
       NODE_TYPES[spec.type],
       serialize(spec.left, parent_spec),
-      spec.respond_to?(:right) && serialize(spec.right)
-    ]
+      spec.respond_to?(:right) ? serialize(spec.right) : nil
+    ].compact
   end
 end

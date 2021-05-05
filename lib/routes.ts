@@ -362,9 +362,9 @@ RubyVariables.WRAPPER(
           case NodeTypes.GROUP:
             return this.visit(route[1], parameters, true);
           case NodeTypes.CAT:
-            return this.visit_cat(...route, parameters, optional);
+            return this.visit_cat(route, parameters, optional);
           case NodeTypes.SYMBOL:
-            return this.visit_symbol(...route, parameters, optional);
+            return this.visit_symbol(route, parameters, optional);
           case NodeTypes.STAR:
             return this.visit_globbing(route[1], parameters, true);
           case NodeTypes.LITERAL:
@@ -385,9 +385,8 @@ RubyVariables.WRAPPER(
       }
 
       visit_cat(
-        type: unknown,
-        left: RouteTree,
-        right: RouteTree,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        [_type, left, right]: [unknown, RouteTree, RouteTree],
         parameters: RouteParameters,
         optional: boolean
       ): string {
@@ -404,9 +403,8 @@ RubyVariables.WRAPPER(
       }
 
       visit_symbol(
-        type: unknown,
-        key: string,
-        _: never,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        [_type, key, _]: [unknown, string, never],
         parameters: RouteParameters,
         optional: boolean
       ): string {
