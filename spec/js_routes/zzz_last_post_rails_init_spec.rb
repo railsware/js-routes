@@ -93,7 +93,7 @@ describe "after Rails initialization" do
               Rails.application.config.assets.initialize_on_precompile = true
             end
             it "should render some javascript" do
-              expect(evaluate(ctx, 'js-routes.js')).to match(/routes = /)
+              expect(evaluate(ctx, 'js-routes.js')).to match(/Utils\.define_module/)
             end
           end
           context "and not initialize on precompile" do
@@ -101,7 +101,7 @@ describe "after Rails initialization" do
               Rails.application.config.assets.initialize_on_precompile = false
             end
             it "should raise an exception if 3 version" do
-              expect(evaluate(ctx, 'js-routes.js')).to match(/routes = /)
+              expect(evaluate(ctx, 'js-routes.js')).to match(/Utils\.define_module/)
             end
           end
 

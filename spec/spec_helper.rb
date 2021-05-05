@@ -39,15 +39,14 @@ def js_error_class
   end
 end
 
-def evaljs(string, force = false)
-  jscontext(force).eval(string)
+def evaljs(string, force: false, filename: 'context.js')
+  jscontext(force).eval(string, filename: filename)
 rescue MiniRacer::ParseError => e
   message = e.message
   _, _, line, _ = message.split(':')
-  code = line && string.split("\n")[line.to_i]
+  code = line && string.split("\n")[line.to_i-1]
   raise "#{message}. Code: #{code.strip}";
 rescue MiniRacer::RuntimeError => e
-  # puts string
   raise e
 end
 
@@ -99,7 +98,7 @@ RSpec.configure do |config|
   end
 
   config.before :each do
-    evaljs("var window = this;", true)
+    evaljs("var window = this;", {force: true})
 
     log = proc do |*values|
       puts values.map(&:inspect).join(", ")

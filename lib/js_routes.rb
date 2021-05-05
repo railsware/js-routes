@@ -74,6 +74,10 @@ class JsRoutes
     def to_hash
       Hash[*members.zip(values).flatten(1)].symbolize_keys
     end
+
+    def esm?
+      self.module_type === 'ESM'
+    end
   end
 
   #
@@ -83,11 +87,6 @@ class JsRoutes
   class << self
     def setup(&block)
       configuration.tap(&block) if block
-    end
-
-    def options
-      ActiveSupport::Deprecation.warn('JsRoutes.options method is deprecated use JsRoutes.configuration instead')
-      configuration
     end
 
     def configuration
@@ -127,7 +126,7 @@ class JsRoutes
 
     {
       'GEM_VERSION'         => JsRoutes::VERSION,
-      'ROUTES'              => routes_object,
+      'ROUTES_OBJECT'              => routes_object,
       'RAILS_VERSION'       => ActionPack.version,
       'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
 
@@ -138,10 +137,11 @@ class JsRoutes
       'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
       'SERIALIZER'          => @configuration.serializer || json(nil),
       'MODULE_TYPE'         => json(@configuration.module_type),
+      'WRAPPER'             => @configuration.esm? ? 'const __jsr = ' : '',
     }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
       js.gsub!("RubyVariables.#{key}", value.to_s) ||
         raise("Missing key #{key} in JS template")
-    end
+    end + routes_export
   end
 
   def generate!(file_name = nil)
@@ -174,13 +174,28 @@ class JsRoutes
   end
 
   def routes_object
-    result = named_routes.sort_by(&:first).flat_map do |_, route|
-      build_routes_if_match(route) + mounted_app_routes(route)
-    end.compact
-    properties = result.map do |comment, name, body|
+    return json({}) if @configuration.esm?
+    properties = routes_list.map do |comment, name, body|
       "#{comment}\n#{name}: #{body}".indent(2)
     end
     "{\n" + properties.join(",\n\n") + "}\n"
+  end
+
+  STATIC_EXPORTS = [:configure, :config, :serialize].map do |name|
+    ["", name, "__jsr.#{name}"]
+  end
+
+  def routes_export
+    return "" unless @configuration.esm?
+    [*STATIC_EXPORTS, *routes_list].map do |comment, name, body|
+      "#{comment}\nexport const #{name} = #{body};"
+    end.join("\n\n")
+  end
+
+  def routes_list
+    named_routes.sort_by(&:first).flat_map do |_, route|
+      build_routes_if_match(route) + mounted_app_routes(route)
+    end.compact
   end
 
   def mounted_app_routes(route)
@@ -233,7 +248,7 @@ class JsRoutes
     end
     name_suffix = absolute ? :url : @configuration[:compact] ? nil : :path
     name = generate_route_name(name_parts, name_suffix)
-    body = "Utils.route(#{route_arguments.join(', ')})"
+    body = "__jsr.r(#{route_arguments.join(', ')})"
     comment = <<-JS.rstrip!
 // #{name_parts.join('.')} => #{parent_spec}#{route.path.spec}
 // function(#{build_params(route.required_parts)})

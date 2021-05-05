@@ -30,6 +30,6 @@ Gem::Specification.new do |s|
   else
     s.add_development_dependency(%q<byebug>)
     s.add_development_dependency(%q<pry-byebug>)
-    s.add_development_dependency(%q<mini_racer>, [">= 0.2.4"])
+    s.add_development_dependency(%q<mini_racer>, [">= 0.4.0"])
   end
 end
