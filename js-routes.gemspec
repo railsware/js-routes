@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version = JsRoutes::VERSION
 
   if s.respond_to? :required_rubygems_version=
-    s.required_rubygems_version = Gem::Requirement.new(">= 2.4.0")
+    s.required_rubygems_version = Gem::Requirement.new(">= 0")
   end
   s.authors = ["Bogdan Gusiev"]
   s.description = %q{Generates javascript file that defines all Rails named routes as javascript helpers}
@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [
     "LICENSE.txt"
   ]
+  s.required_ruby_version = '>= 2.4.0'
   s.files = `git ls-files`.split("\n")
   s.homepage = %q{http://github.com/railsware/js-routes}
   s.licenses = ["MIT"]
