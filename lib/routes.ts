@@ -59,7 +59,6 @@ declare const define:
 
 declare const module: { exports: any } | undefined;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 RubyVariables.WRAPPER(
   (that: unknown): RouterExposedMethods => {
     const hasProp = (value: unknown, key: string) =>
@@ -74,14 +73,23 @@ RubyVariables.WRAPPER(
       SLASH = 7,
       DOT = 8,
     }
-    type RouteTree =
-      | [NodeTypes.GROUP, RouteTree, never]
-      | [NodeTypes.STAR, RouteTree, never]
-      | [NodeTypes.LITERAL, string, never]
-      | [NodeTypes.SLASH, "/", never]
-      | [NodeTypes.DOT, ".", never]
-      | [NodeTypes.CAT, RouteTree, RouteTree]
-      | [NodeTypes.SYMBOL, string, never];
+    type RouteNodes = {
+      [NodeTypes.GROUP]: { left: RouteTree; right: never };
+      [NodeTypes.STAR]: { left: RouteTree; right: never };
+      [NodeTypes.LITERAL]: { left: string; right: never };
+      [NodeTypes.SLASH]: { left: "/"; right: never };
+      [NodeTypes.DOT]: { left: "."; right: never };
+      [NodeTypes.CAT]: { left: RouteTree; right: RouteTree };
+      [NodeTypes.SYMBOL]: { left: string; right: never };
+    };
+    type RouteNode<T extends keyof RouteNodes> = [
+      T,
+      RouteNodes[T]["left"],
+      RouteNodes[T]["right"]
+    ];
+    type RouteTree = {
+      [T in keyof RouteNodes]: RouteNode<T>;
+    }[keyof RouteNodes];
 
     const Root = that;
     type ModuleDefinition = {
@@ -386,7 +394,7 @@ RubyVariables.WRAPPER(
 
       visit_cat(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        [_type, left, right]: [unknown, RouteTree, RouteTree],
+        [_type, left, right]: RouteNode<NodeTypes.CAT>,
         parameters: RouteParameters,
         optional: boolean
       ): string {
@@ -404,7 +412,7 @@ RubyVariables.WRAPPER(
 
       visit_symbol(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        [_type, key, _]: [unknown, string, never],
+        [_type, key]: RouteNode<NodeTypes.SYMBOL>,
         parameters: RouteParameters,
         optional: boolean
       ): string {

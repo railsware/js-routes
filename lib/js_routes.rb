@@ -30,7 +30,7 @@ class JsRoutes
     serializer: nil,
     special_options_key: "_options",
     application: -> { Rails.application },
-    module_type: 'UMD',
+    module_type: 'ESM',
   } #:nodoc:
 
   NODE_TYPES = {

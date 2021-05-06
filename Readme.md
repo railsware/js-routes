@@ -23,7 +23,8 @@ rake js:routes
 Make routes available globally in `app/javascript/packs/application.js`: 
 
 ``` javascript
-window.Routes = require('routes');
+import * as Routes from 'routes';
+window.Routes = Routes;
 ```
 
 Individual routes can be imported using:
@@ -35,6 +36,8 @@ import {edit_post_path, new_post_path} from 'routes';
 **Note**: that this setup requires `rake js:routes` to be run each time routes file is updated.
 
 #### Webpacker + automatic updates
+
+<div id='webpacker'></div>
 
 This setup can automatically update your routes without `rake js:routes` being called manually.
 It requires [rails-erb-loader](https://github.com/usabilityhub/rails-erb-loader) npm package to work.
@@ -78,12 +81,22 @@ Create routes file `app/javascript/routes.js.erb`:
 Use routes wherever you need them `app/javascript/packs/application.js`: 
 
 ``` javascript
-window.Routes = require('routes.js.erb');
+import * as Routes from 'routes.js.erb';
+window.Routes = Routes;
 ```
 
 #### Sprockets (Deprecated)
 
 If you are using [Sprockets](https://github.com/rails/sprockets-rails) you may configure js-routes in the following way.
+
+Setup the initializer (e.g. `config/initializers/js_routes.rb`):
+
+``` ruby
+JsRoutes.setup do |config|
+  config.module_type = nil
+  config.namespace = 'Routes'
+end
+```
 
 Require JsRoutes in `app/assets/javascripts/application.js` or other bundle
 
@@ -114,6 +127,7 @@ end
 Or dynamically in JavaScript, although only [Formatter Options](#formatter-options) are supported (see below)
 
 ``` js
+import * as Routes from 'routes'
 Routes.configure({
   option: value
 });
@@ -127,8 +141,8 @@ Routes.config(); // current config
 Options to configure JavaScript file generator. These options are only available in Ruby context but not JavaScript.
 
 * `module_type` - JavaScript module type for generated code. [Article](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm)
-  * Options: `UMD`, `CJS`, `AMD`, `nil`.
-  * Default: `UMD`
+  * Options: `ESM`, `UMD`, `CJS`, `AMD`, `nil`.
+  * Default: `ESM`
   * `nil` option can be used in case you don't want generated code to export anything.
 * `exclude` - Array of regexps to exclude from routes.
   * Default: `[]`
@@ -138,7 +152,7 @@ Options to configure JavaScript file generator. These options are only available
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
 * `namespace` - global object used to access routes.
   * Supports nested namespace like `MyProject.routes`
-  * Default: `Routes`
+  * Default: `nil`
 * `camel_case` - Generate camel case route names.
   * Default: `false`
 * `url_links` - Generate `*_url` helpers (in addition to the default `*_path` helpers).
@@ -179,12 +193,12 @@ If your application has an `admin` and an `application` namespace for example:
 
 ```
 # app/javascript/admin/routes.js.erb
-<%= JsRoutes.generate(namespace: "AdminRoutes", include: /admin/) %>
+<%= JsRoutes.generate(include: /admin/) %>
 ```
 
 ```
 # app/javascript/customer/routes.js.erb
-<%= JsRoutes.generate(namespace: "CustomerRoutes", exclude: /admin/) %>
+<%= JsRoutes.generate(exclude: /admin/) %>
 ```
 
 You can manipulate the generated helper manually by injecting ruby into javascript:
@@ -196,10 +210,11 @@ export const routes = <%= JsRoutes.generate(module_type: nil) %>
 If you want to generate the routes files outside of the asset pipeline, you can use `JsRoutes.generate!`:
 
 ``` ruby
-path = "app/javascript"
-JsRoutes.generate!("#{path}/app_routes.js", namespace: "AppRoutes", exclude: [/^admin_/, /^api_/])
-JsRoutes.generate!("#{path}/adm_routes.js", namespace: "AdmRoutes", include: /^admin_/)
-JsRoutes.generate!("#{path}/api_routes.js", namespace: "ApiRoutes", include: /^api_/, default_url_options: {format: "json"})
+path = Rails.root.join("app/javascript")
+
+JsRoutes.generate!("#{path}/app_routes.js", exclude: [/^admin_/, /^api_/])
+JsRoutes.generate!("#{path}/adm_routes.js", include: /^admin_/)
+JsRoutes.generate!("#{path}/api_routes.js", include: /^api_/, default_url_options: {format: "json"})
 ```
 
 ## Usage
@@ -207,6 +222,8 @@ JsRoutes.generate!("#{path}/api_routes.js", namespace: "ApiRoutes", include: /^a
 Configuration above will create a nice javascript file with `Routes` object that has all the rails routes available:
 
 ``` js
+import * as Routes from 'routes';
+
 Routes.users_path() // => "/users"
 Routes.user_path(1) // => "/users/1"
 Routes.user_path(1, {format: 'json'}) // => "/users/1.json"
@@ -294,6 +311,7 @@ There are some alternatives available. Most of them has only basic feature and d
 Advantages of this one are:
 
 * Rails 4,5,6 support
+* [ESM Tree shaking](https://webpack.js.org/guides/tree-shaking/) support
 * Rich options set
 * Full rails compatibility
 * Support Rails `#to_param` convention for seo optimized paths
@@ -306,8 +324,7 @@ Advantages of this one are:
 * Add prettier
 * Add eslint
 * Add development guide
-* Add ESM module support
-* Upgrade guide
+* Upgrade guide Link
 
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)
 

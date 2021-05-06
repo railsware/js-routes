@@ -1,8 +1,24 @@
-## List of breaking changes
+## Version 2.0 upgrade notes
 
-### No global objects by default
+### Using ESM module by default
 
-The default value of `namespace` option is set to `nil` now which means that JsRoutes will no longer generate global `Routes` object out of the box. This is more optimized setup for WebPacker. You can set `namespace` option to whatecer you prefer.
+The default setting are now changed:
+
+Setting | Old | New 
+--- | --- | ---
+module\_type | nil | ESM 
+namespace | Routes | nil
+
+This is more optimized setup for WebPacker. You can retain the old configuration this:
+
+``` ruby
+JsRoutes.setup do |config|
+  config.module_type = nil
+  config.namespace = 'Routes'
+end
+```
+
+However, [ESM+Webpacker](/Readme.md#webpacker) upgrade is recommended. 
 
 
 ### ParameterMissing error rework
@@ -11,10 +27,11 @@ The default value of `namespace` option is set to `nil` now which means that JsR
 
 ``` javascript
 try {
-  Routes.inbox_path()
+  return Routes.inbox_path();
 } catch(error) {
   if (error.name === 'ParametersMissing') {
-    console.warn(`Missing route keys ${error.keys.join(', ')}. Ignoring.`)
+    console.warn(`Missing route keys ${error.keys.join(', ')}. Ignoring.`);
+    return "#";
   } else {
     throw error;
   }

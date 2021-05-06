@@ -1,11 +1,11 @@
 require 'spec_helper'
 require "fileutils"
 
-
 describe JsRoutes do
   describe "generated js" do
     subject do
       JsRoutes.generate(
+        module_type: 'UMD',
         include: /book|inboxes|inbox_message/,
       )
     end
@@ -61,14 +61,6 @@ describe JsRoutes do
 
     it "should not generate file before initialization" do
       expect(File.exists?(name)).to be_falsey
-    end
-
-  end
-
-  describe "compiled javascript asset" do
-    subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }
-    it "should have js routes code" do
-      is_expected.to include("inbox_message_path: __jsr.r([[\"inbox_id\",true],[\"id\",true],[\"format\"]]")
     end
   end
 end

@@ -31,4 +31,11 @@ describe JsRoutes, "compatibility with ESM"  do
   it "defines utility methods" do
     expect(evaljs("serialize({a: 1, b: 2})")).to eq({a: 1, b: 2}.to_param)
   end
+
+  describe "compiled javascript asset" do
+    subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }
+    it "should have js routes code" do
+      is_expected.to include("export const inbox_message_path = __jsr.r(")
+    end
+  end
 end
