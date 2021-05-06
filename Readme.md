@@ -144,6 +144,8 @@ Options to configure JavaScript file generator. These options are only available
   * Options: `ESM`, `UMD`, `CJS`, `AMD`, `nil`.
   * Default: `ESM`
   * `nil` option can be used in case you don't want generated code to export anything.
+* `documentation` - specifies if each route should be annotated with [JSDoc](https://jsdoc.app/) comment
+  * Default: `true`
 * `exclude` - Array of regexps to exclude from routes.
   * Default: `[]`
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
@@ -153,10 +155,9 @@ Options to configure JavaScript file generator. These options are only available
 * `namespace` - global object used to access routes.
   * Supports nested namespace like `MyProject.routes`
   * Default: `nil`
-* `camel_case` - Generate camel case route names.
+* `camel_case` - specifies if route helpers should be generated in camel case instead of underscore case.
   * Default: `false`
-* `url_links` - Generate `*_url` helpers (in addition to the default `*_path` helpers).
-  * Example: `true`
+* `url_links` - specifies if `*_url` helpers should be generated (in addition to the default `*_path` helpers).
   * Default: `false`
   * Note: generated URLs will first use the protocol, host, and port options specified in the route definition. Otherwise, the URL will be based on the option specified in the `default_url_options` config. If no default option has been set, then the URL will fallback to the current URL based on `window.location`.
 * `compact` - Remove `_path` suffix in path routes(`*_url` routes stay untouched if they were enabled)

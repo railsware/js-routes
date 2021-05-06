@@ -37,3 +37,15 @@ try {
   }
 }
 ```
+
+### JSDoc comment format
+
+New version of js-routes generates function comment in the [JSDoc](https://jsdoc.app) format.
+If you have any problems with that disable the annotation:
+
+``` ruby
+JsRoutes.setup do |config|
+  config.documentation = false
+end
+```
+

@@ -31,6 +31,7 @@ class JsRoutes
     special_options_key: "_options",
     application: -> { Rails.application },
     module_type: 'ESM',
+    documentation: true,
   } #:nodoc:
 
   NODE_TYPES = {
@@ -176,7 +177,7 @@ class JsRoutes
   def routes_object
     return json({}) if @configuration.esm?
     properties = routes_list.map do |comment, name, body|
-      "#{comment}\n#{name}: #{body}".indent(2)
+      "#{comment}#{name}: #{body}".indent(2)
     end
     "{\n" + properties.join(",\n\n") + "}\n"
   end
@@ -188,7 +189,7 @@ class JsRoutes
   def routes_export
     return "" unless @configuration.esm?
     [*STATIC_EXPORTS, *routes_list].map do |comment, name, body|
-      "#{comment}\nexport const #{name} = #{body};"
+      "#{comment}export const #{name} = #{body};"
     end.join("\n\n")
   end
 
@@ -249,12 +250,20 @@ class JsRoutes
     name_suffix = absolute ? :url : @configuration[:compact] ? nil : :path
     name = generate_route_name(name_parts, name_suffix)
     body = "__jsr.r(#{route_arguments.join(', ')})"
-    comment = <<-JS.rstrip!
-// #{name_parts.join('.')} => #{parent_spec}#{route.path.spec}
-// function(#{build_params(route.required_parts)})
-JS
-
+    comment = documentation(route, parent_spec)
     [ comment, name, body ]
+  end
+
+  def documentation(route, parent_spec)
+    return nil unless @configuration[:documentation]
+    <<-JS
+/**
+ * Generates rails route to
+ * #{parent_spec}#{route.path.spec}#{build_params(route.required_parts)}
+ * @param {object | undefined} options
+ * @returns {string} route path
+ */
+JS
   end
 
   def route_js_arguments(route, parent_spec)
@@ -300,8 +309,9 @@ JS
   end
 
   def build_params(required_parts)
-    params = required_parts + [LAST_OPTIONS_KEY]
-    params.join(', ')
+    required_parts.map do |param|
+      "\n * @param {any} #{param}"
+    end.join
   end
 
   # This function serializes Journey route into JSON structure

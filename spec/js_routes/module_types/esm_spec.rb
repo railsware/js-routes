@@ -17,11 +17,15 @@ describe JsRoutes, "compatibility with ESM"  do
   end
 
   it "exports route helpers" do
-    expect(generated_js).to include(<<-EOI.strip_heredoc.strip)
-    // inboxes => /inboxes(.:format)
-    // function(options)
-    export const inboxes_path = __jsr.r(
-    EOI
+    expect(generated_js).to include(<<-DOC.rstrip)
+/**
+ * Generates rails route to
+ * /inboxes(.:format)
+ * @param {object | undefined} options
+ * @returns {string} route path
+ */
+export const inboxes_path = __jsr.r
+DOC
   end
 
   it "exports utility methods" do

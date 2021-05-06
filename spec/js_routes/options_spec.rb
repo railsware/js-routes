@@ -2,10 +2,14 @@ require 'spec_helper'
 
 describe JsRoutes, "options" do
 
+  let(:generated_js) do
+    JsRoutes.generate({module_type: nil, **_options})
+  end
+
   before(:each) do
     evaljs(_presetup) if _presetup
     with_warnings(_warnings) do
-      evaljs(JsRoutes.generate({module_type: nil, **_options}))
+      evaljs(generated_js)
       App.routes.default_url_options = _options[:default_url_options] || {}
     end
   end
@@ -489,6 +493,15 @@ describe JsRoutes, "options" do
 
     it "should include specified engine route" do
       expect(evaljs("Routes.posts_path()")).not_to be_nil
+    end
+  end
+
+  describe "documentation option" do
+    let(:_options) { {documentation: false} }
+
+    it "should include specified engine route" do
+      expect(generated_js).not_to include("@param")
+      expect(generated_js).not_to include("@returns")
     end
   end
 end

@@ -1,5 +1,6 @@
-require 'spec_helper'
+require "active_support/core_ext/string/strip"
 require "fileutils"
+require 'spec_helper'
 
 describe JsRoutes do
   describe "generated js" do
@@ -31,10 +32,28 @@ describe JsRoutes do
     end
 
     it "should have correct function comment with options argument" do
-      is_expected.to include("// function(options)\n  inboxes_path: __jsr.r")
+      is_expected.to include(<<-DOC.rstrip)
+  /**
+   * Generates rails route to
+   * /inboxes(.:format)
+   * @param {object | undefined} options
+   * @returns {string} route path
+   */
+  inboxes_path: __jsr.r
+DOC
     end
     it "should have correct function comment with arguments" do
-      is_expected.to include("// function(inbox_id, message_id, options)\n  new_inbox_message_attachment_path: __jsr.r")
+      is_expected.to include(<<-DOC.rstrip)
+  /**
+   * Generates rails route to
+   * /inboxes/:inbox_id/messages/:message_id/attachments/new(.:format)
+   * @param {any} inbox_id
+   * @param {any} message_id
+   * @param {object | undefined} options
+   * @returns {string} route path
+   */
+  new_inbox_message_attachment_path: __jsr.r
+  DOC
     end
 
     it "routes should be sorted in alphabetical order" do
