@@ -67,7 +67,7 @@ module.exports = {
 
 Enable `erb` extension in `config/webpacker/environment.js`:
 
-```
+``` javascript
 const erb = require('./loaders/erb')
 environment.loaders.append('erb', erb)
 ```
@@ -324,6 +324,7 @@ Advantages of this one are:
 * Add prettier
 * Add eslint
 * Add development guide
+* Improve route comments
 * Upgrade guide Link
 
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)

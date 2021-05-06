@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [
     "LICENSE.txt"
   ]
+  s.required_ruby_version = '>= 2.4.0'
   s.files = `git ls-files`.split("\n")
   s.homepage = %q{http://github.com/railsware/js-routes}
   s.licenses = ["MIT"]

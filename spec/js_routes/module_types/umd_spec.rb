@@ -21,13 +21,13 @@ describe JsRoutes do
       is_expected.to include("inboxes_path: __jsr.r(")
     end
     it "should have correct function without arguments signature" do
-      is_expected.to include("inboxes_path: __jsr.r([[\"format\"]]")
+      is_expected.to include('inboxes_path: __jsr.r({"format":[]}')
     end
     it "should have correct function with arguments signature" do
-      is_expected.to include('inbox_message_path: __jsr.r([["inbox_id",true],["id",true],["format"]]')
+      is_expected.to include('inbox_message_path: __jsr.r({"inbox_id":[true],"id":[true],"format":[]}')
     end
     it "should have correct function signature with unordered hash" do
-      is_expected.to include('inbox_message_attachment_path: __jsr.r([["inbox_id",true],["message_id",true],["id",true],["format"]]')
+      is_expected.to include('inbox_message_attachment_path: __jsr.r({"inbox_id":[true],"message_id":[true],"id":[true],"format":[]}')
     end
 
     it "should have correct function comment with options argument" do

@@ -37,7 +37,7 @@ type KeywordUrlOptions = Optional<{
   trailing_slash: boolean;
 }>;
 
-type PartDescriptor = [string, boolean | undefined, unknown];
+type PartsTable = Record<string, [boolean | undefined, unknown]>;
 
 type ModuleType = "CJS" | "AMD" | "UMD" | "ESM";
 
@@ -493,14 +493,14 @@ RubyVariables.WRAPPER(
       }
 
       route(
-        parts_table: PartDescriptor[],
+        parts_table: PartsTable,
         route_spec: RouteTree,
         full_url = false
       ): RouteHelper {
         const required_params: string[] = [];
         const parts: string[] = [];
         const default_options: RouteParameters = {};
-        for (const [part, required, value] of parts_table) {
+        for (const [part, [required, value]] of Object.entries(parts_table)) {
           parts.push(part);
           if (required) {
             required_params.push(part);
@@ -641,7 +641,7 @@ RubyVariables.WRAPPER(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const __jsr = {
       r(
-        parts_table: PartDescriptor[],
+        parts_table: PartsTable,
         route_spec: RouteTree,
         full_url?: boolean
       ): RouteHelper {
