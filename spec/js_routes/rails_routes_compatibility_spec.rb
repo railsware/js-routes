@@ -428,13 +428,13 @@ describe JsRoutes, "compatibility with Rails"  do
     end
   end
 
-  describe "required_params" do
+  describe "requiredParams" do
     it "should show inbox spec" do
-      expect(evaljs("Routes.inbox_path.required_params").to_a).to eq(["id"])
+      expect(evaljs("Routes.inbox_path.requiredParams()").to_a).to eq(["id"])
     end
 
     it "should show inbox message spec" do
-      expect(evaljs("Routes.inbox_message_path.required_params").to_a).to eq(["inbox_id", "id"])
+      expect(evaljs("Routes.inbox_message_path.requiredParams()").to_a).to eq(["inbox_id", "id"])
     end
   end
 

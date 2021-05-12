@@ -8,7 +8,7 @@ type RouteParameters = Record<string, RouteParameter>;
 type Serializer = (value: unknown) => string;
 type RouteHelper = {
   (...args: RouteParameter[]): string;
-  required_params: string[];
+  requiredParams(): string[];
   toString(): string;
 };
 
@@ -519,7 +519,7 @@ RubyVariables.WRAPPER(
             args
           );
         };
-        result.required_params = required_params;
+        result.requiredParams = () => required_params;
         result.toString = () => {
           return this.build_path_spec(route_spec);
         };
@@ -663,7 +663,7 @@ RubyVariables.WRAPPER(
       ...RubyVariables.ROUTES_OBJECT,
     };
 
-    Utils.namespace(Root, RubyVariables.NAMESPACE || "Routes", result);
+    Utils.namespace(Root, RubyVariables.NAMESPACE, result);
 
     if (RubyVariables.MODULE_TYPE) {
       Utils.define_module(RubyVariables.MODULE_TYPE, result);

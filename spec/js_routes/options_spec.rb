@@ -499,7 +499,7 @@ describe JsRoutes, "options" do
   describe "documentation option" do
     let(:_options) { {documentation: false} }
 
-    it "should include specified engine route" do
+    it "disables documentation generation" do
       expect(generated_js).not_to include("@param")
       expect(generated_js).not_to include("@returns")
     end

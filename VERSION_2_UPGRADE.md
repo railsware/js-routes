@@ -9,7 +9,7 @@ Setting | Old | New
 module\_type | nil | ESM 
 namespace | Routes | nil
 
-This is more optimized setup for WebPacker. You can retain the old configuration this:
+This is more optimized setup for WebPacker. You can restore the old configuration like this:
 
 ``` ruby
 JsRoutes.setup do |config|
@@ -20,6 +20,16 @@ end
 
 However, [ESM+Webpacker](/Readme.md#webpacker) upgrade is recommended. 
 
+### `required_params` renamed
+
+In case you are using `required_params` property, it is now renamed and converted to a method:
+
+``` javascript
+// Old style
+Routes.post_path.required_params  // => ['id']
+// New style
+Routes.post_path.requiredParams() // => ['id']
+```
 
 ### ParameterMissing error rework
 

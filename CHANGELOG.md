@@ -1,5 +1,15 @@
 ## master
 
+## v2.0.0
+
+Version 2.0 has some breaking changes.
+See [UPGRADE TO 2.0](./VERSION_2_UPGRADE.md) for guidance.
+
+* `module_type` option support
+* `documentation` option spport
+* Migrated implementation to typescript
+* ESM tree shaking support
+
 ## v1.4.14
 
 * Fix compatibility with UMD modules #237 [Comment](https://github.com/railsware/js-routes/issues/237#issuecomment-752754679)

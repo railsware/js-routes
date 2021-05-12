@@ -7,7 +7,7 @@ declare type RouteParameters = Record<string, RouteParameter>;
 declare type Serializer = (value: unknown) => string;
 declare type RouteHelper = {
   (...args: RouteParameter[]): string;
-  required_params: string[];
+  requiredParams(): string[];
   toString(): string;
 };
 declare type RouteHelpers = Record<string, RouteHelper>;

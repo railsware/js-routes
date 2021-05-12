@@ -325,7 +325,6 @@ Advantages of this one are:
 * Add prettier
 * Add eslint
 * Add development guide
-* Improve route comments
 * Upgrade guide Link
 
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)

@@ -300,17 +300,20 @@ JS
   end
 
   def generate_route_name(*parts)
-    route_name = parts.compact.join('_')
-    @configuration[:camel_case] ? route_name.camelize(:lower) : route_name
+    apply_case(parts.compact.join('_'))
   end
 
   def json(string)
     self.class.json(string)
   end
 
+  def apply_case(value)
+    @configuration[:camel_case] ? value.to_s.camelize(:lower) : value
+  end
+
   def build_params(required_parts)
     required_parts.map do |param|
-      "\n * @param {any} #{param}"
+      "\n * @param {any} #{apply_case(param)}"
     end.join
   end
 
