@@ -272,27 +272,20 @@ JS
     route.parts.each do |part, hash|
       parts_table[part] ||= {}
       if required_parts.include?(part)
-        parts_table[part][:required] = true
+        # Using shortened keys to reduce js file size
+        parts_table[part][:r] = true
       end
     end
     route.defaults.each do |part, value|
       if FILTERED_DEFAULT_PARTS.exclude?(part) &&
         URL_OPTIONS.include?(part) || parts_table[part]
         parts_table[part] ||= {}
-        parts_table[part][:default] = value
+        # Using shortened keys to reduce js file size
+        parts_table[part][:d] = value
       end
     end
     [
-      parts_table.transform_values do |config|
-        # Optmizing JS file size by using
-        # an Array with optional elements instead of Hash
-        # [required?: boolean, default?: any]
-        if config.has_key?(:default) && !config[:default].nil?
-          [config[:required] || false, config[:default]]
-        else
-          config[:required] ? [config[:required]] : []
-        end
-      end,
+      parts_table,
       serialize(route.path.spec, parent_spec)
     ].map do |argument|
       json(argument)

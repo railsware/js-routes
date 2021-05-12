@@ -33,7 +33,13 @@ declare type KeywordUrlOptions = Optional<{
   anchor: string;
   trailing_slash: boolean;
 }>;
-declare type PartsTable = Record<string, [boolean | undefined, unknown]>;
+declare type PartsTable = Record<
+  string,
+  {
+    r?: boolean;
+    d?: unknown;
+  }
+>;
 declare type ModuleType = "CJS" | "AMD" | "UMD" | "ESM";
 declare const RubyVariables: {
   PREFIX: string;

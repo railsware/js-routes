@@ -37,7 +37,7 @@ type KeywordUrlOptions = Optional<{
   trailing_slash: boolean;
 }>;
 
-type PartsTable = Record<string, [boolean | undefined, unknown]>;
+type PartsTable = Record<string, { r?: boolean; d?: unknown }>;
 
 type ModuleType = "CJS" | "AMD" | "UMD" | "ESM";
 
@@ -500,7 +500,9 @@ RubyVariables.WRAPPER(
         const required_params: string[] = [];
         const parts: string[] = [];
         const default_options: RouteParameters = {};
-        for (const [part, [required, value]] of Object.entries(parts_table)) {
+        for (const [part, { r: required, d: value }] of Object.entries(
+          parts_table
+        )) {
           parts.push(part);
           if (required) {
             required_params.push(part);
