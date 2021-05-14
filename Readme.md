@@ -71,7 +71,7 @@ module.exports = {
 }
 ```
 
-Enable `erb` extension in `config/webpacker/environment.js`:
+Enable `erb` extension in `config/webpack/environment.js`:
 
 ``` javascript
 const erb = require('./loaders/erb')
