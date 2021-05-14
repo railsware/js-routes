@@ -198,13 +198,13 @@ Options to configure routes formatting. These options are available both in Ruby
 In case you need multiple route files for different parts of your application, you have to create the files manually.
 If your application has an `admin` and an `application` namespace for example:
 
-```
-# app/javascript/admin/routes.js.erb
+``` erb
+// app/javascript/admin/routes.js.erb
 <%= JsRoutes.generate(include: /admin/) %>
 ```
 
-```
-# app/javascript/customer/routes.js.erb
+``` erb
+// app/javascript/customer/routes.js.erb
 <%= JsRoutes.generate(exclude: /admin/) %>
 ```
 
