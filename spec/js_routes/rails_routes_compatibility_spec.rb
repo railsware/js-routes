@@ -389,6 +389,14 @@ describe JsRoutes, "compatibility with Rails"  do
       )).to eq(test_routes.inbox_message_path(inbox, 2, :custom => true, :format => "json"))
     end
 
+    it "supports camel case property name" do
+      expect(evaljs("Routes.inbox_path({id: 1, toParam: 'my'})")).to eq(test_routes.inbox_path(inbox))
+    end
+
+    it "supports camel case method name" do
+      expect(evaljs("Routes.inbox_path({id: 1, toParam: function(){ return 'my';}})")).to eq(test_routes.inbox_path(inbox))
+    end
+
     context "when globbing" do
       it "should prefer to_param property over id property" do
         expect(evaljs("Routes.book_path({id: 1, to_param: 'my'}, 1)")).to eq(test_routes.book_path(inbox, 1))
@@ -408,6 +416,7 @@ describe JsRoutes, "compatibility with Rails"  do
         )).to eq(test_routes.book_path(inbox, 2, :custom => true, :format => "json"))
       end
     end
+
   end
 
   context "when specs" do

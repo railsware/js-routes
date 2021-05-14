@@ -14,6 +14,8 @@ gem "js-routes"
 
 ## Setup
 
+### Quick Start 
+
 Run:
 
 ```
@@ -30,14 +32,16 @@ window.Routes = Routes;
 Individual routes can be imported using:
 
 ``` javascript
-import {edit_post_path, new_post_path} from 'routes';
+import {edit_post_path} from 'routes';
+console.log(edit_post_path(1))
 ```
 
 **Note**: that this setup requires `rake js:routes` to be run each time routes file is updated.
 
+<div id='webpacker'></div>
+
 #### Webpacker + automatic updates
 
-<div id='webpacker'></div>
 
 This setup can automatically update your routes without `rake js:routes` being called manually.
 It requires [rails-erb-loader](https://github.com/usabilityhub/rails-erb-loader) npm package to work.
@@ -205,7 +209,7 @@ If your application has an `admin` and an `application` namespace for example:
 You can manipulate the generated helper manually by injecting ruby into javascript:
 
 ``` erb
-export const routes = <%= JsRoutes.generate(module_type: nil) %>
+export const routes = <%= JsRoutes.generate(module_type: nil, namespace: nil) %>
 ```
 
 If you want to generate the routes files outside of the asset pipeline, you can use `JsRoutes.generate!`:
@@ -265,11 +269,11 @@ This function allow to get the same `spec` for route, if you will get string rep
 '' + Routes.user_path // => "/users/:id(.:format)"
 ```
 
-Route function also contain inside attribute `required_params` required param names as array:
+Route function also contain method `requiredParams` inside which returns required param names array:
 
 ```js
-Routes.users_path.required_params // => []
-Routes.user_path.required_params // => ['id']
+Routes.users_path.requiredParams() // => []
+Routes.user_path.requiredParams() // => ['id']
 ```
 
 
@@ -290,9 +294,34 @@ Routes.company_project_path({company_id: 1, id: 2, _options: true}) // => "/comp
 
 ## What about security?
 
-JsRoutes itself does not have security holes. It makes URLs
-without access protection more reachable by potential attacker.
-In order to prevent this use `:exclude` option for sensitive urls like `/admin_/`
+JsRoutes itself does not have security holes. 
+It makes URLs without access protection more reachable by potential attacker.
+If that is an issue for you, you may use one of the following solutions:
+
+### Explicit Import + ESM Tree shaking
+
+Make sure `module_type` is set to `ESM` (the default) and JS files import only required routes into the file like:
+
+``` javascript
+import {
+  inbox_path,
+  inboxes_path,
+  inbox_message_path,
+  inbox_attachment_path,
+  user_path,
+} from 'routes.js.erb'
+```
+
+### Exclude option
+
+Split your routes into multiple files related to each section of your website like:
+
+``` javascript
+// admin-routes.js.erb
+<%= JsRoutes.generate(include: /^admin_/)
+// app-routes.js.erb
+<%= JsRoutes.generate(exclude: /^admin_/)
+```
 
 ## JsRoutes and Heroku
 
@@ -325,7 +354,6 @@ Advantages of this one are:
 * Add prettier
 * Add eslint
 * Add development guide
-* Upgrade guide Link
 
 #### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)
 

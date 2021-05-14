@@ -9,6 +9,7 @@ See [UPGRADE TO 2.0](./VERSION_2_UPGRADE.md) for guidance.
 * `documentation` option spport
 * Migrated implementation to typescript
 * ESM tree shaking support
+* Support camel case `toParam` version of `to_param` property
 
 ## v1.4.14
 

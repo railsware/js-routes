@@ -3,7 +3,10 @@ require "spec_helper"
 describe JsRoutes, "compatibility with CJS"  do
   before(:each) do
     evaljs("module = { exports: null }")
-    evaljs(JsRoutes.generate({module_type: 'CJS'}))
+    evaljs(JsRoutes.generate(
+      module_type: 'CJS',
+      include: /^inboxes/
+    ))
   end
 
   it "should define module exports" do

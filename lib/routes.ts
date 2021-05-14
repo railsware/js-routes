@@ -235,11 +235,14 @@ RubyVariables.WRAPPER(
 
       looks_like_serialized_model(
         object: any
-      ): object is { id: unknown } | { to_param: unknown } {
+      ): object is
+        | { id: unknown }
+        | { to_param: unknown }
+        | { toParam: unknown } {
         return (
           this.is_object(object) &&
           !object[this.configuration.special_options_key] &&
-          ("id" in object || "to_param" in object)
+          ("id" in object || "to_param" in object || "toParam" in object)
         );
       }
 
@@ -255,6 +258,8 @@ RubyVariables.WRAPPER(
         }
         if ("to_param" in object) {
           result = object.to_param;
+        } else if ("toParam" in object) {
+          result = object.toParam;
         } else if ("id" in object) {
           result = object.id;
         } else {
