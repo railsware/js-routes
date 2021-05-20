@@ -446,6 +446,4 @@ describe JsRoutes, "compatibility with Rails"  do
       expect(evaljs("Routes.inbox_message_path.requiredParams()").to_a).to eq(["inbox_id", "id"])
     end
   end
-
-
 end
