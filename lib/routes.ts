@@ -577,7 +577,10 @@ RubyVariables.WRAPPER(
       }
 
       is_object(value: unknown): value is Record<string, unknown> {
-        return typeof value === "object" && "" + value === "[object Object]";
+        return (
+          typeof value === "object" &&
+          Object.prototype.toString.call(value) === "[object Object]"
+        );
       }
 
       is_array<T>(object: unknown | T[]): object is T[] {
