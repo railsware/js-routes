@@ -73,7 +73,7 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.inbox_path(1, {expanded: true, anchor: 'hello'})")).to eq(test_routes.inbox_path(1, :expanded => true, :anchor => "hello"))
   end
 
-  it "should support required paramters given as options hash" do
+  it "should support required parameters given as options hash" do
     expect(evaljs("Routes.search_path({q: 'hello'})")).to eq(test_routes.search_path(:q => 'hello'))
   end
 
@@ -153,13 +153,25 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.root_path()")).to eq(test_routes.root_path)
   end
 
-  describe "get paramters" do
+  describe "get parameters" do
     it "should support simple get parameters" do
       expect(evaljs("Routes.inbox_path(1, {format: 'json', lang: 'ua', q: 'hello'})")).to eq(test_routes.inbox_path(1, :lang => "ua", :q => "hello", :format => "json"))
     end
 
     it "should support array get parameters" do
       expect(evaljs("Routes.inbox_path(1, {hello: ['world', 'mars']})")).to eq(test_routes.inbox_path(1, :hello => [:world, :mars]))
+    end
+
+    context "object without prototype" do
+      before(:each) do
+        evaljs("let params = Object.create(null); params.q = 'hello'")
+      end
+
+      it "should still work correctly" do
+        expect(evaljs("Routes.inbox_path(1, params)")).to eq(
+          test_routes.inbox_path(1, :q => "hello")
+        )
+      end
     end
 
     it "should support nested get parameters" do

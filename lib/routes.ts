@@ -171,7 +171,7 @@ RubyVariables.WRAPPER(
         if (this.is_nullable(value)) {
           return "";
         }
-        if (!prefix && !this.is_hash(value)) {
+        if (!prefix && !this.is_object(value)) {
           throw new Error("Url parameters should be a javascript hash");
         }
         prefix = prefix || "";
@@ -180,7 +180,7 @@ RubyVariables.WRAPPER(
           for (const element of value) {
             result.push(this.default_serializer(element, prefix + "[]"));
           }
-        } else if (this.is_hash(value)) {
+        } else if (this.is_object(value)) {
           for (let key in value) {
             if (!hasProp(value, key)) continue;
             let prop = value[key];
@@ -218,9 +218,10 @@ RubyVariables.WRAPPER(
         const last_el = args[args.length - 1];
         if (
           (args.length > number_of_params && last_el === 0) ||
-          (this.is_hash(last_el) && !this.looks_like_serialized_model(last_el))
+          (this.is_object(last_el) &&
+            !this.looks_like_serialized_model(last_el))
         ) {
-          if (this.is_hash(last_el)) {
+          if (this.is_object(last_el)) {
             delete last_el[this.configuration.special_options_key];
           }
           return {
@@ -239,7 +240,7 @@ RubyVariables.WRAPPER(
         | { to_param: unknown }
         | { toParam: unknown } {
         return (
-          this.is_hash(object) &&
+          this.is_object(object) &&
           !object[this.configuration.special_options_key] &&
           ("id" in object || "to_param" in object || "toParam" in object)
         );
@@ -252,7 +253,7 @@ RubyVariables.WRAPPER(
 
       unwrap_path_identifier(object: any): unknown {
         let result: any = object;
-        if (!this.is_hash(object)) {
+        if (!this.is_object(object)) {
           return object;
         }
         if ("to_param" in object) {
@@ -575,11 +576,10 @@ RubyVariables.WRAPPER(
         }
       }
 
-      is_hash(value: unknown): value is Record<string, unknown> {
+      is_object(value: unknown): value is Record<string, unknown> {
         return (
-          !!value &&
           typeof value === "object" &&
-          (!value?.constructor || "" + value === "[object Object]")
+          Object.prototype.toString.call(value) === "[object Object]"
         );
       }
 
