@@ -491,9 +491,8 @@ RubyVariables.WRAPPER(
         if (this.is_array(value)) {
           value = value.join("/");
         }
-        value = this.path_identifier(value as any);
-
-        return DeprecatedGlobbingBehavior ? "" + value : encodeURI("" + value);
+        const result = this.path_identifier(value as any);
+        return DeprecatedGlobbingBehavior ? result : encodeURI(result);
       }
 
       get_prefix(): string {

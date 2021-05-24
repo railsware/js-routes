@@ -164,12 +164,13 @@ describe JsRoutes, "compatibility with Rails"  do
 
     context "object without prototype" do
       before(:each) do
-        evaljs("let params = Object.create(null); params.q = 'hello'")
+        evaljs("let params = Object.create(null); params.q = 'hello';")
+        evaljs("let inbox = Object.create(null); inbox.to_param = 1;")
       end
 
       it "should still work correctly" do
-        expect(evaljs("Routes.inbox_path(1, params)")).to eq(
-          test_routes.inbox_path(1, :q => "hello")
+        expect(evaljs("Routes.inbox_path(inbox, params)")).to eq(
+          test_routes.inbox_path(1, q: "hello")
         )
       end
     end
