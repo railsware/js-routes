@@ -248,7 +248,7 @@ RubyVariables.WRAPPER(
 
       path_identifier(object: unknown): string {
         const result = this.unwrap_path_identifier(object);
-        return this.is_nullable(result) ? "" : "" + result;
+        return this.is_nullable(result) || result === false ? "" : "" + result;
       }
 
       unwrap_path_identifier(object: any): unknown {
@@ -274,7 +274,7 @@ RubyVariables.WRAPPER(
         default_options: RouteParameters,
         call_arguments: RouteParameter[]
       ): {
-        url_parameters: KeywordUrlOptions;
+        keyword_parameters: KeywordUrlOptions;
         query_parameters: RouteParameters;
       } {
         // eslint-disable-next-line prefer-const
@@ -301,13 +301,13 @@ RubyVariables.WRAPPER(
           ...options,
         };
 
-        const url_parameters: KeywordUrlOptions = {};
+        const keyword_parameters: KeywordUrlOptions = {};
         const query_parameters: RouteParameters = {};
         for (const key in options) {
           if (!hasProp(options, key)) continue;
           const value = options[key];
           if (this.is_reserved_option(key)) {
-            url_parameters[key] = value as any;
+            keyword_parameters[key] = value as any;
           } else {
             if (
               !this.is_nullable(value) &&
@@ -321,13 +321,14 @@ RubyVariables.WRAPPER(
         let i = 0;
         for (const part of route_parts) {
           if (i < args.length) {
+            const value = args[i];
             if (!hasProp(parts_options, part)) {
-              query_parameters[part] = args[i];
+              query_parameters[part] = value;
               ++i;
             }
           }
         }
-        return { url_parameters, query_parameters };
+        return { keyword_parameters, query_parameters };
       }
       build_route(
         parts: string[],
@@ -337,7 +338,10 @@ RubyVariables.WRAPPER(
         full_url: boolean,
         args: RouteParameter[]
       ): string {
-        const { url_parameters, query_parameters } = this.partition_parameters(
+        const {
+          keyword_parameters,
+          query_parameters,
+        } = this.partition_parameters(
           parts,
           required_params,
           default_options,
@@ -352,16 +356,18 @@ RubyVariables.WRAPPER(
           throw new ParametersMissing(...missing_params);
         }
         let result = this.get_prefix() + this.visit(route, query_parameters);
-        if (url_parameters.trailing_slash) {
+        if (keyword_parameters.trailing_slash) {
           result = result.replace(/(.*?)[/]?$/, "$1/");
         }
         const url_params = this.serialize(query_parameters);
         if (url_params.length) {
           result += "?" + url_params;
         }
-        result += url_parameters.anchor ? "#" + url_parameters.anchor : "";
+        result += keyword_parameters.anchor
+          ? "#" + keyword_parameters.anchor
+          : "";
         if (full_url) {
-          result = this.route_url(url_parameters) + result;
+          result = this.route_url(keyword_parameters) + result;
         }
         return result;
       }

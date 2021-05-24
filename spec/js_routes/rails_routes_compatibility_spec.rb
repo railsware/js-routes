@@ -241,6 +241,15 @@ describe JsRoutes, "compatibility with Rails"  do
         expect(evaljs("Routes.things_path({ q: 'hello' })")).to eq(test_routes.things_path(q: 'hello'))
       end
 
+      it "treats false as absent optional part" do
+        pending("https://github.com/rails/rails/issues/42280")
+        expect(evaljs("Routes.things_path(false)")).to eq(test_routes.things_path(false))
+      end
+
+      it "treats false as absent optional part when default is specified" do
+        expect(evaljs("Routes.campaigns_path(false)")).to eq(test_routes.campaigns_path(false))
+      end
+
       it "should not require the optional parts as arguments" do
         expect(evaljs("Routes.thing_path(null, 5)")).to eq(test_routes.thing_path(nil, 5))
       end

@@ -14,6 +14,8 @@ def draw_routes
       end
     end
 
+    get "(/:space)/campaigns" => "foo#foo", as: :campaigns, defaults: {space: nil}
+
     root :to => "inboxes#index"
 
     namespace :admin do
