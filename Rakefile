@@ -12,7 +12,10 @@ require 'bundler/gem_tasks'
 require 'rspec/core'
 require 'rspec/core/rake_task'
 require 'appraisal'
-load "rails/tasks/routes.rake"
+require 'rails/version'
+if Rails.version < "6.1"
+  load "rails/tasks/routes.rake"
+end
 
 RSpec::Core::RakeTask.new(:spec)
 
@@ -29,6 +32,6 @@ namespace :spec do
     draw_routes
     all_routes = Rails.application.routes.routes
     inspector = ActionDispatch::Routing::RoutesInspector.new(all_routes)
-    puts inspector.format(ActionDispatch::Routing::ConsoleFormatter.new, ENV['CONTROLLER'])
+    puts inspector.format(ActionDispatch::Routing::ConsoleFormatter::Sheet.new)
   end
 end
