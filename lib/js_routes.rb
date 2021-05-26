@@ -170,6 +170,10 @@ class JsRoutes
     @configuration.application
   end
 
+  def json(string)
+    self.class.json(string)
+  end
+
   def named_routes
     application.routes.named_routes.to_a
   end
@@ -195,7 +199,7 @@ class JsRoutes
 
   def routes_list
     named_routes.sort_by(&:first).flat_map do |_, route|
-      build_routes_if_match(route) + mounted_app_routes(route)
+      route_helpers_if_match(route) + mounted_app_routes(route)
     end.compact
   end
 
@@ -204,7 +208,7 @@ class JsRoutes
     if rails_engine_app.respond_to?(:superclass) &&
        rails_engine_app.superclass == Rails::Engine && !route.path.anchored
       rails_engine_app.routes.named_routes.flat_map do |_, engine_route|
-        build_routes_if_match(engine_route, route)
+        route_helpers_if_match(engine_route, route)
       end
     else
       []
@@ -221,122 +225,149 @@ class JsRoutes
     end
   end
 
-  def build_routes_if_match(route, parent_route = nil)
-    if any_match?(route, parent_route, @configuration[:exclude]) ||
-       !any_match?(route, parent_route, @configuration[:include])
-      []
-    else
-      name = [parent_route.try(:name), route.name].compact
-      parent_spec = parent_route.try(:path).try(:spec)
-      route_arguments = route_js_arguments(route, parent_spec)
-      return [false, true].map do |absolute|
-        route_js(name, parent_spec, route, route_arguments, absolute)
+  def route_helpers_if_match(route, parent_route = nil)
+    JsRoute.new(@configuration, route, parent_route).helpers
+  end
+
+  class JsRoute #:nodoc:
+    attr_reader :configuration, :route, :parent_route
+
+    def initialize(configuration, route, parent_route = nil)
+      @configuration = configuration
+      @route = route
+      @parent_route = parent_route
+    end
+
+    def helpers
+      unless match_configuration?
+        []
+      else
+        [false, true].map do |absolute|
+          absolute && !@configuration[:url_links] ?
+            nil : [ documentation, helper_name(absolute), body(absolute) ]
+        end
       end
     end
-  end
 
-  def any_match?(route, parent_route, matchers)
-    full_route = [parent_route.try(:name), route.name].compact.join('_')
-
-    matchers = Array(matchers)
-    matchers.any? { |regex| full_route =~ regex }
-  end
-
-  def route_js(name_parts, parent_spec, route, route_arguments, absolute)
-    if absolute
-      return nil unless @configuration[:url_links]
-      route_arguments = route_arguments + [json(true)]
+    def body(absolute)
+      "__jsr.r(#{arguments(absolute).join(', ')})"
     end
-    name_suffix = absolute ? :url : @configuration[:compact] ? nil : :path
-    name = generate_route_name(name_parts, name_suffix)
-    body = "__jsr.r(#{route_arguments.join(', ')})"
-    comment = documentation(route, parent_spec)
-    [ comment, name, body ]
-  end
 
-  def documentation(route, parent_spec)
-    return nil unless @configuration[:documentation]
-    <<-JS
+    def arguments(absolute)
+      absolute ? base_arguments + [json(true)] : base_arguments
+    end
+
+    def match_configuration?
+      !match?(@configuration[:exclude]) && match?(@configuration[:include])
+    end
+
+    def base_name
+      @base_name ||= apply_case(parent_route&.name, route.name)
+    end
+
+    def parent_spec
+      parent_route&.path&.spec
+    end
+
+    def spec
+      route.path.spec
+    end
+
+    def json(value)
+      JsRoutes.json(value)
+    end
+
+    def helper_name(absolute)
+      suffix = absolute ? :url : @configuration[:compact] ? nil : :path
+      suffix ? apply_case(base_name, suffix) : base_name
+    end
+
+    def documentation
+      return nil unless @configuration[:documentation]
+      <<-JS
 /**
  * Generates rails route to
- * #{parent_spec}#{route.path.spec}#{build_params(route.required_parts)}
+ * #{parent_spec}#{spec}#{documentation_params}
  * @param {object | undefined} options
  * @returns {string} route path
  */
 JS
-  end
-
-  def route_js_arguments(route, parent_spec)
-    required_parts = route.required_parts
-    parts_table = {}
-    route.parts.each do |part, hash|
-      parts_table[part] ||= {}
-      if required_parts.include?(part)
-        # Using shortened keys to reduce js file size
-        parts_table[part][:r] = true
-      end
     end
-    route.defaults.each do |part, value|
-      if FILTERED_DEFAULT_PARTS.exclude?(part) &&
-        URL_OPTIONS.include?(part) || parts_table[part]
+
+    def required_parts
+      route.required_parts
+    end
+
+    protected
+
+    def base_arguments
+      return @base_arguments if defined?(@base_arguments)
+      parts_table = {}
+      route.parts.each do |part, hash|
         parts_table[part] ||= {}
-        # Using shortened keys to reduce js file size
-        parts_table[part][:d] = value
+        if required_parts.include?(part)
+          # Using shortened keys to reduce js file size
+          parts_table[part][:r] = true
+        end
+      end
+      route.defaults.each do |part, value|
+        if FILTERED_DEFAULT_PARTS.exclude?(part) &&
+          URL_OPTIONS.include?(part) || parts_table[part]
+          parts_table[part] ||= {}
+          # Using shortened keys to reduce js file size
+          parts_table[part][:d] = value
+        end
+      end
+      @base_arguments = [
+        parts_table, serialize(spec, parent_spec)
+      ].map do |argument|
+        json(argument)
       end
     end
-    [
-      parts_table,
-      serialize(route.path.spec, parent_spec)
-    ].map do |argument|
-      json(argument)
+
+    def documentation_params
+      required_parts.map do |param|
+        "\n * @param {any} #{apply_case(param)}"
+      end.join
     end
-  end
 
-  def generate_route_name(*parts)
-    apply_case(parts.compact.join('_'))
-  end
-
-  def json(string)
-    self.class.json(string)
-  end
-
-  def apply_case(value)
-    @configuration[:camel_case] ? value.to_s.camelize(:lower) : value
-  end
-
-  def build_params(required_parts)
-    required_parts.map do |param|
-      "\n * @param {any} #{apply_case(param)}"
-    end.join
-  end
-
-  # This function serializes Journey route into JSON structure
-  # We do not use Hash for human readable serialization
-  # And preffer Array serialization because it is shorter.
-  # Routes.js file will be smaller.
-  def serialize(spec, parent_spec=nil)
-    return nil unless spec
-    # Rails 4 globbing requires * removal
-    return spec.tr(':*', '') if spec.is_a?(String)
-
-    result = serialize_spec(spec, parent_spec)
-    if parent_spec && result[1].is_a?(String)
-      result = [
-        # We encode node symbols as integer
-        # to reduce the routes.js file size
-        NODE_TYPES[:CAT],
-        serialize_spec(parent_spec),
-        result
-      ]
+    def match?(matchers)
+      Array(matchers).any? { |regex| base_name =~ regex }
     end
-    result
-  end
 
-  def serialize_spec(spec, parent_spec = nil)
-    [
-      NODE_TYPES[spec.type],
-      serialize(spec.left, parent_spec),
-      spec.respond_to?(:right) ? serialize(spec.right) : nil
-    ].compact
+    def apply_case(*values)
+      value = values.compact.map(&:to_s).join('_')
+      @configuration[:camel_case] ? value.camelize(:lower) : value
+    end
+
+    # This function serializes Journey route into JSON structure
+    # We do not use Hash for human readable serialization
+    # And preffer Array serialization because it is shorter.
+    # Routes.js file will be smaller.
+    def serialize(spec, parent_spec=nil)
+      return nil unless spec
+      # Rails 4 globbing requires * removal
+      return spec.tr(':*', '') if spec.is_a?(String)
+
+      result = serialize_spec(spec, parent_spec)
+      if parent_spec && result[1].is_a?(String)
+        result = [
+          # We encode node symbols as integer
+          # to reduce the routes.js file size
+          NODE_TYPES[:CAT],
+          serialize_spec(parent_spec),
+          result
+        ]
+      end
+      result
+    end
+
+    def serialize_spec(spec, parent_spec = nil)
+      [
+        NODE_TYPES[spec.type],
+        serialize(spec.left, parent_spec),
+        spec.respond_to?(:right) ? serialize(spec.right) : nil
+      ].compact
+    end
   end
 end
