@@ -45,7 +45,6 @@ class JsRoutes
     DOT: 8
   } #:nodoc:
 
-  LAST_OPTIONS_KEY = "options".freeze #:nodoc:
   FILTERED_DEFAULT_PARTS = [:controller, :action] #:nodoc:
   URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain] #:nodoc:
 

@@ -335,7 +335,7 @@ RubyVariables.WRAPPER(
         required_params: string[],
         default_options: RouteParameters,
         route: RouteTree,
-        full_url: boolean,
+        absolute: boolean,
         args: RouteParameter[]
       ): string {
         const {
@@ -366,7 +366,7 @@ RubyVariables.WRAPPER(
         result += keyword_parameters.anchor
           ? "#" + keyword_parameters.anchor
           : "";
-        if (full_url) {
+        if (absolute) {
           result = this.route_url(keyword_parameters) + result;
         }
         return result;
@@ -505,7 +505,7 @@ RubyVariables.WRAPPER(
       route(
         parts_table: PartsTable,
         route_spec: RouteTree,
-        full_url = false
+        absolute = false
       ): RouteHelper {
         const required_params: string[] = [];
         const parts: string[] = [];
@@ -527,7 +527,7 @@ RubyVariables.WRAPPER(
             required_params,
             default_options,
             route_spec,
-            full_url,
+            absolute,
             args
           );
         };
@@ -653,14 +653,13 @@ RubyVariables.WRAPPER(
     const Utils = new UtilsClass();
 
     // We want this helper name to be short
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const __jsr = {
       r(
         parts_table: PartsTable,
         route_spec: RouteTree,
-        full_url?: boolean
+        absolute?: boolean
       ): RouteHelper {
-        return Utils.route(parts_table, route_spec, full_url);
+        return Utils.route(parts_table, route_spec, absolute);
       },
     };
 
