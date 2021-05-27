@@ -33,6 +33,7 @@ declare type KeywordUrlOptions = Optional<{
   anchor: string;
   trailing_slash: boolean;
 }>;
+declare type RouteOptions = KeywordUrlOptions & RouteParameters;
 declare type PartsTable = Record<
   string,
   {

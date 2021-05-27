@@ -37,6 +37,8 @@ type KeywordUrlOptions = Optional<{
   trailing_slash: boolean;
 }>;
 
+type RouteOptions = KeywordUrlOptions & RouteParameters;
+
 type PartsTable = Record<string, { r?: boolean; d?: unknown }>;
 
 type ModuleType = "CJS" | "AMD" | "UMD" | "ESM";
@@ -213,7 +215,7 @@ RubyVariables.WRAPPER(
         args: RouteParameter[]
       ): {
         args: RouteParameter[];
-        options: KeywordUrlOptions & RouteParameters;
+        options: RouteOptions;
       } {
         const last_el = args[args.length - 1];
         if (
@@ -226,7 +228,7 @@ RubyVariables.WRAPPER(
           }
           return {
             args: args.slice(0, args.length - 1),
-            options: last_el as KeywordUrlOptions & RouteParameters,
+            options: last_el as RouteOptions,
           };
         } else {
           return { args, options: {} };

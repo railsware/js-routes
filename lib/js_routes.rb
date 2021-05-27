@@ -78,6 +78,18 @@ class JsRoutes
     def esm?
       self.module_type === 'ESM'
     end
+
+    def dts?
+      self.module_type === 'DTS'
+    end
+
+    def modern?
+      esm? || dts?
+    end
+
+    def file_name
+      dts? ? "routes.d.ts" : "routes.js"
+    end
   end
 
   #
@@ -123,22 +135,12 @@ class JsRoutes
     if named_routes.to_a.empty? && application.respond_to?(:reload_routes!)
       application.reload_routes!
     end
+    content = File.read(File.dirname(__FILE__) + "/" + @configuration.file_name)
+    if @configuration.dts?
+      return content + routes_export
+    end
 
-    {
-      'GEM_VERSION'         => JsRoutes::VERSION,
-      'ROUTES_OBJECT'              => routes_object,
-      'RAILS_VERSION'       => ActionPack.version,
-      'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
-
-      'APP_CLASS'           => application.class.to_s,
-      'NAMESPACE'           => json(@configuration.namespace),
-      'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
-      'PREFIX'              => json(@configuration.prefix),
-      'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
-      'SERIALIZER'          => @configuration.serializer || json(nil),
-      'MODULE_TYPE'         => json(@configuration.module_type),
-      'WRAPPER'             => @configuration.esm? ? 'const __jsr = ' : '',
-    }.inject(File.read(File.dirname(__FILE__) + "/routes.js")) do |js, (key, value)|
+    js_variables.inject(content) do |js, (key, value)|
       js.gsub!("RubyVariables.#{key}", value.to_s) ||
         raise("Missing key #{key} in JS template")
     end + routes_export
@@ -165,6 +167,24 @@ class JsRoutes
 
   protected
 
+  def js_variables
+    {
+      'GEM_VERSION'         => JsRoutes::VERSION,
+      'ROUTES_OBJECT'              => routes_object,
+      'RAILS_VERSION'       => ActionPack.version,
+      'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
+
+      'APP_CLASS'           => application.class.to_s,
+      'NAMESPACE'           => json(@configuration.namespace),
+      'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
+      'PREFIX'              => json(@configuration.prefix),
+      'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
+      'SERIALIZER'          => @configuration.serializer || json(nil),
+      'MODULE_TYPE'         => json(@configuration.module_type),
+      'WRAPPER'             => @configuration.esm? ? 'const __jsr = ' : '',
+    }
+  end
+
   def application
     @configuration.application
   end
@@ -178,28 +198,39 @@ class JsRoutes
   end
 
   def routes_object
-    return json({}) if @configuration.esm?
+    return json({}) if @configuration.modern?
     properties = routes_list.map do |comment, name, body|
       "#{comment}#{name}: #{body}".indent(2)
     end
     "{\n" + properties.join(",\n\n") + "}\n"
   end
 
-  STATIC_EXPORTS = [:configure, :config, :serialize].map do |name|
-    ["", name, "__jsr.#{name}"]
+  def static_exports
+    [:configure, :config, :serialize].map do |name|
+      [
+        "", name,
+        @configuration.dts? ?
+          "RouterExposedMethods['#{name}']" :
+          "__jsr.#{name}"
+      ]
+    end
   end
 
   def routes_export
-    return "" unless @configuration.esm?
-    [*STATIC_EXPORTS, *routes_list].map do |comment, name, body|
-      "#{comment}export const #{name} = #{body};"
+    return "" unless @configuration.modern?
+    [*static_exports, *routes_list].map do |comment, name, body|
+      "#{comment}export const #{name}#{export_separator}#{body};"
     end.join("\n\n")
+  end
+
+  def export_separator
+    @configuration.dts? ? ': ' : ' = '
   end
 
   def routes_list
     named_routes.sort_by(&:first).flat_map do |_, route|
       route_helpers_if_match(route) + mounted_app_routes(route)
-    end.compact
+    end
   end
 
   def mounted_app_routes(route)
@@ -241,15 +272,25 @@ class JsRoutes
       unless match_configuration?
         []
       else
-        [false, true].map do |absolute|
-          absolute && !@configuration[:url_links] ?
-            nil : [ documentation, helper_name(absolute), body(absolute) ]
+        helper_types.map do |absolute|
+          [ documentation, helper_name(absolute), body(absolute) ]
         end
       end
     end
 
+    def helper_types
+      @helper_types ||= @configuration[:url_links] ? [true, false] : [false]
+    end
+
     def body(absolute)
-      "__jsr.r(#{arguments(absolute).join(', ')})"
+      @configuration.dts? ?
+        definition_body : "__jsr.r(#{arguments(absolute).join(', ')})"
+    end
+
+    def definition_body
+      args = required_parts.map{|p| "#{apply_case(p)}: unknown"}
+      args << "options?: RouteOptions"
+      "(\n#{args.join(",\n").indent(2)}\n) => string"
     end
 
     def arguments(absolute)
