@@ -1,5 +1,9 @@
 ## master
 
+## v2.0.3
+
+* Fixed backward compatibility issue [#275](https://github.com/railsware/js-routes/issues/275)
+
 ## v2.0.2
 
 * Fixed backward compatibility issue [#274](https://github.com/railsware/js-routes/issues/274)
