@@ -137,6 +137,7 @@ describe JsRoutes, "compatibility with Rails"  do
     end
 
     it 'works' do
+      expect(evaljs("Routes.planner_manage_path({locale: 'ua'})")).to eq(planner_routes.manage_path(locale: 'ua'))
       expect(evaljs("Routes.planner_manage_path()")).to eq(planner_routes.manage_path)
     end
   end

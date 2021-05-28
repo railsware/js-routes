@@ -410,13 +410,19 @@ RubyVariables.WRAPPER(
         optional: boolean
       ): string {
         const left_part = this.visit(left, parameters, optional);
-        const right_part = this.visit(right, parameters, optional);
+        let right_part = this.visit(right, parameters, optional);
         if (
           optional &&
           ((this.is_optional_node(left[0]) && !left_part) ||
             (this.is_optional_node(right[0]) && !right_part))
         ) {
           return "";
+        }
+        // if left_part ends on '/' and right_part starts on '/'
+        if (left_part[left_part.length - 1] === "/" && right_part[0] === "/") {
+          // strip slash from right_part
+          // to prevent double slash
+          right_part = right_part.substring(1);
         }
         return left_part + right_part;
       }

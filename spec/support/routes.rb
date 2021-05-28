@@ -9,7 +9,7 @@ def draw_routes
   end
   App.routes.draw do
 
-    mount Planner::Engine, at: "/", as: :planner
+    mount Planner::Engine, at: "/(locale/:locale)", as: :planner
 
     mount BlogEngine::Engine => "/blog", as: :blog_app
     get 'support(/page/:page)', to: BlogEngine::Engine, as: 'support'
