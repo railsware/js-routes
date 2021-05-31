@@ -390,7 +390,7 @@ JS
       return spec.tr(':*', '') if spec.is_a?(String)
 
       result = serialize_spec(spec, parent_spec)
-      if parent_spec && result[1].is_a?(String)
+      if parent_spec && result[1].is_a?(String) && parent_spec.type != :SLASH
         result = [
           # We encode node symbols as integer
           # to reduce the routes.js file size

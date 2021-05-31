@@ -135,6 +135,11 @@ describe JsRoutes, "compatibility with Rails"  do
     it "should support single route mapping" do
       expect(evaljs("Routes.support_path({page: 3})")).to eq(test_routes.support_path(:page => 3))
     end
+
+    it 'works' do
+      expect(evaljs("Routes.planner_manage_path({locale: 'ua'})")).to eq(planner_routes.manage_path(locale: 'ua'))
+      expect(evaljs("Routes.planner_manage_path()")).to eq(planner_routes.manage_path)
+    end
   end
 
   it "shouldn't require the format" do

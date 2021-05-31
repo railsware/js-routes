@@ -58,10 +58,20 @@ def blog_routes
   BlogEngine::Engine.routes.url_helpers
 end
 
+def planner_routes
+  Planner::Engine.routes.url_helpers
+end
+
 ActiveSupport::Inflector.inflections do |inflect|
   inflect.irregular "budgie", "budgies"
 end
 
+
+module Planner
+  class Engine < Rails::Engine
+    isolate_namespace Planner
+  end
+end
 
 module BlogEngine
   class Engine < Rails::Engine

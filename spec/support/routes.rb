@@ -1,11 +1,17 @@
 def draw_routes
+  Planner::Engine.routes.draw do
+    get "/manage" => 'foo#foo', as: :manage
+  end
 
   BlogEngine::Engine.routes.draw do
     root to: "application#index"
-    resources :posts
+    resources :posts, only: [:show, :index]
   end
   App.routes.draw do
 
+    mount Planner::Engine, at: "/(locale/:locale)", as: :planner
+
+    mount BlogEngine::Engine => "/blog", as: :blog_app
     get 'support(/page/:page)', to: BlogEngine::Engine, as: 'support'
 
     resources :inboxes, only: [:index, :show] do
@@ -42,8 +48,6 @@ def draw_routes
 
     get 'books/*section/:title' => 'books#show', :as => :book
     get 'books/:title/*section' => 'books#show', :as => :book_title
-
-    mount BlogEngine::Engine => "/blog", :as => :blog_app
 
     get '/no_format' => "foo#foo", :format => false, :as => :no_format
 
