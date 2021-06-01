@@ -234,7 +234,7 @@ class JsRoutes
   end
 
   def mounted_app_routes(route)
-    rails_engine_app = get_app_from_route(route)
+    rails_engine_app = app_from_route(route)
     if rails_engine_app.respond_to?(:superclass) &&
        rails_engine_app.superclass == Rails::Engine && !route.path.anchored
       rails_engine_app.routes.named_routes.flat_map do |_, engine_route|
@@ -245,7 +245,7 @@ class JsRoutes
     end
   end
 
-  def get_app_from_route(route)
+  def app_from_route(route)
     # rails engine in Rails 4.2 use additional
     # ActionDispatch::Routing::Mapper::Constraints, which contain app
     if route.app.respond_to?(:app) && route.app.respond_to?(:constraints)
@@ -269,17 +269,14 @@ class JsRoutes
     end
 
     def helpers
-      unless match_configuration?
-        []
-      else
-        helper_types.map do |absolute|
-          [ documentation, helper_name(absolute), body(absolute) ]
-        end
+      helper_types.map do |absolute|
+        [ documentation, helper_name(absolute), body(absolute) ]
       end
     end
 
     def helper_types
-      @helper_types ||= @configuration[:url_links] ? [true, false] : [false]
+      return [] unless match_configuration?
+      @configuration[:url_links] ? [true, false] : [false]
     end
 
     def body(absolute)

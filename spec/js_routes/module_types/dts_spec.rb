@@ -49,7 +49,9 @@ describe JsRoutes, "compatibility with DTS"  do
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inboxes_path: (options?: RouteOptions) => string;
+export const inboxes_path: (
+  options?: RouteOptions
+) => string;
 DOC
     expect(generated_js).to include(<<-DOC.rstrip)
 /**
