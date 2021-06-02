@@ -35,7 +35,7 @@ declare type RouteHelper = {
 declare type RouteHelpers = Record<string, RouteHelper>;
 declare type Configuration = {
   prefix: string;
-  default_url_options: RouteOptions;
+  default_url_options: RouteParameters;
   special_options_key: string;
   serializer: Serializer;
 };

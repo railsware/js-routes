@@ -180,9 +180,9 @@ describe JsRoutes, "options" do
     end
 
     context "is nil" do
-      let(:_options) { {:namespace => nil} }
+      let(:_options) { {:namespace => nil, include: /^inbox$/} }
       it "should use this namespace for routing" do
-        evaljs("window.zz = #{JsRoutes.generate(module_type: nil, namespace: nil)}")
+        evaljs("window.zz = #{generated_js}")
         expect(evaljs("window.zz.inbox_path")).not_to be_nil
       end
 
