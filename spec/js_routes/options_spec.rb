@@ -91,6 +91,18 @@ describe JsRoutes, "options" do
       expect(evaljs("Routes.inboxes_path")).to be_nil
     end
 
+    context "with camel_case option" do
+      let(:_options) { {include: /^admin_/, camel_case: true} }
+
+      it "should exclude specified routes from file" do
+        expect(evaljs("Routes.adminUsersPath()")).not_to be_nil
+      end
+
+      it "should not exclude routes not under specified pattern" do
+        expect(evaljs("Routes.inboxesPath")).to be_nil
+      end
+    end
+
     context "for rails engine" do
       let(:_options) { {:include => /^blog_app_posts/} }
 
@@ -180,9 +192,9 @@ describe JsRoutes, "options" do
     end
 
     context "is nil" do
-      let(:_options) { {:namespace => nil} }
+      let(:_options) { {:namespace => nil, include: /^inbox$/} }
       it "should use this namespace for routing" do
-        evaljs("window.zz = #{JsRoutes.generate(module_type: nil, namespace: nil)}")
+        evaljs("window.zz = #{generated_js}")
         expect(evaljs("window.zz.inbox_path")).not_to be_nil
       end
 

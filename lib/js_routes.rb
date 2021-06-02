@@ -261,7 +261,8 @@ class JsRoutes
     end
 
     def base_name
-      @base_name ||= apply_case(parent_route&.name, route.name)
+      @base_name ||= parent_route ?
+        [parent_route.name, route.name].join('_') : route.name
     end
 
     def parent_spec
@@ -278,7 +279,7 @@ class JsRoutes
 
     def helper_name(absolute)
       suffix = absolute ? :url : @configuration[:compact] ? nil : :path
-      suffix ? apply_case(base_name, suffix) : base_name
+      apply_case(base_name, suffix)
     end
 
     def documentation
