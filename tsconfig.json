@@ -3,30 +3,20 @@
     "target": "es2019",
     "lib": ["es2020", "dom"],
     "module": "commonjs",
-    "outDir": "lib",
     "sourceMap": true,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "typeRoots": ["node_modules/@types", "./@types"],
-
     "strict": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "alwaysStrict": false,
-
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
+
   },
   "ts-node": {
     "files": true,
     "transpileOnly": false
   },
-  "include": ["./**/*.ts", "lib/**/*.json", "./**/*.tsx"],
-  "exclude": ["node_modules", "**/thorn", "**/support", "**/tmp"]
+  "include": ["lib/*.ts"]
 }

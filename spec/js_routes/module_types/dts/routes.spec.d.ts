@@ -35,7 +35,7 @@ declare type RouteHelper = {
 declare type RouteHelpers = Record<string, RouteHelper>;
 declare type Configuration = {
   prefix: string;
-  default_url_options: RouteParameters;
+  default_url_options: RouteOptions;
   special_options_key: string;
   serializer: Serializer;
 };
@@ -85,3 +85,34 @@ declare const module:
       exports: any;
     }
   | undefined;
+export const configure: RouterExposedMethods["configure"];
+
+export const config: RouterExposedMethods["config"];
+
+export const serialize: RouterExposedMethods["serialize"];
+
+/**
+ * Generates rails route to
+ * /inboxes/:inbox_id/messages/:message_id/attachments/:id(.:format)
+ * @param {any} inbox_id
+ * @param {any} message_id
+ * @param {any} id
+ * @param {object | undefined} options
+ * @returns {string} route path
+ */
+export const inbox_message_attachment_path: (
+  inbox_id: RequiredRouteParameter,
+  message_id: RequiredRouteParameter,
+  id: RequiredRouteParameter,
+  options?: { format?: OptionalRouteParameter } & RouteOptions
+) => string;
+
+/**
+ * Generates rails route to
+ * /inboxes(.:format)
+ * @param {object | undefined} options
+ * @returns {string} route path
+ */
+export const inboxes_path: (
+  options?: { format?: OptionalRouteParameter } & RouteOptions
+) => string;

@@ -17,11 +17,11 @@ describe JsRoutes, "compatibility with DTS"  do
 
   context "when file is generated" do
     let(:dir_name) do
-       File.expand_path(__dir__ + "/../../../tmp")
+       File.expand_path(__dir__ + "/dts")
     end
 
     let(:file_name) do
-      dir_name + "/routes.d.ts"
+      dir_name + "/routes.spec.d.ts"
     end
 
     before do
@@ -30,7 +30,7 @@ describe JsRoutes, "compatibility with DTS"  do
     end
 
     it "has no compile errors" do
-      command = "tsc --noEmit #{file_name} --out /dev/stdout"
+      command = "tsc --strict --noEmit -p spec/tsconfig.json"
       _, stdout, stderr = Open3.popen3(command)
       expect(stderr.read).to eq("")
       expect(stdout.read).to eq("")
@@ -50,7 +50,7 @@ describe JsRoutes, "compatibility with DTS"  do
  * @returns {string} route path
  */
 export const inboxes_path: (
-  options?: RouteOptions
+  options?: {format?: OptionalRouteParameter} & RouteOptions
 ) => string;
 DOC
     expect(generated_js).to include(<<-DOC.rstrip)
@@ -64,10 +64,10 @@ DOC
  * @returns {string} route path
  */
 export const inbox_message_attachment_path: (
-  inbox_id: unknown,
-  message_id: unknown,
-  id: unknown,
-  options?: RouteOptions
+  inbox_id: RequiredRouteParameter,
+  message_id: RequiredRouteParameter,
+  id: RequiredRouteParameter,
+  options?: {format?: OptionalRouteParameter} & RouteOptions
 ) => string
 DOC
   end
@@ -75,10 +75,6 @@ DOC
   it "exports utility methods" do
     expect(generated_js).to include("export const serialize: RouterExposedMethods['serialize'];")
   end
-
-  # it "defines utility methods" do
-    # expect(evaljs("serialize({a: 1, b: 2})")).to eq({a: 1, b: 2}.to_param)
-  # end
 
   describe "compiled javascript asset" do
     subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }

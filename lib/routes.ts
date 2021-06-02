@@ -3,11 +3,24 @@
  * Based on Rails RubyVariables.RAILS_VERSION routes of RubyVariables.APP_CLASS
  */
 
-type RouteParameter = unknown;
-type RouteParameters = Record<string, RouteParameter>;
-type Serializer = (value: unknown) => string;
+type BaseRouteParameter = string | boolean | Date | number;
+type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
+type ModelRouteParameter =
+  | { id: MethodRouteParameter }
+  | { to_param: MethodRouteParameter }
+  | { toParam: MethodRouteParameter };
+type RequiredRouteParameter = BaseRouteParameter | ModelRouteParameter;
+type OptionalRouteParameter = undefined | null | RequiredRouteParameter;
+type QueryRouteParameter =
+  | OptionalRouteParameter
+  | QueryRouteParameter[]
+  | { [k: string]: QueryRouteParameter };
+type RouteParameters = Record<string, QueryRouteParameter>;
+
+type Serializable = Record<string, unknown>;
+type Serializer = (value: Serializable) => string;
 type RouteHelper = {
-  (...args: RouteParameter[]): string;
+  (...args: OptionalRouteParameter[]): string;
   requiredParams(): string[];
   toString(): string;
 };
@@ -32,16 +45,16 @@ type KeywordUrlOptions = Optional<{
   host: string;
   protocol: string;
   subdomain: string;
-  port: string;
+  port: string | number;
   anchor: string;
   trailing_slash: boolean;
 }>;
 
 type RouteOptions = KeywordUrlOptions & RouteParameters;
 
-type PartsTable = Record<string, { r?: boolean; d?: unknown }>;
+type PartsTable = Record<string, { r?: boolean; d?: OptionalRouteParameter }>;
 
-type ModuleType = "CJS" | "AMD" | "UMD" | "ESM";
+type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS";
 
 declare const RubyVariables: {
   PREFIX: string;
@@ -95,7 +108,7 @@ RubyVariables.WRAPPER(
 
     const Root = that;
     type ModuleDefinition = {
-      define: (routes: unknown) => void;
+      define: (routes: RouterExposedMethods) => void;
       support: () => boolean;
     };
     const ModuleReferences: Record<ModuleType, ModuleDefinition> = {
@@ -105,11 +118,8 @@ RubyVariables.WRAPPER(
         support: () => typeof module === "object",
       },
       AMD: {
-        define: (routes) =>
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          define!([], function () {
-            return routes;
-          }),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        define: (routes) => define!([], () => routes),
         support: () => typeof define === "function" && !!define.amd,
       },
       UMD: {
@@ -130,6 +140,10 @@ RubyVariables.WRAPPER(
           ModuleReferences.AMD.support() || ModuleReferences.CJS.support(),
       },
       ESM: {
+        define: () => null,
+        support: () => true,
+      },
+      DTS: {
         define: () => null,
         support: () => true,
       },
@@ -206,15 +220,15 @@ RubyVariables.WRAPPER(
         return result.join("&");
       }
 
-      serialize(object: unknown): string {
+      serialize(object: Serializable): string {
         return this.configuration.serializer(object);
       }
 
       extract_options(
         number_of_params: number,
-        args: RouteParameter[]
+        args: OptionalRouteParameter[]
       ): {
-        args: RouteParameter[];
+        args: OptionalRouteParameter[];
         options: RouteOptions;
       } {
         const last_el = args[args.length - 1];
@@ -228,32 +242,27 @@ RubyVariables.WRAPPER(
           }
           return {
             args: args.slice(0, args.length - 1),
-            options: last_el as RouteOptions,
+            options: (last_el as any) as RouteOptions,
           };
         } else {
           return { args, options: {} };
         }
       }
 
-      looks_like_serialized_model(
-        object: any
-      ): object is
-        | { id: unknown }
-        | { to_param: unknown }
-        | { toParam: unknown } {
+      looks_like_serialized_model(object: any): object is ModelRouteParameter {
         return (
           this.is_object(object) &&
-          !object[this.configuration.special_options_key] &&
+          !(this.configuration.special_options_key in object) &&
           ("id" in object || "to_param" in object || "toParam" in object)
         );
       }
 
-      path_identifier(object: unknown): string {
+      path_identifier(object: QueryRouteParameter): string {
         const result = this.unwrap_path_identifier(object);
         return this.is_nullable(result) || result === false ? "" : "" + result;
       }
 
-      unwrap_path_identifier(object: any): unknown {
+      unwrap_path_identifier(object: QueryRouteParameter): unknown {
         let result: any = object;
         if (!this.is_object(object)) {
           return object;
@@ -274,7 +283,7 @@ RubyVariables.WRAPPER(
         parts: string[],
         required_params: string[],
         default_options: RouteParameters,
-        call_arguments: RouteParameter[]
+        call_arguments: OptionalRouteParameter[]
       ): {
         keyword_parameters: KeywordUrlOptions;
         query_parameters: RouteParameters;
@@ -338,7 +347,7 @@ RubyVariables.WRAPPER(
         default_options: RouteParameters,
         route: RouteTree,
         absolute: boolean,
-        args: RouteParameter[]
+        args: OptionalRouteParameter[]
       ): string {
         const {
           keyword_parameters,
@@ -448,9 +457,9 @@ RubyVariables.WRAPPER(
       }
 
       encode_segment(segment: string): string {
-        return segment.replace(UriEncoderSegmentRegex, function (str) {
-          return encodeURIComponent(str);
-        });
+        return segment.replace(UriEncoderSegmentRegex, (str) =>
+          encodeURIComponent(str)
+        );
       }
 
       is_optional_node(node: NodeTypes): boolean {
@@ -529,7 +538,7 @@ RubyVariables.WRAPPER(
             default_options[part] = value;
           }
         }
-        const result = (...args: RouteParameter[]): string => {
+        const result = (...args: OptionalRouteParameter[]): string => {
           return this.build_route(
             parts,
             required_params,
@@ -562,31 +571,16 @@ RubyVariables.WRAPPER(
         return protocol + "://" + subdomain + hostname + port;
       }
 
-      has_location(): boolean {
-        return this.is_not_nullable(window) && !!window.location;
-      }
-
-      current_host(): string | null {
-        if (this.has_location()) {
-          return window.location.hostname;
-        } else {
-          return null;
-        }
+      current_host(): string {
+        return window?.location?.hostname || "";
       }
 
       current_protocol(): string {
-        if (this.has_location() && window.location.protocol !== "") {
-          return window.location.protocol.replace(/:$/, "");
-        } else {
-          return "http";
-        }
+        return window?.location?.protocol?.replace(/:$/, "") || "http";
       }
+
       current_port(): string {
-        if (this.has_location() && window.location.port !== "") {
-          return window.location.port;
-        } else {
-          return "";
-        }
+        return window?.location?.port || "";
       }
 
       is_object(value: unknown): value is Record<string, unknown> {
@@ -679,7 +673,7 @@ RubyVariables.WRAPPER(
       config: (): Configuration => {
         return Utils.config();
       },
-      serialize: (object: unknown): string => {
+      serialize: (object: Serializable): string => {
         return Utils.serialize(object);
       },
       ...RubyVariables.ROUTES_OBJECT,

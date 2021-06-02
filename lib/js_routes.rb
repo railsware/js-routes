@@ -15,13 +15,7 @@ class JsRoutes
     namespace: -> { defined?(Webpacker) ? nil : "Routes" },
     exclude: [],
     include: //,
-    file: -> do
-      webpacker_dir = Rails.root.join('app', 'javascript')
-      sprockets_dir = Rails.root.join('app','assets','javascripts')
-      sprockets_file = sprockets_dir.join('routes.js')
-      webpacker_file = webpacker_dir.join('routes.js')
-      !Dir.exist?(webpacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
-    end,
+    file: nil,
     prefix: -> { Rails.application.config.relative_url_root || "" },
     url_links: false,
     camel_case: false,
@@ -87,7 +81,22 @@ class JsRoutes
       esm? || dts?
     end
 
-    def file_name
+    def source_file
+      File.dirname(__FILE__) + "/" + default_file_name
+    end
+
+    def output_file
+      webpacker_dir = Rails.root.join('app', 'javascript')
+      sprockets_dir = Rails.root.join('app','assets','javascripts')
+      file_name = file || default_file_name
+      sprockets_file = sprockets_dir.join(file_name)
+      webpacker_file = webpacker_dir.join(file_name)
+      !Dir.exist?(webpacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
+    end
+
+    protected
+
+    def default_file_name
       dts? ? "routes.d.ts" : "routes.js"
     end
   end
@@ -109,12 +118,13 @@ class JsRoutes
       new(opts).generate
     end
 
-    def generate!(file_name=nil, opts = {})
-      if file_name.is_a?(Hash)
-        opts = file_name
-        file_name = opts[:file]
-      end
-      new(opts).generate!(file_name)
+    def generate!(file_name=nil, **opts)
+      new(file: file_name, **opts).generate!
+    end
+
+    def definitions!(file_name = nil, **opts)
+      file_name ||= configuration.file&.sub!(%r{\.(j|t)s\Z}, ".d.ts")
+      new(file: file_name, module_type: 'DTS', **opts).generate!
     end
 
     def json(string)
@@ -135,7 +145,7 @@ class JsRoutes
     if named_routes.to_a.empty? && application.respond_to?(:reload_routes!)
       application.reload_routes!
     end
-    content = File.read(File.dirname(__FILE__) + "/" + @configuration.file_name)
+    content = File.read(@configuration.source_file)
     if @configuration.dts?
       return content + routes_export
     end
@@ -146,21 +156,20 @@ class JsRoutes
     end + routes_export
   end
 
-  def generate!(file_name = nil)
-    # Some libraries like Devise do not yet loaded their routes so we will wait
-    # until initialization process finish
+  def generate!
+    # Some libraries like Devise did not load their routes yet
+    # so we will wait until initialization process finishes
     # https://github.com/railsware/js-routes/issues/7
     Rails.configuration.after_initialize do
-      file_name ||= self.class.configuration['file']
-      file_path = Rails.root.join(file_name)
-      js_content = generate
+      file_path = Rails.root.join(@configuration.output_file)
+      source_code = generate
 
       # We don't need to rewrite file if it already exist and have same content.
       # It helps asset pipeline or webpack understand that file wasn't changed.
-      next if File.exist?(file_path) && File.read(file_path) == js_content
+      next if File.exist?(file_path) && File.read(file_path) == source_code
 
       File.open(file_path, 'w') do |f|
-        f.write js_content
+        f.write source_code
       end
     end
   end
@@ -285,9 +294,14 @@ class JsRoutes
     end
 
     def definition_body
-      args = required_parts.map{|p| "#{apply_case(p)}: unknown"}
-      args << "options?: RouteOptions"
+      args = required_parts.map{|p| "#{apply_case(p)}: RequiredRouteParameter"}
+      args << "options?: #{optional_parts_type} & RouteOptions"
       "(\n#{args.join(",\n").indent(2)}\n) => string"
+    end
+
+    def optional_parts_type
+      @optional_parts_type ||=
+        "{" + optional_parts.map {|p| "#{p}?: OptionalRouteParameter"}.join(', ') + "}"
     end
 
     def arguments(absolute)
@@ -299,7 +313,7 @@ class JsRoutes
     end
 
     def base_name
-      @base_name ||= apply_case(parent_route&.name, route.name)
+      @base_name ||= parent_route ? [parent_route.name, route.name].join("_") : route.name
     end
 
     def parent_spec
@@ -316,7 +330,7 @@ class JsRoutes
 
     def helper_name(absolute)
       suffix = absolute ? :url : @configuration[:compact] ? nil : :path
-      suffix ? apply_case(base_name, suffix) : base_name
+      apply_case(base_name, suffix)
     end
 
     def documentation
@@ -333,6 +347,10 @@ JS
 
     def required_parts
       route.required_parts
+    end
+
+    def optional_parts
+      route.path.optional_names
     end
 
     protected

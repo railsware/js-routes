@@ -20,8 +20,10 @@ gem "js-routes"
 
 Run:
 
-```
+``` sh
 rake js:routes 
+# OR for typescript support
+rake js:routes:typescript
 ```
 
 Make routes available globally in `app/javascript/packs/application.js`: 
@@ -91,6 +93,14 @@ import * as Routes from 'routes.js.erb';
 window.Routes = Routes;
 ```
 
+#### Typescript Definitions
+
+JsRoutes has typescript support out of the box. In order to generate typscript definitions file (aka `routes.d.ts`) you can call:
+
+``` ruby
+JsRotues.definitions!
+```
+
 #### Sprockets (Deprecated)
 
 If you are using [Sprockets](https://github.com/rails/sprockets-rails) you may configure js-routes in the following way.
@@ -147,7 +157,7 @@ Routes.config(); // current config
 Options to configure JavaScript file generator. These options are only available in Ruby context but not JavaScript.
 
 * `module_type` - JavaScript module type for generated code. [Article](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm)
-  * Options: `ESM`, `UMD`, `CJS`, `AMD`, `nil`.
+  * Options: `ESM`, `UMD`, `CJS`, `AMD`, `DTS`, `nil`.
   * Default: `ESM`
   * `nil` option can be used in case you don't want generated code to export anything.
 * `documentation` - specifies if each route should be annotated with [JSDoc](https://jsdoc.app/) comment
