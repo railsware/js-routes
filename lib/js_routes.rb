@@ -313,7 +313,8 @@ class JsRoutes
     end
 
     def base_name
-      @base_name ||= parent_route ? [parent_route.name, route.name].join("_") : route.name
+      @base_name ||= parent_route ?
+        [parent_route.name, route.name].join('_') : route.name
     end
 
     def parent_spec
