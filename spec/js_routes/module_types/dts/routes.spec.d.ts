@@ -96,15 +96,15 @@ export const serialize: RouterExposedMethods["serialize"];
 /**
  * Generates rails route to
  * /inboxes/:inbox_id/messages/:message_id/attachments/:id(.:format)
- * @param {any} inboxId
- * @param {any} messageId
+ * @param {any} inbox_id
+ * @param {any} message_id
  * @param {any} id
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inboxMessageAttachmentPath: (
-  inboxId: RequiredRouteParameter,
-  messageId: RequiredRouteParameter,
+export const inbox_message_attachment_path: (
+  inbox_id: RequiredRouteParameter,
+  message_id: RequiredRouteParameter,
   id: RequiredRouteParameter,
   options?: { format?: OptionalRouteParameter } & RouteOptions
 ) => string;
@@ -115,8 +115,26 @@ export const inboxMessageAttachmentPath: (
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inboxesPath: (
+export const inboxes_path: (
   options?: { format?: OptionalRouteParameter } & RouteOptions
+) => string;
+
+/**
+ * Generates rails route to
+ * (/sep1/:first_optional)/sep2/:second_required/sep3/:third_required(/:forth_optional)(.:format)
+ * @param {any} second_required
+ * @param {any} third_required
+ * @param {object | undefined} options
+ * @returns {string} route path
+ */
+export const thing_deep_path: (
+  second_required: RequiredRouteParameter,
+  third_required: RequiredRouteParameter,
+  options?: {
+    first_optional?: OptionalRouteParameter;
+    forth_optional?: OptionalRouteParameter;
+    format?: OptionalRouteParameter;
+  } & RouteOptions
 ) => string;
 
 // By some reason this line prevents all types in a file

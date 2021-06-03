@@ -35,13 +35,14 @@ describe JsRoutes, "compatibility with DTS"  do
       expect(stderr.read).to eq("")
       expect(stdout.read).to eq("")
     end
+  end
 
-    context "when camel case is enabled" do
-      let(:extra_options) { {camel_case: true} }
+  context "when camel case is enabled" do
+    let(:extra_options) { {camel_case: true} }
 
-      it "camelizes route name and arguments" do
+    it "camelizes route name and arguments" do
 
-    expect(generated_js).to include(<<-DOC.rstrip)
+      expect(generated_js).to include(<<-DOC.rstrip)
 /**
  * Generates rails route to
  * /inboxes/:inbox_id/messages/:message_id/attachments/:id(.:format)
@@ -56,10 +57,8 @@ export const inboxMessageAttachmentPath: (
   messageId: RequiredRouteParameter,
   id: RequiredRouteParameter,
   options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string
+) => string;
 DOC
-      end
-
     end
   end
 
