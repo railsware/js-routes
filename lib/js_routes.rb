@@ -146,14 +146,14 @@ class JsRoutes
       application.reload_routes!
     end
     content = File.read(@configuration.source_file)
-    if @configuration.dts?
-      return content + routes_export
-    end
 
-    js_variables.inject(content) do |js, (key, value)|
-      js.gsub!("RubyVariables.#{key}", value.to_s) ||
+    if !@configuration.dts?
+      content = js_variables.inject(content) do |js, (key, value)|
+        js.gsub!("RubyVariables.#{key}", value.to_s) ||
         raise("Missing key #{key} in JS template")
-    end + routes_export
+      end
+    end
+    content + routes_export + prevent_types_export
   end
 
   def generate!
@@ -179,7 +179,7 @@ class JsRoutes
   def js_variables
     {
       'GEM_VERSION'         => JsRoutes::VERSION,
-      'ROUTES_OBJECT'              => routes_object,
+      'ROUTES_OBJECT'       => routes_object,
       'RAILS_VERSION'       => ActionPack.version,
       'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
 
@@ -228,8 +228,16 @@ class JsRoutes
   def routes_export
     return "" unless @configuration.modern?
     [*static_exports, *routes_list].map do |comment, name, body|
-      "#{comment}export const #{name}#{export_separator}#{body};"
-    end.join("\n\n")
+      "#{comment}export const #{name}#{export_separator}#{body};\n\n"
+    end.join
+  end
+
+  def prevent_types_export
+    @configuration.dts? ? <<-JS : ""
+// By some reason this line prevents all types in a file
+// from being automatically exported
+export {};
+    JS
   end
 
   def export_separator

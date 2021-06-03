@@ -19,8 +19,8 @@ type RouteParameters = Record<string, QueryRouteParameter>;
 
 type Serializable = Record<string, unknown>;
 type Serializer = (value: Serializable) => string;
-type RouteHelper = {
-  (...args: OptionalRouteParameter[]): string;
+type RouteHelperFunction = (...args: OptionalRouteParameter[]) => string;
+type RouteHelper<T extends Function = RouteHelperFunction> = T & {
   requiredParams(): string[];
   toString(): string;
 };

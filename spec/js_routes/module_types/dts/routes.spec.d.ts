@@ -27,8 +27,10 @@ declare type QueryRouteParameter =
 declare type RouteParameters = Record<string, QueryRouteParameter>;
 declare type Serializable = Record<string, unknown>;
 declare type Serializer = (value: Serializable) => string;
-declare type RouteHelper = {
-  (...args: OptionalRouteParameter[]): string;
+declare type RouteHelperFunction = (
+  ...args: OptionalRouteParameter[]
+) => string;
+declare type RouteHelper<T extends Function = RouteHelperFunction> = T & {
   requiredParams(): string[];
   toString(): string;
 };
@@ -94,15 +96,15 @@ export const serialize: RouterExposedMethods["serialize"];
 /**
  * Generates rails route to
  * /inboxes/:inbox_id/messages/:message_id/attachments/:id(.:format)
- * @param {any} inbox_id
- * @param {any} message_id
+ * @param {any} inboxId
+ * @param {any} messageId
  * @param {any} id
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inbox_message_attachment_path: (
-  inbox_id: RequiredRouteParameter,
-  message_id: RequiredRouteParameter,
+export const inboxMessageAttachmentPath: (
+  inboxId: RequiredRouteParameter,
+  messageId: RequiredRouteParameter,
   id: RequiredRouteParameter,
   options?: { format?: OptionalRouteParameter } & RouteOptions
 ) => string;
@@ -113,6 +115,10 @@ export const inbox_message_attachment_path: (
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inboxes_path: (
+export const inboxesPath: (
   options?: { format?: OptionalRouteParameter } & RouteOptions
 ) => string;
+
+// By some reason this line prevents all types in a file
+// from being automatically exported
+export {};

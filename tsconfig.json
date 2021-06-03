@@ -6,7 +6,7 @@
     "sourceMap": true,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "strictNullChecks": true,
     "noImplicitAny": true,
     "noImplicitThis": true,

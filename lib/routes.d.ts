@@ -27,8 +27,10 @@ declare type QueryRouteParameter =
 declare type RouteParameters = Record<string, QueryRouteParameter>;
 declare type Serializable = Record<string, unknown>;
 declare type Serializer = (value: Serializable) => string;
-declare type RouteHelper = {
-  (...args: OptionalRouteParameter[]): string;
+declare type RouteHelperFunction = (
+  ...args: OptionalRouteParameter[]
+) => string;
+declare type RouteHelper<T extends Function = RouteHelperFunction> = T & {
   requiredParams(): string[];
   toString(): string;
 };

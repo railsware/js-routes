@@ -37,6 +37,28 @@ describe JsRoutes, "compatibility with DTS"  do
     end
 
     context "when camel case is enabled" do
+      let(:extra_options) { {camel_case: true} }
+
+      it "camelizes route name and arguments" do
+
+    expect(generated_js).to include(<<-DOC.rstrip)
+/**
+ * Generates rails route to
+ * /inboxes/:inbox_id/messages/:message_id/attachments/:id(.:format)
+ * @param {any} inboxId
+ * @param {any} messageId
+ * @param {any} id
+ * @param {object | undefined} options
+ * @returns {string} route path
+ */
+export const inboxMessageAttachmentPath: (
+  inboxId: RequiredRouteParameter,
+  messageId: RequiredRouteParameter,
+  id: RequiredRouteParameter,
+  options?: {format?: OptionalRouteParameter} & RouteOptions
+) => string
+DOC
+      end
 
     end
   end
@@ -74,6 +96,9 @@ DOC
 
   it "exports utility methods" do
     expect(generated_js).to include("export const serialize: RouterExposedMethods['serialize'];")
+  end
+  it "prevents all types from automatic export" do
+    expect(generated_js).to include("export {};")
   end
 
   describe "compiled javascript asset" do
