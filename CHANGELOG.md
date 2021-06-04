@@ -1,5 +1,9 @@
 ## master
 
+## v2.0.6
+
+* Disable `namespace` option default for all envs [#278](https://github.com/railsware/js-routes/issues/278)
+
 ## v2.0.5
 
 * Fixed backward compatibility issue [#276](https://github.com/railsware/js-routes/issues/276)
