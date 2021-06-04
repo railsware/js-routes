@@ -12,7 +12,7 @@ class JsRoutes
   #
 
   DEFAULTS = {
-    namespace: -> { defined?(Webpacker) ? nil : "Routes" },
+    namespace: nil,
     exclude: [],
     include: //,
     file: -> do
