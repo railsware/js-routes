@@ -8,6 +8,7 @@ Setting | Old | New
 --- | --- | ---
 module\_type | nil | ESM 
 namespace | Routes | nil
+documentation | false | true
 
 This is more optimized setup for WebPacker. You can restore the old configuration like this:
 
