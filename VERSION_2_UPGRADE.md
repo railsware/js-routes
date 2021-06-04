@@ -10,12 +10,16 @@ module\_type | nil | ESM
 namespace | Routes | nil
 documentation | false | true
 
-This is more optimized setup for WebPacker. You can restore the old configuration like this:
+This is more optimized setup for WebPacker. 
+New version of js-routes generates function comment in the [JSDoc](https://jsdoc.app) format.
+
+You can restore the old configuration like this:
 
 ``` ruby
 JsRoutes.setup do |config|
   config.module_type = nil
   config.namespace = 'Routes'
+  config.documentation = false
 end
 ```
 
@@ -48,15 +52,3 @@ try {
   }
 }
 ```
-
-### JSDoc comment format
-
-New version of js-routes generates function comment in the [JSDoc](https://jsdoc.app) format.
-If you have any problems with that disable the annotation:
-
-``` ruby
-JsRoutes.setup do |config|
-  config.documentation = false
-end
-```
-
