@@ -3,87 +3,70 @@
  * Based on Rails RubyVariables.RAILS_VERSION routes of RubyVariables.APP_CLASS
  */
 declare type BaseRouteParameter = string | boolean | Date | number;
-declare type MethodRouteParameter =
-  | BaseRouteParameter
-  | (() => BaseRouteParameter);
-declare type ModelRouteParameter =
-  | {
-      id: MethodRouteParameter;
-    }
-  | {
-      to_param: MethodRouteParameter;
-    }
-  | {
-      toParam: MethodRouteParameter;
-    };
+declare type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
+declare type ModelRouteParameter = {
+    id: MethodRouteParameter;
+} | {
+    to_param: MethodRouteParameter;
+} | {
+    toParam: MethodRouteParameter;
+};
 declare type RequiredRouteParameter = BaseRouteParameter | ModelRouteParameter;
 declare type OptionalRouteParameter = undefined | null | RequiredRouteParameter;
-declare type QueryRouteParameter =
-  | OptionalRouteParameter
-  | QueryRouteParameter[]
-  | {
-      [k: string]: QueryRouteParameter;
-    };
+declare type QueryRouteParameter = OptionalRouteParameter | QueryRouteParameter[] | {
+    [k: string]: QueryRouteParameter;
+};
 declare type RouteParameters = Record<string, QueryRouteParameter>;
 declare type Serializable = Record<string, unknown>;
 declare type Serializer = (value: Serializable) => string;
-declare type RouteHelperFunction = (
-  ...args: OptionalRouteParameter[]
-) => string;
+declare type RouteHelperFunction = (...args: OptionalRouteParameter[]) => string;
 declare type RouteHelper<T extends Function = RouteHelperFunction> = T & {
-  requiredParams(): string[];
-  toString(): string;
+    requiredParams(): string[];
+    toString(): string;
 };
 declare type RouteHelpers = Record<string, RouteHelper>;
 declare type Configuration = {
-  prefix: string;
-  default_url_options: RouteParameters;
-  special_options_key: string;
-  serializer: Serializer;
+    prefix: string;
+    default_url_options: RouteParameters;
+    special_options_key: string;
+    serializer: Serializer;
 };
 declare type Optional<T> = {
-  [P in keyof T]?: T[P] | null;
+    [P in keyof T]?: T[P] | null;
 };
 interface RouterExposedMethods {
-  config(): Configuration;
-  configure(arg: Partial<Configuration>): Configuration;
-  serialize: Serializer;
+    config(): Configuration;
+    configure(arg: Partial<Configuration>): Configuration;
+    serialize: Serializer;
 }
 declare type KeywordUrlOptions = Optional<{
-  host: string;
-  protocol: string;
-  subdomain: string;
-  port: string | number;
-  anchor: string;
-  trailing_slash: boolean;
+    host: string;
+    protocol: string;
+    subdomain: string;
+    port: string | number;
+    anchor: string;
+    trailing_slash: boolean;
 }>;
 declare type RouteOptions = KeywordUrlOptions & RouteParameters;
-declare type PartsTable = Record<
-  string,
-  {
+declare type PartsTable = Record<string, {
     r?: boolean;
     d?: OptionalRouteParameter;
-  }
->;
+}>;
 declare type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS";
 declare const RubyVariables: {
-  PREFIX: string;
-  DEPRECATED_GLOBBING_BEHAVIOR: boolean;
-  SPECIAL_OPTIONS_KEY: string;
-  DEFAULT_URL_OPTIONS: RouteParameters;
-  SERIALIZER: Serializer;
-  NAMESPACE: string;
-  ROUTES_OBJECT: RouteHelpers;
-  MODULE_TYPE: ModuleType | null;
-  WRAPPER: <T>(callback: T) => T;
+    PREFIX: string;
+    DEPRECATED_GLOBBING_BEHAVIOR: boolean;
+    SPECIAL_OPTIONS_KEY: string;
+    DEFAULT_URL_OPTIONS: RouteParameters;
+    SERIALIZER: Serializer;
+    NAMESPACE: string;
+    ROUTES_OBJECT: RouteHelpers;
+    MODULE_TYPE: ModuleType | null;
+    WRAPPER: <T>(callback: T) => T;
 };
-declare const define:
-  | undefined
-  | (((arg: unknown[], callback: () => unknown) => void) & {
-      amd?: unknown;
-    });
-declare const module:
-  | {
-      exports: any;
-    }
-  | undefined;
+declare const define: undefined | (((arg: unknown[], callback: () => unknown) => void) & {
+    amd?: unknown;
+});
+declare const module: {
+    exports: any;
+} | undefined;

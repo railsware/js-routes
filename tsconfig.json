@@ -3,7 +3,7 @@
     "target": "es2019",
     "lib": ["es2020", "dom"],
     "module": "commonjs",
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": false,
