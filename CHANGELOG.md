@@ -1,5 +1,11 @@
 ## master
 
+## v2.0.7
+
+* Remove source map annotation from JS file. Fixes [#277](https://github.com/railsware/js-routes/issues/277)
+  * Generated file is not minified, so it is better to use app side bundler/compressor for source maps
+
+
 ## v2.0.6
 
 * Disable `namespace` option default for all envs [#278](https://github.com/railsware/js-routes/issues/278)
