@@ -8,7 +8,7 @@ require 'js-routes'
 require 'active_support/core_ext/hash/slice'
 
 unless ENV['TRAVIS_CI']
-  code = system("yarn tsc")
+  code = system("yarn build")
   unless code
     exit(1)
   end

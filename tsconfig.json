@@ -4,7 +4,7 @@
     "lib": ["es2020", "dom"],
     "module": "commonjs",
     "outDir": "lib",
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,

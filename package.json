@@ -21,6 +21,7 @@
     "prettier": "^2.2.1"
   },
   "scripts": {
+    "build": "tsc && yarn lint:fix",
     "lint:fix": "yarn eslint --fix && yarn prettier --write lib/routes.ts",
     "postinstall": "yarn husky-upgrade"
   },
@@ -30,7 +31,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": ["yarn lint:fix" ]
+    "./lib/routes.ts": ["yarn lint:fix" ]
   }
 
 }
