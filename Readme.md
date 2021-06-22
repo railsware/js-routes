@@ -314,7 +314,7 @@ import {
 } from 'routes.js.erb'
 ```
 
-Such import structure allows for moddern packers like [Webpack](https://webpack.js.org/) to only include explicitly imported routes into JS bundle file.
+Such import structure allows for moddern JS bundlers like [Webpack](https://webpack.js.org/) to only include explicitly imported routes into JS bundle file.
 See [Tree Shaking](https://webpack.js.org/guides/tree-shaking/) for more information.
 
 ### Exclude option
@@ -327,18 +327,6 @@ Split your routes into multiple files related to each section of your website li
 // app-routes.js.erb
 <%= JsRoutes.generate(exclude: /^admin_/)
 ```
-
-## JsRoutes and Heroku
-
-When using this setup on Heroku, it is impossible to use the asset pipeline. You should use the "Very Advanced Setup" schema in this case.
-
-For example create routes.js.erb in assets folder with needed content:
-
-``` erb
-<%= JsRoutes.generate(options) %>
-```
-
-This should just work.
 
 ## Advantages over alternatives
 
