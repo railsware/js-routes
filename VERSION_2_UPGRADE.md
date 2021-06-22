@@ -6,7 +6,7 @@ The default setting are now changed:
 
 Setting | Old | New 
 --- | --- | ---
-module\_type | nil | ESM 
+module\_type | UMD | ESM 
 namespace | Routes | nil
 documentation | false | true
 
@@ -17,13 +17,27 @@ You can restore the old configuration like this:
 
 ``` ruby
 JsRoutes.setup do |config|
-  config.module_type = nil
+  config.module_type = 'UMD'
   config.namespace = 'Routes'
   config.documentation = false
 end
 ```
 
-However, [ESM+Webpacker](/Readme.md#webpacker) upgrade is recommended. 
+New version of JsRoutes doesn't try to guess your javascript environment module system because JS has generated a ton of legacy module systems in the past. 
+[ESM+Webpacker](/Readme.md#webpacker) upgrade is recommended. 
+
+
+However, if you don't want to follow that pass, specify `module_type` configuration option instead.
+Here are supported values:
+
+* CJS
+* UMD
+* AMD
+* ESM
+* nil
+
+[Explaination Article](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm)
+
 
 ### `required_params` renamed
 
