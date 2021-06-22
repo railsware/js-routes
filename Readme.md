@@ -314,6 +314,9 @@ import {
 } from 'routes.js.erb'
 ```
 
+Such import structure allows for moddern packers like [Webpack](https://webpack.js.org/) to only include explicitly imported routes into JS bundle file.
+See [Tree Shaking](https://webpack.js.org/guides/tree-shaking/) for more information.
+
 ### Exclude option
 
 Split your routes into multiple files related to each section of your website like:
