@@ -233,7 +233,8 @@ class JsRoutes
   end
 
   def prevent_types_export
-    @configuration.dts? ? <<-JS : ""
+    return "" unless @configuration.dts?
+    <<-JS
 // By some reason this line prevents all types in a file
 // from being automatically exported
 export {};
