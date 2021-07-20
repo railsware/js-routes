@@ -159,6 +159,7 @@ Options to configure JavaScript file generator. These options are only available
   * Default: `[]`
   * The regexp applies only to the name before the `_path` suffix, eg: you want to match exactly `settings_path`, the regexp should be `/^settings$/`
 * `namespace` - global object used to access routes.
+  * Only available if `module_type` option is set to `nil`.
   * Supports nested namespace like `MyProject.routes`
   * Default: `nil`
 * `camel_case` - specifies if route helpers should be generated in camel case instead of underscore case.

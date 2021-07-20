@@ -37,7 +37,7 @@ declare type PartsTable = Record<string, {
     r?: boolean;
     d?: unknown;
 }>;
-declare type ModuleType = "CJS" | "AMD" | "UMD" | "ESM";
+declare type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "NIL";
 declare const RubyVariables: {
     PREFIX: string;
     DEPRECATED_GLOBBING_BEHAVIOR: boolean;
@@ -46,7 +46,7 @@ declare const RubyVariables: {
     SERIALIZER: Serializer;
     NAMESPACE: string;
     ROUTES_OBJECT: RouteHelpers;
-    MODULE_TYPE: ModuleType | null;
+    MODULE_TYPE: ModuleType;
     WRAPPER: <T>(callback: T) => T;
 };
 declare const define: undefined | (((arg: unknown[], callback: () => unknown) => void) & {
