@@ -54,7 +54,7 @@ type RouteOptions = KeywordUrlOptions & RouteParameters;
 
 type PartsTable = Record<string, { r?: boolean; d?: OptionalRouteParameter }>;
 
-type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS";
+type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
 
 declare const RubyVariables: {
   PREFIX: string;
@@ -64,7 +64,7 @@ declare const RubyVariables: {
   SERIALIZER: Serializer;
   NAMESPACE: string;
   ROUTES_OBJECT: RouteHelpers;
-  MODULE_TYPE: ModuleType | null;
+  MODULE_TYPE: ModuleType;
   WRAPPER: <T>(callback: T) => T;
 };
 
@@ -109,25 +109,35 @@ RubyVariables.WRAPPER(
     const Root = that;
     type ModuleDefinition = {
       define: (routes: RouterExposedMethods) => void;
-      support: () => boolean;
+      isSupported: () => boolean;
     };
     const ModuleReferences: Record<ModuleType, ModuleDefinition> = {
       CJS: {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        define: (routes) => (module!.exports = routes),
-        support: () => typeof module === "object",
+        define(routes) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          module!.exports = routes;
+        },
+        isSupported() {
+          return typeof module === "object";
+        },
       },
       AMD: {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        define: (routes) => define!([], () => routes),
-        support: () => typeof define === "function" && !!define.amd,
+        define(routes) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          define!([], function () {
+            return routes;
+          });
+        },
+        isSupported() {
+          return typeof define === "function" && !!define.amd;
+        },
       },
       UMD: {
-        define: (routes) => {
-          if (ModuleReferences.AMD.support()) {
+        define(routes) {
+          if (ModuleReferences.AMD.isSupported()) {
             ModuleReferences.AMD.define(routes);
           } else {
-            if (ModuleReferences.CJS.support()) {
+            if (ModuleReferences.CJS.isSupported()) {
               try {
                 ModuleReferences.CJS.define(routes);
               } catch (error) {
@@ -136,16 +146,38 @@ RubyVariables.WRAPPER(
             }
           }
         },
-        support: () =>
-          ModuleReferences.AMD.support() || ModuleReferences.CJS.support(),
+        isSupported() {
+          return (
+            ModuleReferences.AMD.isSupported() ||
+            ModuleReferences.CJS.isSupported()
+          );
+        },
       },
       ESM: {
-        define: () => null,
-        support: () => true,
+        define() {
+          // Module can only be defined using ruby code generation
+        },
+        isSupported() {
+          // Its impossible to check if "export" keyword is supported
+          return true;
+        },
+      },
+      NIL: {
+        define(routes) {
+          Utils.namespace(Root, RubyVariables.NAMESPACE, routes);
+        },
+        isSupported() {
+          return !!Root;
+        },
       },
       DTS: {
-        define: () => null,
-        support: () => true,
+        // Acts the same as ESM
+        define(routes) {
+          ModuleReferences.ESM.define(routes);
+        },
+        isSupported() {
+          return ModuleReferences.ESM.isSupported();
+        },
       },
     };
 
@@ -158,9 +190,6 @@ RubyVariables.WRAPPER(
         this.name = ParametersMissing.name;
       }
     }
-
-    const DeprecatedGlobbingBehavior =
-      RubyVariables.DEPRECATED_GLOBBING_BEHAVIOR;
 
     const UriEncoderSegmentRegex = /[^a-zA-Z0-9\-._~!$&'()*+,;=:@]/g;
 
@@ -509,7 +538,9 @@ RubyVariables.WRAPPER(
           value = value.join("/");
         }
         const result = this.path_identifier(value as any);
-        return DeprecatedGlobbingBehavior ? result : encodeURI(result);
+        return RubyVariables.DEPRECATED_GLOBBING_BEHAVIOR
+          ? result
+          : encodeURI(result);
       }
 
       get_prefix(): string {
@@ -631,7 +662,7 @@ RubyVariables.WRAPPER(
       }
 
       is_module_supported(name: ModuleType): boolean {
-        return ModuleReferences[name].support();
+        return ModuleReferences[name].isSupported();
       }
 
       ensure_module_supported(name: ModuleType): void {
@@ -640,13 +671,7 @@ RubyVariables.WRAPPER(
         }
       }
 
-      define_module(
-        name: ModuleType | null,
-        module: RouterExposedMethods
-      ): void {
-        if (!name) {
-          return;
-        }
+      define_module(name: ModuleType, module: RouterExposedMethods): void {
         this.ensure_module_supported(name);
         ModuleReferences[name].define(module);
       }
@@ -679,11 +704,7 @@ RubyVariables.WRAPPER(
       ...RubyVariables.ROUTES_OBJECT,
     };
 
-    Utils.namespace(Root, RubyVariables.NAMESPACE, result);
-
-    if (RubyVariables.MODULE_TYPE) {
-      Utils.define_module(RubyVariables.MODULE_TYPE, result);
-    }
+    Utils.define_module(RubyVariables.MODULE_TYPE, result);
     return result;
   }
 )(this);

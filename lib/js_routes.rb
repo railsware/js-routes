@@ -54,6 +54,8 @@ class JsRoutes
         value = value.call if value.is_a?(Proc)
         send(:"#{attribute}=", value)
       end
+      normalize
+      verify
       self
     end
 
@@ -70,7 +72,7 @@ class JsRoutes
     end
 
     def esm?
-      self.module_type === 'ESM'
+      module_type === 'ESM'
     end
 
     def dts?
@@ -98,6 +100,16 @@ class JsRoutes
 
     def default_file_name
       dts? ? "routes.d.ts" : "routes.js"
+    end
+
+    def normalize
+      self.module_type = module_type&.upcase || 'NIL'
+    end
+
+    def verify
+      if module_type != 'NIL' && namespace
+        raise "JsRoutes namespace option can only be used if module_type is nil"
+      end
     end
   end
 
@@ -299,7 +311,7 @@ export {};
 
     def body(absolute)
       @configuration.dts? ?
-        definition_body : "__jsr.r(#{arguments(absolute).join(', ')})"
+        definition_body : "__jsr.r(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
     end
 
     def definition_body
@@ -313,8 +325,10 @@ export {};
         "{" + optional_parts.map {|p| "#{p}?: OptionalRouteParameter"}.join(', ') + "}"
     end
 
+    protected
+
     def arguments(absolute)
-      absolute ? base_arguments + [json(true)] : base_arguments
+      absolute ? base_arguments + [true] : base_arguments
     end
 
     def match_configuration?
@@ -363,10 +377,11 @@ JS
       route.path.optional_names
     end
 
-    protected
-
     def base_arguments
-      return @base_arguments if defined?(@base_arguments)
+      @base_arguments ||= [parts_table, serialize(spec, parent_spec)]
+    end
+
+    def parts_table
       parts_table = {}
       route.parts.each do |part, hash|
         parts_table[part] ||= {}
@@ -383,11 +398,7 @@ JS
           parts_table[part][:d] = value
         end
       end
-      @base_arguments = [
-        parts_table, serialize(spec, parent_spec)
-      ].map do |argument|
-        json(argument)
-      end
+      parts_table
     end
 
     def documentation_params

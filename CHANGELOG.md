@@ -1,5 +1,9 @@
 ## master
 
+## v2.0.8
+
+* Forbid usage of `namespace` option if `module_type` is not `nil`. [#281](https://github.com/railsware/js-routes/issues/281).
+
 ## v2.0.7
 
 * Remove source map annotation from JS file. Fixes [#277](https://github.com/railsware/js-routes/issues/277)
