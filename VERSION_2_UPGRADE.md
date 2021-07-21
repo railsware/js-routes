@@ -2,32 +2,10 @@
 
 ### Using ESM module by default
 
-The default setting are now changed:
-
-Setting | Old | New 
---- | --- | ---
-module\_type | UMD | ESM 
-namespace | Routes | nil
-documentation | false | true
-
-This is more optimized setup for WebPacker. 
-New version of js-routes generates function comment in the [JSDoc](https://jsdoc.app) format.
-
-You can restore the old configuration like this:
-
-``` ruby
-JsRoutes.setup do |config|
-  config.module_type = 'UMD'
-  config.namespace = 'Routes'
-  config.documentation = false
-end
-```
-
 New version of JsRoutes doesn't try to guess your javascript environment module system because JS has generated a ton of legacy module systems in the past. 
 [ESM+Webpacker](/Readme.md#webpacker) upgrade is recommended. 
 
-
-However, if you don't want to follow that pass, specify `module_type` configuration option instead.
+However, if you don't want to follow that pass, specify `module_type` configuration option instead based on module system available in your JS environment.
 Here are supported values:
 
 * CJS
@@ -38,6 +16,26 @@ Here are supported values:
 
 [Explaination Article](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm)
 
+If you don't want to use any JS module system and make routes available via a **global variable**, specify `nil` as a `module_type` and use `namespace` option:
+
+``` ruby
+JsRoutes.setup do |config|
+  config.module_type = nil
+  config.namespace = "Routes"
+end
+```
+
+### JSDoc comment
+
+New version of js-routes generates function comment in the [JSDoc](https://jsdoc.app) format.
+If you have any problems with that, you can disable it like this:
+
+
+``` ruby
+JsRoutes.setup do |config|
+  config.documentation = false
+end
+```
 
 ### `required_params` renamed
 

@@ -38,8 +38,7 @@ class JsRoutes
         value = value.call if value.is_a?(Proc)
         send(:"#{attribute}=", value)
       end
-      normalize
-      verify
+      normalize_and_verify
       self
     end
 
@@ -80,6 +79,11 @@ class JsRoutes
       !Dir.exist?(webpacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
     end
 
+    def normalize_and_verify
+      normalize
+      verify
+    end
+
     protected
 
     def default_file_name
@@ -104,6 +108,7 @@ class JsRoutes
   class << self
     def setup(&block)
       configuration.tap(&block) if block
+      configuration.normalize_and_verify
     end
 
     def configuration
