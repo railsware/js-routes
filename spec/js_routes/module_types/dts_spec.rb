@@ -29,12 +29,12 @@ describe JsRoutes, "compatibility with DTS"  do
       File.write(file_name, generated_js)
     end
 
-    it "has no compile errors" do
+    it "has no compile errors", :slow do
       command = "yarn tsc --strict --noEmit -p spec/tsconfig.json"
       stdout, stderr, status = Open3.capture3(command)
-      expect(status).to eq(0)
       expect(stderr).to eq("")
       expect(stdout).to include("Done in ")
+      expect(status).to eq(0)
     end
   end
 
@@ -97,6 +97,7 @@ DOC
   it "exports utility methods" do
     expect(generated_js).to include("export const serialize: RouterExposedMethods['serialize'];")
   end
+
   it "prevents all types from automatic export" do
     expect(generated_js).to include("export {};")
   end

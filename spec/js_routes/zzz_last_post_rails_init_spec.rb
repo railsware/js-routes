@@ -5,7 +5,7 @@
 require 'spec_helper'
 require "fileutils"
 
-describe "after Rails initialization" do
+describe "after Rails initialization", :slow do
   NAME = Rails.root.join('app', 'assets', 'javascripts', 'routes.js').to_s
 
   def sprockets_v3?
@@ -122,7 +122,7 @@ describe "after Rails initialization" do
   end
 end
 
-describe "JSRoutes thread safety" do
+describe "JSRoutes thread safety", :slow do
   before do
     begin
       Rails.application.initialize!

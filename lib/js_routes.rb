@@ -7,42 +7,26 @@ require 'active_support/core_ext/string/indent'
 
 class JsRoutes
 
-  #
-  # OPTIONS
-  #
+  class Configuration
+    DEFAULTS = {
+      namespace: nil,
+      exclude: [],
+      include: //,
+      file: nil,
+      prefix: -> { Rails.application.config.relative_url_root || "" },
+      url_links: false,
+      camel_case: false,
+      default_url_options: {},
+      compact: false,
+      serializer: nil,
+      special_options_key: "_options",
+      application: -> { Rails.application },
+      module_type: 'ESM',
+      documentation: true,
+    } #:nodoc:
 
-  DEFAULTS = {
-    namespace: nil,
-    exclude: [],
-    include: //,
-    file: nil,
-    prefix: -> { Rails.application.config.relative_url_root || "" },
-    url_links: false,
-    camel_case: false,
-    default_url_options: {},
-    compact: false,
-    serializer: nil,
-    special_options_key: "_options",
-    application: -> { Rails.application },
-    module_type: 'ESM',
-    documentation: true,
-  } #:nodoc:
+    attr_accessor(*DEFAULTS.keys)
 
-  NODE_TYPES = {
-    GROUP: 1,
-    CAT: 2,
-    SYMBOL: 3,
-    OR: 4,
-    STAR: 5,
-    LITERAL: 6,
-    SLASH: 7,
-    DOT: 8
-  } #:nodoc:
-
-  FILTERED_DEFAULT_PARTS = [:controller, :action] #:nodoc:
-  URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain] #:nodoc:
-
-  class Configuration < Struct.new(*DEFAULTS.keys)
     def initialize(attributes = nil)
       assign(DEFAULTS)
       return unless attributes
@@ -290,6 +274,19 @@ export {};
   end
 
   class JsRoute #:nodoc:
+    FILTERED_DEFAULT_PARTS = [:controller, :action]
+    URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain]
+    NODE_TYPES = {
+      GROUP: 1,
+      CAT: 2,
+      SYMBOL: 3,
+      OR: 4,
+      STAR: 5,
+      LITERAL: 6,
+      SLASH: 7,
+      DOT: 8
+    }
+
     attr_reader :configuration, :route, :parent_route
 
     def initialize(configuration, route, parent_route = nil)
@@ -328,7 +325,7 @@ export {};
     protected
 
     def arguments(absolute)
-      absolute ? base_arguments + [true] : base_arguments
+      absolute ? [*base_arguments, true] : base_arguments
     end
 
     def match_configuration?
