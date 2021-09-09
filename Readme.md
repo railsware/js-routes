@@ -108,7 +108,7 @@ JsRoutes.definitions!
 Or create an automatic updates file at `app/javascript/routes.d.ts.erb`:
 
 ``` erb
-<%= JsRoutes.defintions %>
+<%= JsRoutes.definitions %>
 ```
 
 #### Sprockets (Deprecated)
