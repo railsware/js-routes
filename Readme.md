@@ -26,18 +26,20 @@ rake js:routes
 rake js:routes:typescript
 ```
 
+
+Individual routes can be imported using:
+
+``` javascript
+import {edit_post_path, posts_path} from 'routes';
+console.log(posts_path({format: 'json'})) // => "/posts.json"
+console.log(edit_post_path(1)) // => "/posts/1/edit"
+```
+
 Make routes available globally in `app/javascript/packs/application.js`: 
 
 ``` javascript
 import * as Routes from 'routes';
 window.Routes = Routes;
-```
-
-Individual routes can be imported using:
-
-``` javascript
-import {edit_post_path} from 'routes';
-console.log(edit_post_path(1))
 ```
 
 **Note**: that this setup requires `rake js:routes` to be run each time routes file is updated.
@@ -98,7 +100,13 @@ window.Routes = Routes;
 JsRoutes has typescript support out of the box. In order to generate typscript definitions file (aka `routes.d.ts`) you can call:
 
 ``` ruby
-JsRotues.definitions!
+JsRoutes.definitions!
+```
+
+Or create an automatic updates file at `app/javascript/routes.d.ts.erb`:
+
+``` erb
+<%= JsRoutes.defintions %>
 ```
 
 #### Sprockets (Deprecated)
@@ -334,9 +342,9 @@ Split your routes into multiple files related to each section of your website li
 
 ``` javascript
 // admin-routes.js.erb
-<%= JsRoutes.generate(include: /^admin_/)
+<%= JsRoutes.generate(include: /^admin_/) %>
 // app-routes.js.erb
-<%= JsRoutes.generate(exclude: /^admin_/)
+<%= JsRoutes.generate(exclude: /^admin_/) %>
 ```
 
 ## Advantages over alternatives
