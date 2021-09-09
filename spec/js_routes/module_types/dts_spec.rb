@@ -53,12 +53,12 @@ describe JsRoutes, "compatibility with DTS"  do
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inboxMessageAttachmentPath: (
+export const inboxMessageAttachmentPath: ((
   inboxId: RequiredRouteParameter,
   messageId: RequiredRouteParameter,
   id: RequiredRouteParameter,
   options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string;
+) => string) & RouteHelperExtras;
 DOC
     end
   end
@@ -71,9 +71,9 @@ DOC
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inboxes_path: (
+export const inboxes_path: ((
   options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string;
+) => string) & RouteHelperExtras;
 DOC
     expect(generated_js).to include(<<-DOC.rstrip)
 /**
@@ -85,12 +85,12 @@ DOC
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inbox_message_attachment_path: (
+export const inbox_message_attachment_path: ((
   inbox_id: RequiredRouteParameter,
   message_id: RequiredRouteParameter,
   id: RequiredRouteParameter,
   options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string
+) => string) & RouteHelperExtras
 DOC
   end
 

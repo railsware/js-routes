@@ -319,7 +319,7 @@ export {};
     def definition_body
       args = required_parts.map{|p| "#{apply_case(p)}: RequiredRouteParameter"}
       args << "options?: #{optional_parts_type} & RouteOptions"
-      "(\n#{args.join(",\n").indent(2)}\n) => string"
+      "((\n#{args.join(",\n").indent(2)}\n) => string) & RouteHelperExtras"
     end
 
     def optional_parts_type

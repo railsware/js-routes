@@ -24,6 +24,8 @@ inbox_message_attachment_path(
   { toParam: () => true }
 );
 inbox_message_attachment_path(1, "2", true, { format: "json" });
+inboxes_path.toString();
+inboxes_path.requiredParams();
 
 // serialize test
 const SerializerArgument = {

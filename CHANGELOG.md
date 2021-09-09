@@ -1,5 +1,7 @@
 ## master
 
+* Support typescript defintions file aka `routes.d.ts`. See [Readme.md](./Readme.md#definitions) for more information.
+
 ## v2.0.8
 
 * Forbid usage of `namespace` option if `module_type` is not `nil`. [#281](https://github.com/railsware/js-routes/issues/281).

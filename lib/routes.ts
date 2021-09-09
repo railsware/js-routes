@@ -3,6 +3,7 @@
  * Based on Rails RubyVariables.RAILS_VERSION routes of RubyVariables.APP_CLASS
  */
 
+type Optional<T> = { [P in keyof T]?: T[P] | null };
 type BaseRouteParameter = string | boolean | Date | number;
 type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
 type ModelRouteParameter =
@@ -19,11 +20,33 @@ type RouteParameters = Record<string, QueryRouteParameter>;
 
 type Serializable = Record<string, unknown>;
 type Serializer = (value: Serializable) => string;
-type RouteHelperFunction = (...args: OptionalRouteParameter[]) => string;
-type RouteHelper<T extends Function = RouteHelperFunction> = T & {
+type RouteHelperExtras = {
   requiredParams(): string[];
   toString(): string;
 };
+
+type RequiredParameters<T extends number> = T extends 1
+  ? [RequiredRouteParameter]
+  : T extends 2
+  ? [RequiredRouteParameter, RequiredRouteParameter]
+  : T extends 3
+  ? [RequiredRouteParameter, RequiredRouteParameter, RequiredRouteParameter]
+  : T extends 4
+  ? [
+      RequiredRouteParameter,
+      RequiredRouteParameter,
+      RequiredRouteParameter,
+      RequiredRouteParameter
+    ]
+  : RequiredRouteParameter[];
+
+type RouteHelperOptions<T extends string> = RouteOptions &
+  Optional<Record<T, OptionalRouteParameter>>;
+
+type RouteHelper<T extends number = number, U extends string = string> = ((
+  ...args: [...RequiredParameters<T>, RouteHelperOptions<U>]
+) => string) &
+  RouteHelperExtras;
 
 type RouteHelpers = Record<string, RouteHelper>;
 
@@ -34,7 +57,6 @@ type Configuration = {
   serializer: Serializer;
 };
 
-type Optional<T> = { [P in keyof T]?: T[P] | null };
 interface RouterExposedMethods {
   config(): Configuration;
   configure(arg: Partial<Configuration>): Configuration;
@@ -583,7 +605,7 @@ RubyVariables.WRAPPER(
         result.toString = () => {
           return this.build_path_spec(route_spec);
         };
-        return result;
+        return result as any;
       }
 
       route_url(route_defaults: KeywordUrlOptions): string {

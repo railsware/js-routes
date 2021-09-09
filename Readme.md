@@ -95,6 +95,8 @@ import * as Routes from 'routes.js.erb';
 window.Routes = Routes;
 ```
 
+<div id='definitions'></div>
+
 #### Typescript Definitions
 
 JsRoutes has typescript support out of the box. In order to generate typscript definitions file (aka `routes.d.ts`) you can call:
