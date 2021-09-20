@@ -66,6 +66,10 @@ class JsRoutes
       esm? || dts?
     end
 
+    def require_esm
+      raise "ESM module type is required" unless modern?
+    end
+
     def source_file
       File.dirname(__FILE__) + "/" + default_file_name
     end
@@ -115,7 +119,7 @@ class JsRoutes
       @configuration ||= Configuration.new
     end
 
-    def generate(opts = {})
+    def generate(**opts)
       new(opts).generate
     end
 
@@ -123,9 +127,13 @@ class JsRoutes
       new(file: file_name, **opts).generate!
     end
 
+    def definitions(**opts)
+      generate(module_type: 'DTS', **opts)
+    end
+
     def definitions!(file_name = nil, **opts)
       file_name ||= configuration.file&.sub!(%r{\.(j|t)s\Z}, ".d.ts")
-      new(file: file_name, module_type: 'DTS', **opts).generate!
+      generate!(file_name, module_type: 'DTS', **opts)
     end
 
     def json(string)

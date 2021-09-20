@@ -16,6 +16,8 @@ gem "js-routes"
 
 ## Setup
 
+<div id='quick-start'></div>
+
 ### Quick Start 
 
 Run:
@@ -46,8 +48,9 @@ window.Routes = Routes;
 
 <div id='webpacker'></div>
 
-#### Webpacker + automatic updates
+#### Webpacker + automatic updates - Typescript
 
+Note: this setup doesn't support IDE autocompletion with [Typescript](#definitions)
 
 This setup can automatically update your routes without `rake js:routes` being called manually.
 It requires [rails-erb-loader](https://github.com/usabilityhub/rails-erb-loader) npm package to work.
@@ -99,17 +102,23 @@ window.Routes = Routes;
 
 #### Typescript Definitions
 
-JsRoutes has typescript support out of the box. In order to generate typscript definitions file (aka `routes.d.ts`) you can call:
+JsRoutes has typescript support out of the box. 
+
+Restrictions:
+
+* Only available if `module_type` is set to `ESM` (strongly recommended and default).
+* Webpacker Automatic Updates are not available because typescript compiler can not be configured to understand `.erb` extensions.
+
+For the basic setup of typscript definitions  see [Quick Start](#quick-start) setup.
+More advanced setup would involve calling manually:
 
 ``` ruby
-JsRoutes.definitions!
+JsRoutes.definitions! # to output to file
+# or 
+JsRoutes.definitions # to output to string
 ```
 
-Or create an automatic updates file at `app/javascript/routes.d.ts.erb`:
-
-``` erb
-<%= JsRoutes.defintions %>
-```
+Even more advanced setups can be achieved by setting `module_type` to `DTS` inside [configuration](#module_type).
 
 #### Sprockets (Deprecated)
 
@@ -165,6 +174,8 @@ Routes.config(); // current config
 ##### Generator Options
 
 Options to configure JavaScript file generator. These options are only available in Ruby context but not JavaScript.
+
+<div id='module-type'></div>
 
 * `module_type` - JavaScript module type for generated code. [Article](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm)
   * Options: `ESM`, `UMD`, `CJS`, `AMD`, `DTS`, `nil`.
