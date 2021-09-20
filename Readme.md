@@ -52,7 +52,7 @@ window.Routes = Routes;
 
 Note: this setup doesn't support IDE autocompletion with [Typescript](#definitions)
 
-This setup can automatically update your routes without `rake js:routes` being called manually.
+The routes files can be automatically updated  without `rake` task being called manually.
 It requires [rails-erb-loader](https://github.com/usabilityhub/rails-erb-loader) npm package to work.
 
 Add `erb` loader to webpacker:
@@ -118,7 +118,8 @@ JsRoutes.definitions! # to output to file
 JsRoutes.definitions # to output to string
 ```
 
-Even more advanced setups can be achieved by setting `module_type` to `DTS` inside [configuration](#module_type).
+Even more advanced setups can be achieved by setting `module_type` to `DTS` inside [configuration](#module_type) 
+which will cause any `JsRoutes` instance to generate defintions instead of routes themselves.
 
 #### Sprockets (Deprecated)
 
