@@ -16,6 +16,16 @@ gem "js-routes"
 
 ## Setup
 
+There are 3 possible ways to setup JsRoutes:
+
+* [Quick and easy](#quick-start)
+  * Requires rake task to be run each time route file is updated
+* [Webpacker](#webpacker) automatic updates
+  * Requires ESM module system (the default)
+  * Doesn't support typescript definitions
+* [Sprockets](#sprockets) legacy
+  * Deprecated and not recommended for modern apps
+
 <div id='quick-start'></div>
 
 ### Quick Start 
@@ -28,6 +38,7 @@ rake js:routes
 rake js:routes:typescript
 ```
 
+**IMPORTANT**: that this setup requires the rake task to be run each time routes file is updated.
 
 Individual routes can be imported using:
 
@@ -44,13 +55,22 @@ import * as Routes from 'routes';
 window.Routes = Routes;
 ```
 
-**Note**: that this setup requires `rake js:routes` to be run each time routes file is updated.
-
 <div id='webpacker'></div>
 
-#### Webpacker + automatic updates - Typescript
+### Webpacker + automatic updates - Typescript
 
-Note: this setup doesn't support IDE autocompletion with [Typescript](#definitions)
+**IMPORTANT**: this setup doesn't support IDE autocompletion with [Typescript](#definitions)
+
+
+#### Use a Generator
+
+Run a command:
+
+``` sh
+./bin/rails generate js_routes:webpacker
+```
+
+#### Setup manually
 
 The routes files can be automatically updated  without `rake` task being called manually.
 It requires [rails-erb-loader](https://github.com/usabilityhub/rails-erb-loader) npm package to work.
@@ -66,16 +86,16 @@ Create webpack ERB config `config/webpack/loaders/erb.js`:
 
 ``` javascript
 module.exports = {
-  test: /\.js\.erb$/,
-  enforce: 'pre',
-  exclude: /node_modules/,
-  use: [{
-    loader: 'rails-erb-loader',
-    options: {
-      runner: (/^win/.test(process.platform) ? 'ruby ' : '') + 'bin/rails runner'
-    }
-  }]
-}
+  module: {
+    rules: [
+      {
+        test: /\.erb$/,
+        enforce: 'pre',
+        loader: 'rails-erb-loader'
+      },
+    ]
+  }
+};
 ```
 
 Enable `erb` extension in `config/webpack/environment.js`:
@@ -100,7 +120,7 @@ window.Routes = Routes;
 
 <div id='definitions'></div>
 
-#### Typescript Definitions
+### Typescript Definitions
 
 JsRoutes has typescript support out of the box. 
 
@@ -121,7 +141,9 @@ JsRoutes.definitions # to output to string
 Even more advanced setups can be achieved by setting `module_type` to `DTS` inside [configuration](#module_type) 
 which will cause any `JsRoutes` instance to generate defintions instead of routes themselves.
 
-#### Sprockets (Deprecated)
+<div id="sprockets"></div>
+
+### Sprockets (Deprecated)
 
 If you are using [Sprockets](https://github.com/rails/sprockets-rails) you may configure js-routes in the following way.
 
@@ -150,7 +172,7 @@ This cache is not flushed on server restart in development environment.
 
 **Important:** If routes.js file is not updated after some configuration change you need to run this rake task again.
 
-### Configuration
+## Configuration
 
 You can configure JsRoutes in two main ways. Either with an initializer (e.g. `config/initializers/js_routes.rb`):
 
@@ -160,7 +182,7 @@ JsRoutes.setup do |config|
 end
 ```
 
-Or dynamically in JavaScript, although only [Formatter Options](#formatter-options) are supported (see below)
+Or dynamically in JavaScript, although only [Formatter Options](#formatter-options) are supported:
 
 ``` js
 import * as Routes from 'routes'
@@ -170,9 +192,9 @@ Routes.configure({
 Routes.config(); // current config
 ```
 
-#### Available Options
+### Available Options
 
-##### Generator Options
+#### Generator Options
 
 Options to configure JavaScript file generator. These options are only available in Ruby context but not JavaScript.
 
@@ -208,7 +230,7 @@ Options to configure JavaScript file generator. These options are only available
 * `file` - a file location where generated routes are stored
   * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
 
-##### Formatter Options
+#### Formatter Options
 
 Options to configure routes formatting. These options are available both in Ruby and JavaScript context.
 
@@ -226,7 +248,7 @@ Options to configure routes formatting. These options are available both in Ruby
   * This option exists because JS doesn't provide a difference between an object and a hash
   * Default: `_options`
 
-### Advanced Setup
+## Advanced Setup
 
 In case you need multiple route files for different parts of your application, you have to create the files manually.
 If your application has an `admin` and an `application` namespace for example:

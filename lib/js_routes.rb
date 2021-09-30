@@ -457,3 +457,5 @@ JS
     end
   end
 end
+
+require "js_routes/generators/webpacker"
