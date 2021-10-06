@@ -1,5 +1,10 @@
 ## master
 
+## v2.1.1
+
+* Added webpacker generator `./bin/rails generate js_routes:webpacker`
+* Reorganized Readme to describe different setups with their pros and cons more clearly
+
 ## v2.1.0
 
 * Support typescript defintions file aka `routes.d.ts`. See [Readme.md](./Readme.md#definitions) for more information.
