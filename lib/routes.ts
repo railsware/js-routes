@@ -129,6 +129,7 @@ RubyVariables.WRAPPER(
     }[keyof RouteNodes];
 
     const Root = that;
+    const isBroswer = typeof window !== "undefined";
     type ModuleDefinition = {
       define: (routes: RouterExposedMethods) => void;
       isSupported: () => boolean;
@@ -625,15 +626,17 @@ RubyVariables.WRAPPER(
       }
 
       current_host(): string {
-        return window?.location?.hostname || "";
+        return (isBroswer && window?.location?.hostname) || "";
       }
 
       current_protocol(): string {
-        return window?.location?.protocol?.replace(/:$/, "") || "http";
+        return (
+          (isBroswer && window?.location?.protocol?.replace(/:$/, "")) || "http"
+        );
       }
 
       current_port(): string {
-        return window?.location?.port || "";
+        return (isBroswer && window?.location?.port) || "";
       }
 
       is_object(value: unknown): value is Record<string, unknown> {
