@@ -256,14 +256,14 @@ describe JsRoutes, "options" do
     end
 
     context "with optional and required route parts" do
-      let(:_options) { {:default_url_options => { :optional_locale => "en" } } }
+      let(:_options) { {:default_url_options => { :optional_id => "12" } } }
       it "should use this options to fill the optional parameters" do
-        expect(evaljs("Routes.translated_thing_path(1)")).to eq test_routes.translated_thing_path(1, { optional_locale: "en" })
+        expect(evaljs("Routes.thing_path(1)")).to eq test_routes.thing_path(1, { optional_id: "12" })
       end
 
       context "when passing an irrelevant options object" do
         it "should use this options to fill the optional parameters" do
-          expect(evaljs("Routes.translated_thing_path(1, { format: 'json' })")).to eq test_routes.translated_thing_path(1, { optional_locale: "en", format: "json" } )
+          expect(evaljs("Routes.thing_path(1, { format: 'json' })")).to eq test_routes.thing_path(1, { optional_id: "12", format: "json" } )
         end
       end
     end

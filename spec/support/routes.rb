@@ -36,10 +36,6 @@ def draw_routes
       resources :things, only: [:show, :index]
     end
 
-    scope "(:optional_locale)" do
-      resources :translated_things, only: [:show]
-    end
-
     get "(/sep1/:first_optional)/sep2/:second_required/sep3/:third_required(/:forth_optional)",
       as: :thing_deep, controller: :things, action: :show
 
