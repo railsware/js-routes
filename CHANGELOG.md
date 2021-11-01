@@ -1,5 +1,9 @@
 ## master
 
+## v2.1.3
+
+* Fix `default_url_options` bug. [#290](https://github.com/railsware/js-routes/issues/290)
+
 ## v2.1.2
 
 * Improve browser window object detection. [#287](https://github.com/railsware/js-routes/issues/287)
