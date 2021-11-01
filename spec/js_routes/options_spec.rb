@@ -263,7 +263,7 @@ describe JsRoutes, "options" do
 
       context "when passing options that do not have defaults" do
         it "should use this options to fill the optional parameters" do
-          expect(evaljs("Routes.thing_path(1, { format: 'json' })")).to eq test_routes.thing_path(1, { optional_id: "12", format: "json" } )
+          expect(evaljs("Routes.thing_path(1, { format: 'json' })")).to eq test_routes.thing_path(1, { optional_id: "12", format: "json" } ) # test_routes.thing_path needs optional_id here to generate the correct route. Not sure why.
         end
       end
     end
