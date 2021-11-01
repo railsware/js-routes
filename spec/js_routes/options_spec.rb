@@ -233,10 +233,17 @@ describe JsRoutes, "options" do
 
   describe "default_url_options" do
     context "with optional route parts" do
-      context "provided" do
+      context "provided by the default_url_options" do
         let(:_options) { { :default_url_options => { :optional_id => "12", :format => "json" } } }
-        it "should use this opions to fill optional parameters" do
-          expect(evaljs("Routes.things_path()")).to eq(test_routes.things_path)
+        it "should use this options to fill optional parameters" do
+          expect(evaljs("Routes.things_path()")).to eq(test_routes.things_path(12))
+        end
+      end
+
+      context "provided inline by the method parameters" do
+        let(:options) { { :default_url_options => { :optional_id => "12" } } }
+        it "should overwrite the default_url_options" do
+          expect(evaljs("Routes.things_path({ optional_id: 34 })")).to eq(test_routes.things_path(optional_id: 34))
         end
       end
 
@@ -249,9 +256,22 @@ describe JsRoutes, "options" do
     end
 
     context "with required route parts" do
-      let(:_options) { {:default_url_options => {:inbox_id => "12"}} }
-      it "should use this opions to fill optional parameters" do
+      let(:_options) { { :default_url_options => { :inbox_id => "12" } } }
+      it "should use this options to fill optional parameters" do
         expect(evaljs("Routes.inbox_messages_path()")).to eq(test_routes.inbox_messages_path)
+      end
+    end
+
+    context "with optional and required route parts" do
+      let(:_options) { {:default_url_options => { :optional_id => "12" } } }
+      it "should use this options to fill the optional parameters" do
+        expect(evaljs("Routes.thing_path(1)")).to eq test_routes.thing_path(1, { optional_id: "12" })
+      end
+
+      context "when passing options that do not have defaults" do
+        it "should use this options to fill the optional parameters" do
+          expect(evaljs("Routes.thing_path(1, { format: 'json' })")).to eq test_routes.thing_path(1, { optional_id: "12", format: "json" } ) # test_routes.thing_path needs optional_id here to generate the correct route. Not sure why.
+        end
       end
     end
 
