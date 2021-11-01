@@ -240,6 +240,13 @@ describe JsRoutes, "options" do
         end
       end
 
+      context "provided inline by the method parameters" do
+        let(:options) { { :default_url_options => { :optional_id => "12" } } }
+        it "should overwrite the default_url_options" do
+          expect(evaljs("Routes.things_path({ optional_id: 34 })")).to eq(test_routes.things_path(optional_id: 34))
+        end
+      end
+
       context "not provided" do
         let(:_options) { { :default_url_options => { :format => "json" } } }
         it "breaks" do
