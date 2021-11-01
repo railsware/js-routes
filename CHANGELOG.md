@@ -1,5 +1,9 @@
 ## master
 
+## v2.1.2
+
+* Improve browser window object detection. [#287](./issues/287)
+
 ## v2.1.1
 
 * Added webpacker generator `./bin/rails generate js_routes:webpacker`
