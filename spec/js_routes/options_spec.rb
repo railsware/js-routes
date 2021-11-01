@@ -261,7 +261,7 @@ describe JsRoutes, "options" do
         expect(evaljs("Routes.thing_path(1)")).to eq test_routes.thing_path(1, { optional_id: "12" })
       end
 
-      context "when passing an irrelevant options object" do
+      context "when passing options that do not have defaults" do
         it "should use this options to fill the optional parameters" do
           expect(evaljs("Routes.thing_path(1, { format: 'json' })")).to eq test_routes.thing_path(1, { optional_id: "12", format: "json" } )
         end
