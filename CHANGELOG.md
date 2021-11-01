@@ -2,7 +2,7 @@
 
 ## v2.1.2
 
-* Improve browser window object detection. [#287](./issues/287)
+* Improve browser window object detection. [#287](https://github.com/railsware/js-routes/issues/287)
 
 ## v2.1.1
 
