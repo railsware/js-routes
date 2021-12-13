@@ -36,7 +36,7 @@ describe JsRoutes, "compatibility with NIL (legacy browser)" do
     end
 
     it "should be possible" do
-      # expect(evaljs("r.inboxes_path()")).to eq(test_routes.inboxes_path())
+      expect(evaljs("r.inboxes_path()")).to eq(test_routes.inboxes_path())
     end
   end
 
