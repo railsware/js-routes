@@ -151,7 +151,7 @@ class JsRoutes
 
   def generate
     # Ensure routes are loaded. If they're not, load them.
-    if named_routes.to_a.empty? && application.respond_to?(:reload_routes!)
+    if named_routes.empty? && application.respond_to?(:reload_routes!)
       application.reload_routes!
     end
     content = File.read(@configuration.source_file)

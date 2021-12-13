@@ -188,49 +188,6 @@ describe JsRoutes, "options" do
     expect(evaljs("Routes.no_format_path({format: 'json'})")).to eq(test_routes.no_format_path(format: 'json'))
   end
 
-  describe "namespace option" do
-    let(:_options) { {:namespace => "PHM"} }
-    it "should use this namespace for routing" do
-      expect(evaljs("window.Routes")).to be_nil
-      expect(evaljs("PHM.inbox_path")).not_to be_nil
-    end
-
-    context "is nil" do
-      let(:_options) { {:namespace => nil, include: /^inbox$/} }
-      it "should use this namespace for routing" do
-        evaljs("window.zz = #{generated_js}")
-        expect(evaljs("window.zz.inbox_path")).not_to be_nil
-      end
-
-    end
-
-    describe "is nested" do
-      context "and defined on client" do
-        let(:_presetup) { "window.PHM = {}" }
-        let(:_options) { {:namespace => "PHM.Routes"} }
-        it "should use this namespace for routing" do
-          expect(evaljs("PHM.Routes.inbox_path")).not_to be_nil
-        end
-      end
-
-      context "but undefined on client" do
-        let(:_options) { {:namespace => "PHM.Routes"} }
-        it "should initialize namespace" do
-          expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
-        end
-      end
-
-      context "and some parts are defined" do
-        let(:_presetup) { "window.PHM = { Utils: {} };" }
-        let(:_options) { {:namespace => "PHM.Routes"} }
-        it "should not overwrite existing parts" do
-          expect(evaljs("window.PHM.Utils")).not_to be_nil
-          expect(evaljs("window.PHM.Routes.inbox_path")).not_to be_nil
-        end
-      end
-    end
-  end
-
   describe "default_url_options" do
     context "with optional route parts" do
       context "provided by the default_url_options" do
@@ -441,8 +398,14 @@ describe JsRoutes, "options" do
         host
       end
 
-      before do
-        jscontext.eval("window = {'location': {'protocol': '#{current_protocol}', 'hostname': '#{current_hostname}', 'port': '#{current_port}', 'host': '#{current_host}'}}")
+      let(:_presetup) do
+        window = {location: {
+          protocol: current_protocol,
+          hostname: current_hostname,
+          port: current_port,
+          host: current_host,
+        }}
+        "const window = #{ActiveSupport::JSON.encode(window)}"
       end
 
       context "without specifying a default host" do
@@ -454,7 +417,6 @@ describe JsRoutes, "options" do
           expect(evaljs("Routes.inbox_url(1)")).to eq("http://current.example.com#{test_routes.inbox_path(1)}")
           expect(evaljs("Routes.inbox_url(1, { test_key: \"test_val\" })")).to eq("http://current.example.com#{test_routes.inbox_path(1, :test_key => "test_val")}")
           expect(evaljs("Routes.new_session_url()")).to eq("https://current.example.com#{test_routes.new_session_path}")
-
         end
 
         it "doesn't use current when specified in the route" do

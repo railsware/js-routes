@@ -3,11 +3,12 @@ require "spec_helper"
 describe JsRoutes, "compatibility with AMD/require.js"  do
 
   before(:each) do
-    evaljs("window.GlobalCheck = {};")
-    evaljs("window.define = function (requirs, callback) { window.GlobalCheck['js-routes'] = callback.call(this); return window.GlobalCheck['js-routes']; };")
-    evaljs("window.define.amd = { jQuery: true };")
+    evaljs("var global = this;", {force: true})
+    evaljs("global.GlobalCheck = {};")
+    evaljs("global.define = function (requirs, callback) { global.GlobalCheck['js-routes'] = callback.call(this); return global.GlobalCheck['js-routes']; };")
+    evaljs("global.define.amd = { jQuery: true };")
     strRequire =<<EOF
-    window.require = function (r, callback) {
+    global.require = function (r, callback) {
       var allArgs, i;
 
       allArgs = (function() {
@@ -15,7 +16,7 @@ describe JsRoutes, "compatibility with AMD/require.js"  do
         _results = [];
         for (_i = 0, _len = r.length; _i < _len; _i++) {
           i = r[_i];
-          _results.push(window.GlobalCheck[i]);
+          _results.push(global.GlobalCheck[i]);
         }
         return _results;
       })();

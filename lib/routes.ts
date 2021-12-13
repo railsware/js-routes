@@ -190,7 +190,7 @@ RubyVariables.WRAPPER(
           Utils.namespace(Root, RubyVariables.NAMESPACE, routes);
         },
         isSupported() {
-          return !!Root;
+          return !RubyVariables.NAMESPACE || !!Root;
         },
       },
       DTS: {
@@ -664,17 +664,17 @@ RubyVariables.WRAPPER(
         object: any,
         namespace: string | null | undefined,
         routes: unknown
-      ): unknown {
+      ): void {
         const parts = namespace?.split(".") || [];
         if (parts.length === 0) {
-          return routes;
+          return;
         }
         for (let index = 0; index < parts.length; index++) {
           const part = parts[index];
           if (index < parts.length - 1) {
             object = object[part] || (object[part] = {});
           } else {
-            return (object[part] = routes);
+            object[part] = routes;
           }
         }
       }

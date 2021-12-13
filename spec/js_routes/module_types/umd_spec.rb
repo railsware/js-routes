@@ -2,7 +2,7 @@ require "active_support/core_ext/string/strip"
 require "fileutils"
 require 'spec_helper'
 
-describe JsRoutes do
+describe JsRoutes, "compatibility with UMD" do
   describe "generated js" do
     subject do
       JsRoutes.generate(

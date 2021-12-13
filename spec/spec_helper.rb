@@ -108,11 +108,10 @@ RSpec.configure do |config|
   end
 
   config.before :each do
-    evaljs("var window = this;", {force: true})
-
     log = proc do |*values|
       puts values.map(&:inspect).join(", ")
     end
+
     if defined?(JRUBY_VERSION)
       jscontext[:"console.log"] = lambda do |context, *values|
         log(*values)
