@@ -49,6 +49,14 @@ Or manually by adding the following to `config/environments/development.rb`:
   config.middleware.use(JsRoutes::Middleware)
 ```
 
+and using it in `app/javascript/packs/application.js`:
+
+``` javascript
+import * as Routes from '../routes';
+// window.Routes = Routes;
+alert(Routes.post_path(1))
+```
+
 <div id='webpacker'></div>
 
 ### Webpacker ERB loader
