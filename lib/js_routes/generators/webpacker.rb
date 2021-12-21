@@ -1,6 +1,6 @@
 require "rails/generators"
 
-class JsRoutes::Webpacker < Rails::Generators::Base
+class JsRoutes::Generators::Webpacker < Rails::Generators::Base
 
   source_root File.expand_path(__FILE__ + "/../../../templates")
 

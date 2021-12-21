@@ -1,5 +1,10 @@
 ## master
 
+## v2.2.0
+
+* Use Rack Middleware to automatically update routes file in development [#288](https://github.com/railsware/js-routes/issues/288)
+  * This setup is now a default recommended due to lack of any downside comparing to [ERB Loader](./Readme.md#webpacker) and [Manual Setup](./Readme.md#advanced-setup)
+
 ## v2.1.3
 
 * Fix `default_url_options` bug. [#290](https://github.com/railsware/js-routes/issues/290)

@@ -132,7 +132,7 @@ class JsRoutes
     end
 
     def definitions!(file_name = nil, **opts)
-      file_name ||= configuration.file&.sub!(%r{\.(j|t)s\Z}, ".d.ts")
+      file_name ||= configuration.file&.sub(%r{(\.d)?\.(j|t)s\Z}, ".d.ts")
       generate!(file_name, module_type: 'DTS', **opts)
     end
 
@@ -273,12 +273,13 @@ export {};
   end
 
   def app_from_route(route)
+    app = route.app
     # rails engine in Rails 4.2 use additional
     # ActionDispatch::Routing::Mapper::Constraints, which contain app
-    if route.app.respond_to?(:app) && route.app.respond_to?(:constraints)
-      route.app.app
+    if app.respond_to?(:app) && app.respond_to?(:constraints)
+      app.app
     else
-      route.app
+      app
     end
   end
 
@@ -456,6 +457,10 @@ JS
       ].compact
     end
   end
+  module Generators
+  end
 end
 
+require "js_routes/middleware"
 require "js_routes/generators/webpacker"
+require "js_routes/generators/middleware"

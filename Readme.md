@@ -19,10 +19,13 @@ gem "js-routes"
 There are 3 possible ways to setup JsRoutes:
 
 * [Quick and easy](#quick-start)
-  * Requires rake task to be run each time route file is updated
+  * Uses Rack Middleware to automatically update routes locally
+  * Works great for a simple Rails application
 * [Webpacker](#webpacker) automatic updates
   * Requires ESM module system (the default)
   * Doesn't support typescript definitions
+* [Advanced Setup](#advanced-setup)
+  * Allows very custom setups
 * [Sprockets](#sprockets) legacy
   * Deprecated and not recommended for modern apps
 
@@ -30,36 +33,20 @@ There are 3 possible ways to setup JsRoutes:
 
 ### Quick Start 
 
+Setup [Rack Middleware](https://guides.rubyonrails.org/rails_on_rack.html#action-dispatcher-middleware-stack) to automatically generate and maintain `routes.js` file and corresponding [Typescript definitions](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html) `routes.d.ts`:
+
 Run:
 
 ``` sh
-rake js:routes 
-# OR for typescript support
-rake js:routes:typescript
+rails generate js_routes:middleware
 ```
 
-**IMPORTANT**: that this setup requires the rake task to be run each time routes file is updated.
-
-Individual routes can be imported using:
-
-``` javascript
-import {edit_post_path, posts_path} from 'routes';
-console.log(posts_path({format: 'json'})) // => "/posts.json"
-console.log(edit_post_path(1)) // => "/posts/1/edit"
-```
-
-Make routes available globally in `app/javascript/packs/application.js`: 
-
-``` javascript
-import * as Routes from 'routes';
-window.Routes = Routes;
-```
 
 <div id='webpacker'></div>
 
 ### Webpacker + automatic updates - Typescript
 
-**IMPORTANT**: this setup doesn't support IDE autocompletion with [Typescript](#definitions)
+**IMPORTANT**: this setup doesn't support IDE autocompletion with [Typescript](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html)
 
 
 #### Use a Generator
@@ -118,9 +105,52 @@ import * as Routes from 'routes.js.erb';
 window.Routes = Routes;
 ```
 
+<div id='advanced-setup'></div>
+
+### Advanced Setup
+
+**IMPORTANT**: that this setup requires the JS routes file to be updates manually
+
+You can run every time you want to generate a routes file:
+
+``` sh
+rake js:routes 
+# OR for typescript support
+rake js:routes:typescript
+```
+
+In case you need multiple route files for different parts of your application, you have to create the files manually.
+If your application has an `admin` and an `application` namespace for example:
+
+``` erb
+// app/javascript/admin/routes.js.erb
+<%= JsRoutes.generate(include: /admin/) %>
+```
+
+``` erb
+// app/javascript/customer/routes.js.erb
+<%= JsRoutes.generate(exclude: /admin/) %>
+```
+
+You can manipulate the generated helper manually by injecting ruby into javascript:
+
+``` erb
+export const routes = <%= JsRoutes.generate(module_type: nil, namespace: nil) %>
+```
+
+If you want to generate the routes files outside of the asset pipeline, you can use `JsRoutes.generate!`:
+
+``` ruby
+path = Rails.root.join("app/javascript")
+
+JsRoutes.generate!("#{path}/app_routes.js", exclude: [/^admin_/, /^api_/])
+JsRoutes.generate!("#{path}/adm_routes.js", include: /^admin_/)
+JsRoutes.generate!("#{path}/api_routes.js", include: /^api_/, default_url_options: {format: "json"})
+```
+
 <div id='definitions'></div>
 
-### Typescript Definitions
+#### Typescript Definitions
 
 JsRoutes has typescript support out of the box. 
 
@@ -230,6 +260,8 @@ Options to configure JavaScript file generator. These options are only available
 * `file` - a file location where generated routes are stored
   * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
 
+<div id="formatter-options"></div>
+
 #### Formatter Options
 
 Options to configure routes formatting. These options are available both in Ruby and JavaScript context.
@@ -248,36 +280,6 @@ Options to configure routes formatting. These options are available both in Ruby
   * This option exists because JS doesn't provide a difference between an object and a hash
   * Default: `_options`
 
-## Advanced Setup
-
-In case you need multiple route files for different parts of your application, you have to create the files manually.
-If your application has an `admin` and an `application` namespace for example:
-
-``` erb
-// app/javascript/admin/routes.js.erb
-<%= JsRoutes.generate(include: /admin/) %>
-```
-
-``` erb
-// app/javascript/customer/routes.js.erb
-<%= JsRoutes.generate(exclude: /admin/) %>
-```
-
-You can manipulate the generated helper manually by injecting ruby into javascript:
-
-``` erb
-export const routes = <%= JsRoutes.generate(module_type: nil, namespace: nil) %>
-```
-
-If you want to generate the routes files outside of the asset pipeline, you can use `JsRoutes.generate!`:
-
-``` ruby
-path = Rails.root.join("app/javascript")
-
-JsRoutes.generate!("#{path}/app_routes.js", exclude: [/^admin_/, /^api_/])
-JsRoutes.generate!("#{path}/adm_routes.js", include: /^admin_/)
-JsRoutes.generate!("#{path}/api_routes.js", include: /^api_/, default_url_options: {format: "json"})
-```
 
 ## Usage
 
