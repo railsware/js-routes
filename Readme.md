@@ -33,7 +33,9 @@ There are 3 possible ways to setup JsRoutes:
 
 ### Quick Start 
 
-Setup [Rack Middleware](https://guides.rubyonrails.org/rails_on_rack.html#action-dispatcher-middleware-stack) to automatically generate and maintain `routes.js` file and corresponding [Typescript definitions](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html) `routes.d.ts`:
+Setup [Rack Middleware](https://guides.rubyonrails.org/rails_on_rack.html#action-dispatcher-middleware-stack) 
+to automatically generate and maintain `routes.js` file and corresponding 
+[Typescript definitions](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html) `routes.d.ts`:
 
 Run:
 
@@ -41,10 +43,15 @@ Run:
 rails generate js_routes:middleware
 ```
 
+Or manually by adding the following to `config/environments/development.rb`:
+
+``` ruby
+  config.middleware.use(JsRoutes::Middleware)
+```
 
 <div id='webpacker'></div>
 
-### Webpacker + automatic updates - Typescript
+### Webpacker ERB loader
 
 **IMPORTANT**: this setup doesn't support IDE autocompletion with [Typescript](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html)
 

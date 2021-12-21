@@ -11,6 +11,8 @@ class JsRoutes::Generators::Middleware < Rails::Generators::Base
     # inject_into_file "config/webpack/environment.js", loader_content
     inject_into_file "app/javascript/packs/application.js", pack_content
     inject_into_file "config/environments/development.rb", middleware_content, before: /^end\n\z/
+    JsRoutes.generate!
+    JsRoutes.definitions!
   end
 
   protected
