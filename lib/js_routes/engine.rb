@@ -1,4 +1,4 @@
-class JsRoutes
+module JsRoutes
 class SprocketsExtension
   def initialize(filename, &block)
     @filename = filename

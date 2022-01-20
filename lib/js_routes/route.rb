@@ -1,4 +1,4 @@
-class JsRoutes
+module JsRoutes
   class Route #:nodoc:
     FILTERED_DEFAULT_PARTS = [:controller, :action]
     URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain]

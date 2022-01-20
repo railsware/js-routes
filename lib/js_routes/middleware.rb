@@ -1,4 +1,4 @@
-class JsRoutes
+module JsRoutes
   # A Rack middleware that automatically updates routes file
   # whenever routes.rb is modified
   #
