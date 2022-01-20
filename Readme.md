@@ -16,12 +16,12 @@ gem "js-routes"
 
 ## Setup
 
-There are 3 possible ways to setup JsRoutes:
+There are several possible ways to setup JsRoutes:
 
 * [Quick and easy](#quick-start)
   * Uses Rack Middleware to automatically update routes locally
   * Works great for a simple Rails application
-* [Webpacker](#webpacker) automatic updates
+* [Webpacker ERB Loader](#webpacker)
   * Requires ESM module system (the default)
   * Doesn't support typescript definitions
 * [Advanced Setup](#advanced-setup)
@@ -37,24 +37,43 @@ Setup [Rack Middleware](https://guides.rubyonrails.org/rails_on_rack.html#action
 to automatically generate and maintain `routes.js` file and corresponding 
 [Typescript definitions](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html) `routes.d.ts`:
 
-Run:
+#### Use a Generator
+
+Run a command:
 
 ``` sh
 rails generate js_routes:middleware
 ```
 
-Or manually by adding the following to `config/environments/development.rb`:
+#### Setup Manually
+
+Add the following to `config/environments/development.rb`:
 
 ``` ruby
   config.middleware.use(JsRoutes::Middleware)
 ```
 
-and using it in `app/javascript/packs/application.js`:
+Use it in `app/javascript/packs/application.js`:
 
 ``` javascript
 import * as Routes from '../routes';
 // window.Routes = Routes;
 alert(Routes.post_path(1))
+```
+
+Upgrade `rake assets:precompile` to update js-routes files: 
+
+``` ruby
+namespace :assets do
+  task :precompile => "js:routes:typescript"
+end
+```
+
+Add js-routes files to `.gitignore`:
+
+```
+/app/javascript/routes.js
+/app/javascript/routes.d.ts
 ```
 
 <div id='webpacker'></div>
@@ -126,7 +145,7 @@ window.Routes = Routes;
 
 **IMPORTANT**: that this setup requires the JS routes file to be updates manually
 
-You can run every time you want to generate a routes file:
+Routes file can be generated with a `rake` task:
 
 ``` sh
 rake js:routes 
@@ -136,6 +155,8 @@ rake js:routes:typescript
 
 In case you need multiple route files for different parts of your application, you have to create the files manually.
 If your application has an `admin` and an `application` namespace for example:
+
+**IMPORTANT**: Requires [Webpacker ERB Loader](#webpacker) setup.
 
 ``` erb
 // app/javascript/admin/routes.js.erb

@@ -1,5 +1,9 @@
 ## master
 
+## v2.2.1
+
+* Improve generator to update route files on `assets:precompile` and add them to `.gitignore by default` [#288](https://github.com/railsware/js-routes/issues/288#issuecomment-1012182815)
+
 ## v2.2.0
 
 * Use Rack Middleware to automatically update routes file in development [#288](https://github.com/railsware/js-routes/issues/288)
