@@ -25,7 +25,7 @@ module JsRoutes
       Instance.new(opts).generate
     end
 
-    def generate!(file_name=nil, **opts)
+    def generate!(file_name = configuration.file, **opts)
       Instance.new(file: file_name, **opts).generate!
     end
 
