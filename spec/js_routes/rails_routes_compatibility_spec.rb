@@ -2,8 +2,11 @@ require "spec_helper"
 
 describe JsRoutes, "compatibility with Rails"  do
 
+  let(:generated_js) do
+    JsRoutes.generate({module_type: nil, namespace: 'Routes'})
+  end
   before(:each) do
-    evaljs(JsRoutes.generate({module_type: nil, namespace: 'Routes'}))
+    evaljs(generated_js)
   end
 
   it "should generate collection routing" do

@@ -84,7 +84,6 @@ declare const RubyVariables: {
   SPECIAL_OPTIONS_KEY: string;
   DEFAULT_URL_OPTIONS: RouteParameters;
   SERIALIZER: Serializer;
-  NAMESPACE: string;
   ROUTES_OBJECT: RouteHelpers;
   MODULE_TYPE: ModuleType;
   WRAPPER: <T>(callback: T) => T;
@@ -97,7 +96,7 @@ declare const define:
 declare const module: { exports: any } | undefined;
 
 RubyVariables.WRAPPER(
-  (that: unknown): RouterExposedMethods => {
+  (): RouterExposedMethods => {
     const hasProp = (value: unknown, key: string) =>
       Object.prototype.hasOwnProperty.call(value, key);
     enum NodeTypes {
@@ -128,7 +127,6 @@ RubyVariables.WRAPPER(
       [T in keyof RouteNodes]: RouteNode<T>;
     }[keyof RouteNodes];
 
-    const Root = that;
     const isBroswer = typeof window !== "undefined";
     type ModuleDefinition = {
       define: (routes: RouterExposedMethods) => void;
@@ -186,11 +184,11 @@ RubyVariables.WRAPPER(
         },
       },
       NIL: {
-        define(routes) {
-          Utils.namespace(Root, RubyVariables.NAMESPACE, routes);
+        define() {
+          // Defined using RubyVariables.WRAPPER
         },
         isSupported() {
-          return !RubyVariables.NAMESPACE || !!Root;
+          return true;
         },
       },
       DTS: {
@@ -660,25 +658,6 @@ RubyVariables.WRAPPER(
         return ReservedOptions.includes(key as any);
       }
 
-      namespace(
-        object: any,
-        namespace: string | null | undefined,
-        routes: unknown
-      ): void {
-        const parts = namespace?.split(".") || [];
-        if (parts.length === 0) {
-          return;
-        }
-        for (let index = 0; index < parts.length; index++) {
-          const part = parts[index];
-          if (index < parts.length - 1) {
-            object = object[part] || (object[part] = {});
-          } else {
-            object[part] = routes;
-          }
-        }
-      }
-
       configure(new_config: Partial<Configuration>): Configuration {
         this.configuration = { ...this.configuration, ...new_config };
         return this.configuration;
@@ -734,4 +713,4 @@ RubyVariables.WRAPPER(
     Utils.define_module(RubyVariables.MODULE_TYPE, result);
     return result;
   }
-)(this);
+)();

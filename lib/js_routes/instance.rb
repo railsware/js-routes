@@ -57,14 +57,33 @@ module JsRoutes
         'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
 
         'APP_CLASS'           => application.class.to_s,
-        'NAMESPACE'           => json(@configuration.namespace),
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(@configuration.prefix),
         'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
         'SERIALIZER'          => @configuration.serializer || json(nil),
         'MODULE_TYPE'         => json(@configuration.module_type),
-        'WRAPPER'             => @configuration.esm? ? 'const __jsr = ' : '',
+        'WRAPPER'             => wrapper_variable,
       }
+    end
+
+    def wrapper_variable
+      case @configuration.module_type
+      when 'ESM'
+        'const __jsr = '
+      when 'NIL'
+        namespace = @configuration.namespace
+        if namespace
+          if namespace.include?('.')
+            "#{namespace} = "
+          else
+            "(typeof window !== 'undefined' ? window : this).#{namespace} = "
+          end
+        else
+          ''
+        end
+      else
+        ''
+      end
     end
 
     def application

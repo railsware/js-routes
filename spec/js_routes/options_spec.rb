@@ -399,13 +399,16 @@ describe JsRoutes, "options" do
       end
 
       let(:_presetup) do
-        window = {location: {
+        location =  {
           protocol: current_protocol,
           hostname: current_hostname,
           port: current_port,
           host: current_host,
-        }}
-        "const window = #{ActiveSupport::JSON.encode(window)}"
+        }
+        [
+          "const window = this;",
+          "window.location = #{ActiveSupport::JSON.encode(location)};",
+        ].join("\n")
       end
 
       context "without specifying a default host" do

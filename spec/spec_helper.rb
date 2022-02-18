@@ -42,10 +42,14 @@ end
 def evaljs(string, force: false, filename: 'context.js')
   jscontext(force).eval(string, filename: filename)
 rescue MiniRacer::ParseError => e
-  message = e.message
-  _, _, line, _ = message.split(':')
-  code = line && string.split("\n")[line.to_i-1]
-  raise "#{message}. Code: #{code.strip}";
+  trace = e.message
+  _, _, line, _ = trace.split(':')
+  if line
+    code = string.split("\n")[line.to_i-1]
+    raise "#{trace}. Code: #{code.strip}";
+  else
+    raise e
+  end
 rescue MiniRacer::RuntimeError => e
   raise e
 end
@@ -60,6 +64,10 @@ end
 
 def planner_routes
   Planner::Engine.routes.url_helpers
+end
+
+def log(string)
+  evaljs("console.log(#{string})")
 end
 
 ActiveSupport::Inflector.inflections do |inflect|

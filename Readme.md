@@ -20,6 +20,7 @@ There are several possible ways to setup JsRoutes:
 
 * [Quick and easy](#quick-start)
   * Uses Rack Middleware to automatically update routes locally
+  * Automatically generates routes files on `assets:precompile` in production
   * Works great for a simple Rails application
 * [Webpacker ERB Loader](#webpacker)
   * Requires ESM module system (the default)

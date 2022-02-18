@@ -66,7 +66,6 @@ declare const RubyVariables: {
     SPECIAL_OPTIONS_KEY: string;
     DEFAULT_URL_OPTIONS: RouteParameters;
     SERIALIZER: Serializer;
-    NAMESPACE: string;
     ROUTES_OBJECT: RouteHelpers;
     MODULE_TYPE: ModuleType;
     WRAPPER: <T>(callback: T) => T;

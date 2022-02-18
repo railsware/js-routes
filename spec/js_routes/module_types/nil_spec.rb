@@ -45,6 +45,7 @@ describe JsRoutes, "compatibility with NIL (legacy browser)" do
     let(:_presetup) { "" }
     before do
       evaljs("var window = this;")
+      evaljs("window.PHM = {}")
       evaljs(_presetup)
       evaljs(generated_js)
     end
