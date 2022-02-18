@@ -1,5 +1,11 @@
 ## master
 
+## v2.2.3
+
+* Fixed NIL module type namespace defintion [#297](https://github.com/railsware/js-routes/issues/297).
+  * The patch may cause a problem with nested `namespace` option 
+  * Ex. Value like `MyProject.Routes` requires to define `window.MyProject` before importing the routes file
+
 ## v2.2.2.
 
 * Fix custom file path [#295](https://github.com/railsware/js-routes/issues/295)
