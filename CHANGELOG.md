@@ -1,5 +1,9 @@
 ## master
 
+## v2.2.4
+
+* Fix rails engine loading if sprockets is not in Gemfile. Fixes [#294](https://github.com/railsware/js-routes/issues/294)
+
 ## v2.2.3
 
 * Fixed NIL module type namespace defintion [#297](https://github.com/railsware/js-routes/issues/297).
