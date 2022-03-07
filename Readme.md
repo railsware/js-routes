@@ -62,7 +62,7 @@ import * as Routes from '../routes';
 alert(Routes.post_path(1))
 ```
 
-Upgrade `rake assets:precompile` to update js-routes files: 
+Upgrade `rake assets:precompile` to update js-routes files in `Rakefile`: 
 
 ``` ruby
 namespace :assets do
