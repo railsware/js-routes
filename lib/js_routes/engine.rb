@@ -29,32 +29,34 @@ end
 
 
 class Engine < ::Rails::Engine
-  require 'sprockets/version'
-  v2                = Gem::Dependency.new('', ' ~> 2')
-  vgte3             = Gem::Dependency.new('', ' >= 3')
-  sprockets_version = Gem::Version.new(::Sprockets::VERSION).release
-  initializer_args  = case sprockets_version
-                        when -> (v) { v2.match?('', v) }
-                          { after: "sprockets.environment" }
-                        when -> (v) { vgte3.match?('', v) }
-                          { after: :engines_blank_point, before: :finisher_hook }
-                        else
-                          raise StandardError, "Sprockets version #{sprockets_version} is not supported"
-                      end
+  if defined?(::Sprockets::Railtie)
+    require 'sprockets/version'
+    v2                = Gem::Dependency.new('', ' ~> 2')
+    vgte3             = Gem::Dependency.new('', ' >= 3')
+    sprockets_version = Gem::Version.new(::Sprockets::VERSION).release
+    initializer_args  = case sprockets_version
+                          when -> (v) { v2.match?('', v) }
+                            { after: "sprockets.environment" }
+                          when -> (v) { vgte3.match?('', v) }
+                            { after: :engines_blank_point, before: :finisher_hook }
+                          else
+                            raise StandardError, "Sprockets version #{sprockets_version} is not supported"
+                        end
 
-  initializer 'js-routes.dependent_on_routes', initializer_args do
-    case sprockets_version
-      when  -> (v) { v2.match?('', v) },
-            -> (v) { vgte3.match?('', v) }
+    initializer 'js-routes.dependent_on_routes', initializer_args do
+      case sprockets_version
+        when  -> (v) { v2.match?('', v) },
+              -> (v) { vgte3.match?('', v) }
 
-      Rails.application.config.assets.configure do |config|
-        config.register_preprocessor(
-          "application/javascript",
-          SprocketsExtension,
-        )
+        Rails.application.config.assets.configure do |config|
+          config.register_preprocessor(
+            "application/javascript",
+            SprocketsExtension,
+          )
+        end
+      else
+        raise StandardError, "Sprockets version #{sprockets_version} is not supported"
       end
-    else
-      raise StandardError, "Sprockets version #{sprockets_version} is not supported"
     end
   end
 end

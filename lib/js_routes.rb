@@ -1,4 +1,4 @@
-if defined?(::Rails) && defined?(::Sprockets::Railtie)
+if defined?(::Rails)
   require 'js_routes/engine'
 end
 require 'js_routes/version'
