@@ -70,6 +70,7 @@ type KeywordUrlOptions = Optional<{
   port: string | number;
   anchor: string;
   trailing_slash: boolean;
+  params: RouteParameters;
 }>;
 
 type RouteOptions = KeywordUrlOptions & RouteParameters;
@@ -365,11 +366,20 @@ RubyVariables.WRAPPER(
         };
 
         const keyword_parameters: KeywordUrlOptions = {};
-        const query_parameters: RouteParameters = {};
+        let query_parameters: RouteParameters = {};
         for (const key in options) {
           if (!hasProp(options, key)) continue;
           const value = options[key];
-          if (this.is_reserved_option(key)) {
+          if (key === "params") {
+            if (this.is_object(value)) {
+              query_parameters = {
+                ...query_parameters,
+                ...(value as RouteParameters),
+              };
+            } else {
+              throw new Error("params value should always be an object");
+            }
+          } else if (this.is_reserved_option(key)) {
             keyword_parameters[key] = value as any;
           } else {
             if (

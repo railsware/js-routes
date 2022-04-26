@@ -21,10 +21,14 @@ module JsRoutes
     def update_js_routes
       new_mtime = routes_mtime
       unless new_mtime == @mtime
-        JsRoutes.generate!
-        JsRoutes.definitions!
+        regenerate
         @mtime = new_mtime
       end
+    end
+
+    def regenerate
+      JsRoutes.generate!
+      JsRoutes.definitions!
     end
 
     def routes_mtime

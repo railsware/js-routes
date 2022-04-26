@@ -161,6 +161,22 @@ describe JsRoutes, "compatibility with Rails"  do
     expect(evaljs("Routes.root_path()")).to eq(test_routes.root_path)
   end
 
+  describe "params parameter" do
+    it "works" do
+      expect(evaljs("Routes.inboxes_path({params: {key: 'value'}})")).to eq(test_routes.inboxes_path(params: {key: 'value'}))
+    end
+
+    it "allows keyword key as a query parameter" do
+      expect(evaljs("Routes.inboxes_path({params: {anchor: 'a', params: 'p'}})")).to eq(test_routes.inboxes_path(params: {anchor: 'a', params: 'p'}))
+    end
+
+    it "throws when value is not an object" do
+      expect {
+        evaljs("Routes.inboxes_path({params: 1})")
+      }.to raise_error(js_error_class)
+    end
+  end
+
   describe "get parameters" do
     it "should support simple get parameters" do
       expect(evaljs("Routes.inbox_path(1, {format: 'json', lang: 'ua', q: 'hello'})")).to eq(test_routes.inbox_path(1, :lang => "ua", :q => "hello", :format => "json"))
