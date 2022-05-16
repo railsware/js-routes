@@ -13,7 +13,7 @@ describe JsRoutes, "compatibility with ESM"  do
   end
 
   it "defines route helpers" do
-    expect(evaljs("inboxes_path()")).to eq(test_routes.inboxes_path())
+    expectjs("inboxes_path()").to eq(test_routes.inboxes_path())
   end
 
   it "exports route helpers" do
@@ -33,7 +33,7 @@ DOC
   end
 
   it "defines utility methods" do
-    expect(evaljs("serialize({a: 1, b: 2})")).to eq({a: 1, b: 2}.to_param)
+    expectjs("serialize({a: 1, b: 2})").to eq({a: 1, b: 2}.to_param)
   end
 
   describe "compiled javascript asset" do

@@ -36,7 +36,7 @@ describe JsRoutes, "compatibility with NIL (legacy browser)" do
     end
 
     it "should be possible" do
-      expect(evaljs("r.inboxes_path()")).to eq(test_routes.inboxes_path())
+      expectjs("r.inboxes_path()").to eq(test_routes.inboxes_path())
     end
   end
 
@@ -50,8 +50,8 @@ describe JsRoutes, "compatibility with NIL (legacy browser)" do
       evaljs(generated_js)
     end
     it "should use this namespace for routing" do
-      expect(evaljs("window.Routes")).to be_nil
-      expect(evaljs("window.PHM.inboxes_path")).not_to be_nil
+      expectjs("window.Routes").to be_nil
+      expectjs("window.PHM.inboxes_path").not_to be_nil
     end
 
     describe "is nested" do
@@ -60,7 +60,7 @@ describe JsRoutes, "compatibility with NIL (legacy browser)" do
         let(:_options) { {namespace: "PHM.Routes"} }
 
         it "should use this namespace for routing" do
-          expect(evaljs("PHM.Routes.inboxes_path")).not_to be_nil
+          expectjs("PHM.Routes.inboxes_path").not_to be_nil
         end
       end
 
@@ -68,7 +68,7 @@ describe JsRoutes, "compatibility with NIL (legacy browser)" do
         let(:_options) { {namespace: "PHM.Routes"} }
 
         it "should initialize namespace" do
-          expect(evaljs("window.PHM.Routes.inboxes_path")).not_to be_nil
+          expectjs("window.PHM.Routes.inboxes_path").not_to be_nil
         end
       end
 
@@ -77,8 +77,8 @@ describe JsRoutes, "compatibility with NIL (legacy browser)" do
         let(:_options) { {namespace: "PHM.Routes"} }
 
         it "should not overwrite existing parts" do
-          expect(evaljs("window.PHM.Utils")).not_to be_nil
-          expect(evaljs("window.PHM.Routes.inboxes_path")).not_to be_nil
+          expectjs("window.PHM.Utils").not_to be_nil
+          expectjs("window.PHM.Routes.inboxes_path").not_to be_nil
         end
       end
     end

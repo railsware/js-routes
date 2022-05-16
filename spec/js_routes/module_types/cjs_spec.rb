@@ -10,6 +10,6 @@ describe JsRoutes, "compatibility with CJS"  do
   end
 
   it "should define module exports" do
-    expect(evaljs("module.exports.inboxes_path()")).to eq(test_routes.inboxes_path())
+    expectjs("module.exports.inboxes_path()").to eq(test_routes.inboxes_path())
   end
 end

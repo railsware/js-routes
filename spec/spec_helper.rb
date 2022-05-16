@@ -70,6 +70,10 @@ def log(string)
   evaljs("console.log(#{string})")
 end
 
+def expectjs(string)
+  expect(evaljs(string))
+end
+
 ActiveSupport::Inflector.inflections do |inflect|
   inflect.irregular "budgie", "budgies"
 end

@@ -2,7 +2,7 @@ require "js_routes/configuration"
 require "js_routes/route"
 
 module JsRoutes
-  class Instance
+  class Instance # :nodoc:
 
     attr_reader :configuration
     #

@@ -29,7 +29,7 @@ EOF
   end
 
   it "should working from require" do
-    expect(evaljs("require(['js-routes'], function(r){ return r.inboxes_path(); })")).to eq(test_routes.inboxes_path())
+    expectjs("require(['js-routes'], function(r){ return r.inboxes_path(); })").to eq(test_routes.inboxes_path())
   end
 
 end

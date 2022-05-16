@@ -53,6 +53,7 @@ declare type KeywordUrlOptions = Optional<{
     port: string | number;
     anchor: string;
     trailing_slash: boolean;
+    params: RouteParameters;
 }>;
 declare type RouteOptions = KeywordUrlOptions & RouteParameters;
 declare type PartsTable = Record<string, {
