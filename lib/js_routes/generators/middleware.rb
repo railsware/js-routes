@@ -52,7 +52,7 @@ end
       {},
       {module_type: 'DTS'}
     ].map do |config|
-      File.join('/', JsRoutes.new(config).configuration.output_file) + "\n"
+      File.join('/', JsRoutes::Configuration.new(config).output_file) + "\n"
     end.join
   end
 end
