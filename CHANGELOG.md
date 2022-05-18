@@ -1,5 +1,8 @@
 ## master
 
+## v2.2.5
+
+* Fix middleware generator [#300](https://github.com/railsware/js-routes/issues/300)
 * Support `params` special parameter
 
 ## v2.2.4
