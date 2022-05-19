@@ -4,8 +4,6 @@
 
 Generates javascript file that defines all Rails named routes as javascript helpers
 
-[UPGRADE TO 2.0](./VERSION_2_UPGRADE.md)
-
 ## Intallation
 
 Your Rails Gemfile:
