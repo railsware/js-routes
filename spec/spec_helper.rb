@@ -7,7 +7,7 @@ require 'rails/all'
 require 'js-routes'
 require 'active_support/core_ext/hash/slice'
 
-unless ENV['TRAVIS_CI']
+unless ENV['CI']
   code = system("yarn build")
   unless code
     exit(1)
