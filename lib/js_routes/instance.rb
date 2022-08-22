@@ -55,7 +55,7 @@ module JsRoutes
         'ROUTES_OBJECT'       => routes_object,
         'RAILS_VERSION'       => ActionPack.version,
         'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
-
+        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => ActionPack::VERSION::MAJOR < 7,
         'APP_CLASS'           => application.class.to_s,
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(@configuration.prefix),

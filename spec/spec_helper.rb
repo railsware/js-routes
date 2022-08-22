@@ -94,10 +94,6 @@ end
 
 
 class ::App < Rails::Application
-  # Enable the asset pipeline
-  config.assets.enabled = true
-  # initialize_on_precompile
-  config.assets.initialize_on_precompile = true
   config.paths['config/routes.rb'] << 'spec/config/routes.rb'
   config.root = File.expand_path('../dummy', __FILE__)
 end

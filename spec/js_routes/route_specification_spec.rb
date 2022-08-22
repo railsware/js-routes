@@ -4,7 +4,7 @@ require "spec_helper"
 describe JsRoutes, "compatibility with Rails"  do
 
   let(:generated_js) do
-    JsRoutes.generate({module_type: nil, namespace: 'Routes'})
+    JsRoutes.generate(module_type: nil, namespace: 'Routes')
   end
   before(:each) do
     evaljs(generated_js)

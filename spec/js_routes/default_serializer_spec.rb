@@ -3,7 +3,7 @@ require "spec_helper"
 describe JsRoutes, "#serialize" do
 
   before(:each) do
-    evaljs(JsRoutes.generate({module_type: nil, namespace: 'Routes'}))
+    evaljs(JsRoutes.generate(module_type: nil, namespace: 'Routes'))
   end
 
   it "should provide this method" do

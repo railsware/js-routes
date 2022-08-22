@@ -12,7 +12,7 @@ describe JsRoutes, "compatibility with DTS"  do
   end
 
   let(:generated_js) do
-    JsRoutes.generate({**OPTIONS, **extra_options})
+    JsRoutes.generate(**OPTIONS, **extra_options)
   end
 
   context "when file is generated" do

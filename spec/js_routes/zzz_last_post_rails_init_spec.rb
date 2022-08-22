@@ -4,12 +4,17 @@
 
 require 'spec_helper'
 require "fileutils"
+require "sprockets"
 
 describe "after Rails initialization", :slow do
   NAME = Rails.root.join('app', 'assets', 'javascripts', 'routes.js').to_s
 
   def sprockets_v3?
     Sprockets::VERSION.to_i >= 3
+  end
+
+  def sprockets_v4?
+    Sprockets::VERSION.to_i >= 4
   end
 
   def sprockets_context(environment, name, filename)
@@ -86,6 +91,9 @@ describe "after Rails initialization", :slow do
       end
 
       context "when dealing with js-routes.js" do
+        before do
+          pending if sprockets_v4?
+        end
 
         context "with Rails" do
           context "and initialize on precompile" do
@@ -112,6 +120,7 @@ describe "after Rails initialization", :slow do
     end
     context "when not dealing with js-routes.js" do
       it "should not depend on routes.rb" do
+          pending if sprockets_v4?
         ctx = sprockets_context(Rails.application.assets,
                                 'test.js',
                                 TEST_ASSET_PATH)

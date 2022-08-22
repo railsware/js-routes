@@ -3,7 +3,7 @@ require "spec_helper"
 describe JsRoutes, "compatibility with Rails"  do
 
   let(:generated_js) do
-    JsRoutes.generate({module_type: nil, namespace: 'Routes'})
+    JsRoutes.generate(module_type: nil, namespace: 'Routes')
   end
   before(:each) do
     evaljs(generated_js)
@@ -267,7 +267,9 @@ describe JsRoutes, "compatibility with Rails"  do
       end
 
       it "treats false as absent optional part" do
-        pending("https://github.com/rails/rails/issues/42280")
+        if Rails.version < "7.0"
+          pending("https://github.com/rails/rails/issues/42280")
+        end
         expectjs("Routes.things_path(false)").to eq(test_routes.things_path(false))
       end
 

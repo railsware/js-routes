@@ -3,7 +3,7 @@ require "spec_helper"
 describe JsRoutes, "compatibility with AMD/require.js"  do
 
   before(:each) do
-    evaljs("var global = this;", {force: true})
+    evaljs("var global = this;", force: true)
     evaljs("global.GlobalCheck = {};")
     evaljs("global.define = function (requirs, callback) { global.GlobalCheck['js-routes'] = callback.call(this); return global.GlobalCheck['js-routes']; };")
     evaljs("global.define.amd = { jQuery: true };")
@@ -25,7 +25,7 @@ describe JsRoutes, "compatibility with AMD/require.js"  do
     };
 EOF
     evaljs(strRequire)
-    evaljs(JsRoutes.generate({module_type: 'AMD'}))
+    evaljs(JsRoutes.generate(module_type: 'AMD'))
   end
 
   it "should working from require" do

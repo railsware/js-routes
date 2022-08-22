@@ -3,11 +3,11 @@ require 'spec_helper'
 describe JsRoutes, "options" do
 
   let(:generated_js) do
-    JsRoutes.generate({
+    JsRoutes.generate(
       module_type: nil,
       namespace: 'Routes',
       **_options
-    })
+    )
   end
 
   before(:each) do

@@ -82,6 +82,7 @@ type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
 declare const RubyVariables: {
   PREFIX: string;
   DEPRECATED_GLOBBING_BEHAVIOR: boolean;
+  DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;
   SPECIAL_OPTIONS_KEY: string;
   DEFAULT_URL_OPTIONS: RouteParameters;
   SERIALIZER: Serializer;
@@ -310,7 +311,11 @@ RubyVariables.WRAPPER(
 
       path_identifier(object: QueryRouteParameter): string {
         const result = this.unwrap_path_identifier(object);
-        return this.is_nullable(result) || result === false ? "" : "" + result;
+        return this.is_nullable(result) ||
+          (RubyVariables.DEPRECATED_FALSE_PARAMETER_BEHAVIOR &&
+            result === false)
+          ? ""
+          : "" + result;
       }
 
       unwrap_path_identifier(object: QueryRouteParameter): unknown {

@@ -67,7 +67,7 @@ DOC
 
     before(:each) do
       FileUtils.rm_f(name)
-      JsRoutes.generate!({:file => name})
+      JsRoutes.generate!(file: name)
     end
 
     after(:each) do
