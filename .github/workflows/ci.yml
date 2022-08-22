@@ -12,7 +12,12 @@ jobs:
     strategy:
       matrix:
         ruby: ["2.7"]
-        gemfile: ["gemfiles/rails52_sprockets_3.gemfile"]
+        gemfile:
+          - rails50_sprockets_3.gemfile
+          - rails51_sprockets_3.gemfile
+          - rails52_sprockets_3.gemfile
+          - rails70_sprockets_4.gemfile
+
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:

@@ -2,7 +2,7 @@
 
 source "http://rubygems.org"
 
-gem "railties", "~> 5.0.5"
-gem "sprockets", "~> 3.0"
+gem "railties", "~> 7.0.3.1"
+gem "sprockets", "~> 4.0"
 
 gemspec path: "../"
