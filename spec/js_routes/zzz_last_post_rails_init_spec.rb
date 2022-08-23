@@ -2,9 +2,10 @@
 # because it cause unrevertable changes to runtime
 # what is why I added "zzz_last" in the beginning
 
+require "sprockets"
+require "sprockets/railtie"
 require 'spec_helper'
 require "fileutils"
-require "sprockets"
 
 describe "after Rails initialization", :slow do
   NAME = Rails.root.join('app', 'assets', 'javascripts', 'routes.js').to_s
@@ -40,6 +41,7 @@ describe "after Rails initialization", :slow do
   end
 
   before(:all) do
+    JsRoutes::Engine.install_sprockets!
     Rails.configuration.eager_load = false
     Rails.application.initialize!
   end
@@ -78,7 +80,7 @@ describe "after Rails initialization", :slow do
     context "the preprocessor" do
       before(:each) do
         path = Rails.root.join('config','routes.rb').to_s
-        if sprockets_v3?
+        if sprockets_v3? || sprockets_v4?
           expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(path)
         else
           expect(ctx).to receive(:depend_on).with(path)
@@ -91,10 +93,6 @@ describe "after Rails initialization", :slow do
       end
 
       context "when dealing with js-routes.js" do
-        before do
-          pending if sprockets_v4?
-        end
-
         context "with Rails" do
           context "and initialize on precompile" do
             before(:each) do
@@ -120,7 +118,6 @@ describe "after Rails initialization", :slow do
     end
     context "when not dealing with js-routes.js" do
       it "should not depend on routes.rb" do
-          pending if sprockets_v4?
         ctx = sprockets_context(Rails.application.assets,
                                 'test.js',
                                 TEST_ASSET_PATH)
