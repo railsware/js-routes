@@ -1,5 +1,7 @@
 # JsRoutes
 
+[![CI](https://github.com/railsware/js-routes/actions/workflows/ci.yml/badge.svg)](https://github.com/railsware/js-routes/actions/workflows/ci.yml)
+
 Generates javascript file that defines all Rails named routes as javascript helpers
 
 ## Intallation
