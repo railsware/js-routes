@@ -1,7 +1,9 @@
 ## master
 
+
 ## v2.2.5
 
+* Upgraded eslint and prettier versions [#304](https://github.com/railsware/js-routes/issues/304)
 * Fix middleware generator [#300](https://github.com/railsware/js-routes/issues/300)
 * Support `params` special parameter
 
