@@ -97,7 +97,9 @@ declare const define:
 
 declare const module: { exports: any } | undefined;
 
+// eslint-disable-next-line
 RubyVariables.WRAPPER(
+  // eslint-disable-next-line
   (): RouterExposedMethods => {
     const hasProp = (value: unknown, key: string) =>
       Object.prototype.hasOwnProperty.call(value, key);
@@ -224,7 +226,7 @@ RubyVariables.WRAPPER(
       "port",
       "protocol",
     ] as const;
-    type ReservedOption = typeof ReservedOptions[any];
+    type ReservedOption = (typeof ReservedOptions)[any];
 
     class UtilsClass {
       configuration: Configuration = {
@@ -235,7 +237,7 @@ RubyVariables.WRAPPER(
           RubyVariables.SERIALIZER || this.default_serializer.bind(this),
       };
 
-      default_serializer(value: any, prefix?: string | null): string {
+      default_serializer(value: unknown, prefix?: string | null): string {
         if (this.is_nullable(value)) {
           return "";
         }
@@ -294,14 +296,16 @@ RubyVariables.WRAPPER(
           }
           return {
             args: args.slice(0, args.length - 1),
-            options: (last_el as any) as RouteOptions,
+            options: last_el as unknown as RouteOptions,
           };
         } else {
           return { args, options: {} };
         }
       }
 
-      looks_like_serialized_model(object: any): object is ModelRouteParameter {
+      looks_like_serialized_model(
+        object: unknown
+      ): object is ModelRouteParameter {
         return (
           this.is_object(object) &&
           !(this.configuration.special_options_key in object) &&
@@ -319,7 +323,7 @@ RubyVariables.WRAPPER(
       }
 
       unwrap_path_identifier(object: QueryRouteParameter): unknown {
-        let result: any = object;
+        let result: unknown = object;
         if (!this.is_object(object)) {
           return object;
         }
@@ -416,15 +420,13 @@ RubyVariables.WRAPPER(
         absolute: boolean,
         args: OptionalRouteParameter[]
       ): string {
-        const {
-          keyword_parameters,
-          query_parameters,
-        } = this.partition_parameters(
-          parts,
-          required_params,
-          default_options,
-          args
-        );
+        const { keyword_parameters, query_parameters } =
+          this.partition_parameters(
+            parts,
+            required_params,
+            default_options,
+            args
+          );
         const missing_params = required_params.filter(
           (param) =>
             !hasProp(query_parameters, param) ||
