@@ -1,5 +1,6 @@
 ## master
 
+* Add stimulus framework application.js location to generators
 
 ## v2.2.5
 

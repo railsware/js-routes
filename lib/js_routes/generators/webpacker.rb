@@ -9,7 +9,9 @@ class JsRoutes::Generators::Webpacker < Rails::Generators::Base
     copy_file "erb.js", "config/webpack/loaders/erb.js"
     copy_file "routes.js.erb", "app/javascript/routes.js.erb"
     inject_into_file "config/webpack/environment.js", loader_content
-    inject_into_file "app/javascript/packs/application.js", pack_content
+    if path = application_js_path
+      inject_into_file path, pack_content
+    end
     command = Rails.root.join("./bin/yarn add rails-erb-loader")
     run command
   end
