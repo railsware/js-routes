@@ -302,7 +302,9 @@ Options to configure JavaScript file generator. These options are only available
   * Default: `Rails.application`
 * `file` - a file location where generated routes are stored
   * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
-
+* `post_processor` - a proc that takes a string and returns a string. It is called after the each route is generated and can be used to modify the generated code.
+  * Default: `nil`
+  * Example: `->(code) { code + addition }`
 <div id="formatter-options"></div>
 
 #### Formatter Options

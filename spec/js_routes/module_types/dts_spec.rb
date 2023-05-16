@@ -108,4 +108,26 @@ DOC
       is_expected.to include("export const inbox_message_path = __jsr.r(")
     end
   end
+
+  context do
+    let(:post_processor) do
+      Proc.new do |content, route|
+        if route
+          pattern = route.path.spec.to_s.gsub('(.:format)', '').gsub('.:format', '')
+          content + %Q[\nexport const #{route.name}_pattern = '#{pattern}';\n\n]
+        else
+          content
+        end
+      end
+    end
+
+    let(:generated_js) do
+      JsRoutes.generate(**OPTIONS.merge(post_processor: post_processor), **extra_options)
+    end
+
+    it "exports route helpers" do
+      expect(generated_js).to include("export const inboxes_pattern = '/inboxes';")
+      expect(generated_js).to include("export const inbox_message_attachment_pattern = '/inboxes/:inbox_id/messages/:message_id/attachments/:id';")
+    end
+  end
 end

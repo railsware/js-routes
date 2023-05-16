@@ -23,7 +23,7 @@ module JsRoutes
 
     def helpers
       helper_types.map do |absolute|
-        [ documentation, helper_name(absolute), body(absolute) ]
+        [ documentation, helper_name(absolute), body(absolute), @route ]
       end
     end
 

@@ -112,15 +112,21 @@ module JsRoutes
           "", name,
           @configuration.dts? ?
           "RouterExposedMethods['#{name}']" :
-          "__jsr.#{name}"
+          "__jsr.#{name}",
+          nil
         ]
       end
     end
 
+    def post_process(content, route)
+      @configuration.post_processor ? @configuration.post_processor.call(content, route) : content
+    end
+
     def routes_export
       return "" unless @configuration.modern?
-      [*static_exports, *routes_list].map do |comment, name, body|
-        "#{comment}export const #{name}#{export_separator}#{body};\n\n"
+      [*static_exports, *routes_list].map do |comment, name, body, route|
+        content = "#{comment}export const #{name}#{export_separator}#{body};\n\n"
+        post_process(content, route)
       end.join
     end
 

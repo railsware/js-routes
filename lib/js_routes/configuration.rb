@@ -17,6 +17,7 @@ module JsRoutes
       application: -> { Rails.application },
       module_type: 'ESM',
       documentation: true,
+      post_processor: nil,
     } #:nodoc:
 
     attr_accessor(*DEFAULTS.keys)
@@ -32,9 +33,10 @@ module JsRoutes
         raise "Provide attributes or block"
       end
       tap(&block) if block
+      no_instant_call_attributes = [:post_processor]
       if attributes
         attributes.each do |attribute, value|
-          value = value.call if value.is_a?(Proc)
+          value = value.call if value.is_a?(Proc) && !no_instant_call_attributes.include?(attribute)
           send(:"#{attribute}=", value)
         end
       end
