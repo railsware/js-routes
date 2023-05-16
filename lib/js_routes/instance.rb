@@ -100,8 +100,8 @@ module JsRoutes
 
     def routes_object
       return json({}) if @configuration.modern?
-      properties = routes_list.map do |comment, name, body|
-        "#{comment}#{name}: #{body}".indent(2)
+      properties = routes_list.map do |comment, name, body, route|
+        post_process("#{comment}#{name}: #{body}", route).indent(2)
       end
       "{\n" + properties.join(",\n\n") + "}\n"
     end

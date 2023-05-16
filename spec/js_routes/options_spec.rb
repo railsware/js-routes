@@ -505,4 +505,23 @@ describe JsRoutes, "options" do
       expect(generated_js).not_to include("@returns")
     end
   end
+
+  describe "post_processor option" do
+    let(:post_processor) do
+      Proc.new do |content, route|
+        if route
+          pattern = route.path.spec.to_s.gsub('(.:format)', '').gsub('.:format', '')
+          content + %Q[,\n#{route.name}_pattern: '#{pattern}']
+        else
+          content
+        end
+      end
+    end
+    let(:_options) { {post_processor: post_processor} }
+
+    it "disables documentation generation" do
+      expect(generated_js).to include("inboxes_pattern: '/inboxes',")
+      expect(generated_js).to include("inbox_message_attachment_pattern: '/inboxes/:inbox_id/messages/:message_id/attachments/:id',")
+    end
+  end
 end
