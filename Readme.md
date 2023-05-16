@@ -64,7 +64,7 @@ Upgrade `rake assets:precompile` to update js-routes files in `Rakefile`:
 
 ``` ruby
 namespace :assets do
-  task :precompile => "js:routes:typescript"
+  task precompile: "js:routes:typescript"
 end
 ```
 

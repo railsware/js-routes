@@ -39,7 +39,7 @@ window.Routes = Routes;
 
 # Update js-routes file before assets precompile
 namespace :assets do
-  task :precompile => "js:routes:typescript"
+  task precompile: "js:routes:typescript"
 end
     RB
   end
