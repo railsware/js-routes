@@ -35,12 +35,11 @@ window.Routes = Routes;
   end
 
   def rakefile_content
+    enhanced_task = Bundler.load.gems.find {|g| g.name = 'jsbundling-rails'} ?
+      "javascript:build" : "assets:precompile"
     <<-RB
-
-# Update js-routes file before assets precompile
-namespace :assets do
-  task precompile: "js:routes:typescript"
-end
+# Update js-routes file before javascript build
+task "#{enhanced_task}" => "js:routes:typescript"
     RB
   end
 
