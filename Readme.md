@@ -60,12 +60,13 @@ import {post_path} from '../routes';
 alert(post_path(1))
 ```
 
-Upgrade `rake assets:precompile` to update js-routes files in `Rakefile`: 
+Upgrade js building process to update js-routes files in `Rakefile`: 
 
 ``` ruby
-namespace :assets do
-  task precompile: "js:routes:typescript"
-end
+task "javascript:build" => "js:routes:typescript"
+# For setups without jsbundling-rails
+task "assets:precompile" => "js:routes:typescript"
+
 ```
 
 Add js-routes files to `.gitignore`:

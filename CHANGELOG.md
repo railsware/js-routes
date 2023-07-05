@@ -1,5 +1,7 @@
 ## master
 
+## v2.2.6
+
 * Prefer to extend `javascript:build` instead of `assets:precompile`. [#305](https://github.com/railsware/js-routes/issues/305)
 * Add stimulus framework application.js location to generators
 
