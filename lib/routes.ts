@@ -40,11 +40,10 @@ type RequiredParameters<T extends number> = T extends 1
     ]
   : RequiredRouteParameter[];
 
-type RouteHelperOptions<T extends string> = RouteOptions &
-  Optional<Record<T, OptionalRouteParameter>>;
+type RouteHelperOptions = RouteOptions & Record<string, OptionalRouteParameter>;
 
-type RouteHelper<T extends number = number, U extends string = string> = ((
-  ...args: [...RequiredParameters<T>, RouteHelperOptions<U>]
+type RouteHelper<T extends number = number> = ((
+  ...args: [...RequiredParameters<T>, RouteHelperOptions]
 ) => string) &
   RouteHelperExtras;
 
@@ -539,7 +538,7 @@ RubyVariables.WRAPPER(
         let key: string;
         switch (route[0]) {
           case NodeTypes.GROUP:
-            return "(" + this.build_path_spec(route[1]) + ")";
+            return `(${this.build_path_spec(route[1])})`;
           case NodeTypes.CAT:
             return (
               this.build_path_spec(route[1]) + this.build_path_spec(route[2])

@@ -32,8 +32,8 @@ declare type RequiredParameters<T extends number> = T extends 1 ? [RequiredRoute
     RequiredRouteParameter,
     RequiredRouteParameter
 ] : RequiredRouteParameter[];
-declare type RouteHelperOptions<T extends string> = RouteOptions & Optional<Record<T, OptionalRouteParameter>>;
-declare type RouteHelper<T extends number = number, U extends string = string> = ((...args: [...RequiredParameters<T>, RouteHelperOptions<U>]) => string) & RouteHelperExtras;
+declare type RouteHelperOptions = RouteOptions & Record<string, OptionalRouteParameter>;
+declare type RouteHelper<T extends number = number> = ((...args: [...RequiredParameters<T>, RouteHelperOptions]) => string) & RouteHelperExtras;
 declare type RouteHelpers = Record<string, RouteHelper>;
 declare type Configuration = {
     prefix: string;
