@@ -1,5 +1,9 @@
 ## master
 
+## v2.2.7
+
+* Fix ESM Tree Shaking [#306](https://github.com/railsware/js-routes/issues/306)
+
 ## v2.2.6
 
 * Prefer to extend `javascript:build` instead of `assets:precompile`. [#305](https://github.com/railsware/js-routes/issues/305)
