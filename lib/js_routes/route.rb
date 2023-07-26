@@ -33,8 +33,14 @@ module JsRoutes
     end
 
     def body(absolute)
-      @configuration.dts? ?
-        definition_body : "__jsr.r(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
+      if @configuration.dts?
+        definition_body
+      else
+        # For tree-shaking ESM, add a #__PURE__ comment informing Webpack/minifiers that the call to `__jsr.r`
+        # has no side-effects (e.g. modifying global variables) and is safe to remove when unused.
+        pure_comment = @configuration.esm? ? '/*#__PURE__*/ ' : ''
+        "#{pure_comment}__jsr.r(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
+      end
     end
 
     def definition_body
