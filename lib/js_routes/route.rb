@@ -38,6 +38,7 @@ module JsRoutes
       else
         # For tree-shaking ESM, add a #__PURE__ comment informing Webpack/minifiers that the call to `__jsr.r`
         # has no side-effects (e.g. modifying global variables) and is safe to remove when unused.
+        # https://webpack.js.org/guides/tree-shaking/#clarifying-tree-shaking-and-sideeffects
         pure_comment = @configuration.esm? ? '/*#__PURE__*/ ' : ''
         "#{pure_comment}__jsr.r(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
       end
