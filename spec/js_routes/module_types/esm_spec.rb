@@ -24,7 +24,7 @@ describe JsRoutes, "compatibility with ESM"  do
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inboxes_path = __jsr.r
+export const inboxes_path = /*#__PURE__*/ __jsr.r(
 DOC
   end
 
@@ -39,7 +39,7 @@ DOC
   describe "compiled javascript asset" do
     subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }
     it "should have js routes code" do
-      is_expected.to include("export const inbox_message_path = __jsr.r(")
+      is_expected.to include("export const inbox_message_path = /*#__PURE__*/ __jsr.r(")
     end
   end
 end

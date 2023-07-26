@@ -414,9 +414,14 @@ JsRoutes itself does not have security holes.
 It makes URLs without access protection more reachable by potential attacker.
 If that is an issue for you, you may use one of the following solutions:
 
-### Explicit Import + ESM Tree shaking
+### ESM Tree shaking
 
-Make sure `module_type` is set to `ESM` (the default) and JS files import only required routes into the file like:
+Make sure `module_type` is set to `ESM` (the default). Modern JS bundlers like
+[Webpack](https://webpack.js.org) can statically determine which ESM exports are used, and remove
+the unused exports to reduce bundle size. This is known as [Tree
+Shaking](https://webpack.js.org/guides/tree-shaking/).
+
+JS files can use named imports to import only required routes into the file, like:
 
 ``` javascript
 import {
@@ -428,8 +433,15 @@ import {
 } from '../routes'
 ```
 
-Such import structure allows for moddern JS bundlers like [Webpack](https://webpack.js.org/) to only include explicitly imported routes into JS bundle file.
-See [Tree Shaking](https://webpack.js.org/guides/tree-shaking/) for more information.
+JS files can also use star imports (`import * as`) for tree shaking, as long as only explicit property accesses are used.
+
+``` javascript
+import * as routes from '../routes';
+
+console.log(routes.inbox_path); // OK, only `inbox_path` is included in the bundle
+
+console.log(Object.keys(routes)); // forces bundler to include all exports, breaking tree shaking
+```
 
 ### Exclude option
 
