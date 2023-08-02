@@ -79,7 +79,7 @@ DOC
     end
 
     it "should not generate file before initialization" do
-      expect(File.exists?(name)).to be_falsey
+      expect(File.exist?(name)).to be_falsey
     end
   end
 end
