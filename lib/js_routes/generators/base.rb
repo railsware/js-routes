@@ -10,7 +10,7 @@ class JsRoutes::Generators::Base < Rails::Generators::Base
       "app/javascript/packs/application.js",
       "app/javascript/controllers/application.js",
     ].find do |path|
-      File.exists?(Rails.root.join(path))
+      File.exist?(Rails.root.join(path))
     end
   end
 end
