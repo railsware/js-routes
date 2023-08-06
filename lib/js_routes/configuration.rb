@@ -75,7 +75,7 @@ module JsRoutes
     end
 
     def output_file
-      webpacker_dir = pathname('app', 'javascript')
+      webpacker_dir = defined?(Webpacker) ? Webpacker.config.source_path : pathname('app', 'javascript')
       sprockets_dir = pathname('app','assets','javascripts')
       file_name = file || default_file_name
       sprockets_file = sprockets_dir.join(file_name)

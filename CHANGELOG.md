@@ -1,5 +1,8 @@
 ## master
 
+* Use webpacker config variable instead of hardcode [#309](https://github.com/railsware/js-routes/issues/309)
+* Use `File.exist?` to be compatible with all versions of ruby [#310](https://github.com/railsware/js-routes/issues/310)
+
 ## v2.2.7
 
 * Fix ESM Tree Shaking [#306](https://github.com/railsware/js-routes/issues/306)

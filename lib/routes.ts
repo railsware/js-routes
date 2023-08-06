@@ -100,7 +100,7 @@ declare const module: { exports: any } | undefined;
 RubyVariables.WRAPPER(
   // eslint-disable-next-line
   (): RouterExposedMethods => {
-    const hasProp = (value: unknown, key: string) =>
+    const hasProp = (value: unknown, key: string): boolean =>
       Object.prototype.hasOwnProperty.call(value, key);
     enum NodeTypes {
       GROUP = 1,
