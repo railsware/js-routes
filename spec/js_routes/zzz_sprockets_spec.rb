@@ -47,7 +47,7 @@ describe "after Rails initialization", :slow do
   end
 
   it "should generate routes file" do
-    expect(File.exists?(NAME)).to be_truthy
+    expect(File.exist?(NAME)).to be_truthy
   end
 
   it "should not rewrite routes file if nothing changed" do
