@@ -54,6 +54,10 @@ rescue MiniRacer::RuntimeError => e
   raise e
 end
 
+def evallib(**options)
+  evaljs(JsRoutes.generate(**options), filename: 'lib/routes.js')
+end
+
 def test_routes
   ::App.routes.url_helpers
 end

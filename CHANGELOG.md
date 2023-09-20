@@ -1,5 +1,8 @@
 ## master
 
+## v2.2.8
+
+* Leave emoji symbols intact when encoding URI fragment [#312](https://github.com/railsware/js-routes/issues/312)
 * Use webpacker config variable instead of hardcode [#309](https://github.com/railsware/js-routes/issues/309)
 * Use `File.exist?` to be compatible with all versions of ruby [#310](https://github.com/railsware/js-routes/issues/310)
 

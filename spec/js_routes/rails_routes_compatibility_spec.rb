@@ -2,11 +2,8 @@ require "spec_helper"
 
 describe JsRoutes, "compatibility with Rails"  do
 
-  let(:generated_js) do
-    JsRoutes.generate(module_type: nil, namespace: 'Routes')
-  end
   before(:each) do
-    evaljs(generated_js)
+    evallib(module_type: nil, namespace: 'Routes')
   end
 
   it "should generate collection routing" do
@@ -87,14 +84,22 @@ describe JsRoutes, "compatibility with Rails"  do
     expectjs("Routes.budgie_descendents_path(1)").to eq(test_routes.budgie_descendents_path(1))
   end
 
-  it "should support route with parameters containing symbols that need URI-encoding", :aggregate_failures do
-    expectjs("Routes.inbox_path('#hello')").to eq(test_routes.inbox_path('#hello'))
-    expectjs("Routes.inbox_path('some param')").to eq(test_routes.inbox_path('some param'))
-    expectjs("Routes.inbox_path('some param with more & more encode symbols')").to eq(test_routes.inbox_path('some param with more & more encode symbols'))
-  end
-  it "should support route with parameters containing symbols not need URI-encoding", :aggregate_failures do
-    expectjs("Routes.inbox_path(':some_id')").to eq(test_routes.inbox_path(':some_id'))
-    expectjs("Routes.inbox_path('.+')").to eq(test_routes.inbox_path('.+'))
+  describe "url parameters encoding" do
+
+    it "should support route with parameters containing symbols that need URI-encoding", :aggregate_failures do
+      expectjs("Routes.inbox_path('#hello')").to eq(test_routes.inbox_path('#hello'))
+      expectjs("Routes.inbox_path('some param')").to eq(test_routes.inbox_path('some param'))
+      expectjs("Routes.inbox_path('some param with more & more encode symbols')").to eq(test_routes.inbox_path('some param with more & more encode symbols'))
+    end
+
+    it "should support route with parameters containing symbols not need URI-encoding", :aggregate_failures do
+      expectjs("Routes.inbox_path(':some_id')").to eq(test_routes.inbox_path(':some_id'))
+      expectjs("Routes.inbox_path('.+')").to eq(test_routes.inbox_path('.+'))
+    end
+
+    it "supports emoji characters", :aggregate_failures do
+      expectjs("Routes.inbox_path('💗')").to eq(test_routes.inbox_path('💗'))
+    end
   end
 
   describe "when route has defaults" do

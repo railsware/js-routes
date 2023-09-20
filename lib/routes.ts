@@ -135,6 +135,16 @@ RubyVariables.WRAPPER(
       define: (routes: RouterExposedMethods) => void;
       isSupported: () => boolean;
     };
+
+    const UnescapedSpecials = "-._~!$&'()*+,;=:@"
+      .split("")
+      .map((s) => s.charCodeAt(0));
+    const UnescapedRanges = [
+      ["a", "z"],
+      ["A", "Z"],
+      ["0", "9"],
+    ].map((range) => range.map((s) => s.charCodeAt(0)));
+
     const ModuleReferences: Record<ModuleType, ModuleDefinition> = {
       CJS: {
         define(routes) {
@@ -214,8 +224,6 @@ RubyVariables.WRAPPER(
         this.name = ParametersMissing.name;
       }
     }
-
-    const UriEncoderSegmentRegex = /[^a-zA-Z0-9\-._~!$&'()*+,;=:@]/g;
 
     const ReservedOptions = [
       "anchor",
@@ -525,9 +533,25 @@ RubyVariables.WRAPPER(
       }
 
       encode_segment(segment: string): string {
-        return segment.replace(UriEncoderSegmentRegex, (str) =>
-          encodeURIComponent(str)
-        );
+        if (segment.match(/^[a-zA-Z0-9-]$/)) {
+          // Performance optimization for 99% of cases
+          return segment;
+        }
+        return (segment.match(/./gu) || [])
+          .map((ch) => {
+            const code = ch.charCodeAt(0);
+            if (
+              UnescapedRanges.find(
+                (range) => code >= range[0] && code <= range[1]
+              ) ||
+              UnescapedSpecials.includes(code)
+            ) {
+              return ch;
+            } else {
+              return encodeURIComponent(ch);
+            }
+          })
+          .join("");
       }
 
       is_optional_node(node: NodeTypes): boolean {
