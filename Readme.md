@@ -16,16 +16,17 @@ gem "js-routes"
 
 There are several possible ways to setup JsRoutes:
 
-* [Quick and easy](#quick-start)
+* [Quick and easy](#quick-start) - Recommended
   * Uses Rack Middleware to automatically update routes locally
   * Automatically generates routes files on javascript build
   * Works great for a simple Rails application
-* [Webpacker ERB Loader](#webpacker)
-  * Requires ESM module system (the default)
-  * Doesn't support typescript definitions
 * [Advanced Setup](#advanced-setup)
   * Allows very custom setups
-* [Sprockets](#sprockets) legacy
+  * Automatic updates need to be customized
+* [Webpacker ERB Loader](#webpacker) - Legacy
+  * Requires ESM module system (the default)
+  * Doesn't support typescript definitions
+* [Sprockets](#sprockets) - Legacy
   * Deprecated and not recommended for modern apps
 
 <div id='quick-start'></div>
@@ -80,7 +81,7 @@ Add js-routes files to `.gitignore`:
 
 ### Webpacker ERB loader
 
-**IMPORTANT**: this setup doesn't support IDE autocompletion with [Typescript](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html)
+**IMPORTANT**: the setup doesn't support IDE autocompletion with [Typescript](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html)
 
 
 #### Use a Generator
