@@ -2,8 +2,6 @@ require "js_routes/generators/base"
 
 class JsRoutes::Generators::Middleware < JsRoutes::Generators::Base
 
-  source_root File.expand_path(__FILE__ + "/../../../templates")
-
   def create_middleware
     copy_file "initializer.rb", "config/initializers/js_routes.rb"
     inject_into_file "config/environments/development.rb", middleware_content, before: /^end\n\z/
@@ -20,8 +18,8 @@ class JsRoutes::Generators::Middleware < JsRoutes::Generators::Base
 
   def pack_content
     <<-JS
-import * as Routes from '../routes';
-window.Routes = Routes;
+import {root_path} from '../routes';
+alert(`JsRoutes installed.\\nYour root path is ${root_path()}`)
     JS
   end
 
@@ -35,8 +33,7 @@ window.Routes = Routes;
   end
 
   def rakefile_content
-    enhanced_task = Bundler.load.gems.find {|g| g.name = 'jsbundling-rails'} ?
-      "javascript:build" : "assets:precompile"
+    enhanced_task = depends_on_js_bundling? ? "javascript:build" : "assets:precompile"
     <<-RB
 # Update js-routes file before javascript build
 task "#{enhanced_task}" => "js:routes:typescript"

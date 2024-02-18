@@ -2,8 +2,6 @@ require "rails/generators"
 
 class JsRoutes::Generators::Webpacker < Rails::Generators::Base
 
-  source_root File.expand_path(__FILE__ + "/../../../templates")
-
   def create_webpack
     copy_file "initializer.rb", "config/initializers/js_routes.rb"
     copy_file "erb.js", "config/webpack/loaders/erb.js"
@@ -21,7 +19,7 @@ class JsRoutes::Generators::Webpacker < Rails::Generators::Base
   def pack_content
     <<-JS
 import * as Routes from 'routes.js.erb';
-window.Routes = Routes;
+alert(Routes.root_path())
     JS
   end
 
