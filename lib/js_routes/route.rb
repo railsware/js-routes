@@ -1,8 +1,16 @@
+# typed: strict
+
+require "js_routes/types"
+require "action_dispatch/journey/route"
+
 module JsRoutes
   class Route #:nodoc:
-    FILTERED_DEFAULT_PARTS = [:controller, :action]
-    URL_OPTIONS = [:protocol, :domain, :host, :port, :subdomain]
-    NODE_TYPES = {
+    include JsRoutes::Types
+    extend T::Sig
+
+    FILTERED_DEFAULT_PARTS = T.let([:controller, :action].freeze, T::Array[Symbol])
+    URL_OPTIONS = T.let([:protocol, :domain, :host, :port, :subdomain].freeze, T::Array[Symbol])
+    NODE_TYPES = T.let({
       GROUP: 1,
       CAT: 2,
       SYMBOL: 3,
@@ -11,84 +19,105 @@ module JsRoutes
       LITERAL: 6,
       SLASH: 7,
       DOT: 8
-    }
+    }.freeze, T::Hash[Symbol, Integer])
 
-    attr_reader :configuration, :route, :parent_route
+    sig {returns(JsRoutes::Configuration)}
+    attr_reader :configuration
 
+    sig {returns(JourneyRoute)}
+    attr_reader :route
+
+    sig {returns(T.nilable(JourneyRoute))}
+    attr_reader :parent_route
+
+    sig { params(configuration: JsRoutes::Configuration, route: JourneyRoute, parent_route: T.nilable(JourneyRoute)).void }
     def initialize(configuration, route, parent_route = nil)
-      @configuration = configuration
-      @route = route
-      @parent_route = parent_route
+      @configuration = T.let(configuration, JsRoutes::Configuration)
+      @route = T.let(route, JourneyRoute)
+      @parent_route = T.let(parent_route, T.nilable(JourneyRoute))
     end
 
+    sig { returns(T::Array[T::Array[String]]) }
     def helpers
       helper_types.map do |absolute|
         [ documentation, helper_name(absolute), body(absolute) ]
       end
     end
 
+    sig {returns(T::Array[T::Boolean])}
     def helper_types
       return [] unless match_configuration?
       @configuration[:url_links] ? [true, false] : [false]
     end
 
+    sig { params(absolute: T::Boolean).returns(String) }
     def body(absolute)
       if @configuration.dts?
         definition_body
       else
         # For tree-shaking ESM, add a #__PURE__ comment informing Webpack/minifiers that the call to `__jsr.r`
         # has no side-effects (e.g. modifying global variables) and is safe to remove when unused.
-        # https://webpack.js.org/guides/tree-shaking/#clarifying-tree-shaking-and-sideeffects
+        # https://webpack.js.org/guides/tree-shaking/#clarifying-tree-shaking-and-sidyeeffects
         pure_comment = @configuration.esm? ? '/*#__PURE__*/ ' : ''
         "#{pure_comment}__jsr.r(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
       end
     end
 
+    sig { returns(String) }
     def definition_body
       args = required_parts.map{|p| "#{apply_case(p)}: RequiredRouteParameter"}
       args << "options?: #{optional_parts_type} & RouteOptions"
       "((\n#{args.join(",\n").indent(2)}\n) => string) & RouteHelperExtras"
     end
 
+    sig { returns(String) }
     def optional_parts_type
-      @optional_parts_type ||=
-        "{" + optional_parts.map {|p| "#{p}?: OptionalRouteParameter"}.join(', ') + "}"
+      @optional_parts_type ||= T.let("{" + optional_parts.map {|p| "#{p}?: OptionalRouteParameter"}.join(', ') + "}", T.nilable(String))
     end
 
     protected
 
+
+    sig { params(absolute: T::Boolean).returns(T::Array[T.untyped]) }
     def arguments(absolute)
       absolute ? [*base_arguments, true] : base_arguments
     end
 
+    sig { returns(T::Boolean) }
     def match_configuration?
       !match?(@configuration[:exclude]) && match?(@configuration[:include])
     end
 
+    sig { returns(T.nilable(String)) }
     def base_name
-      @base_name ||= parent_route ?
-        [parent_route.name, route.name].join('_') : route.name
+      @base_name ||= T.let(parent_route ?
+        [parent_route&.name, route.name].join('_') : route.name, T.nilable(String))
     end
 
+    sig { returns(T.nilable(RouteSpec)) }
     def parent_spec
       parent_route&.path&.spec
     end
 
+    sig { returns(RouteSpec) }
     def spec
       route.path.spec
     end
 
+    sig { params(value: T.untyped).returns(String) }
     def json(value)
       JsRoutes.json(value)
     end
 
+    sig { params(absolute: T::Boolean).returns(String) }
     def helper_name(absolute)
       suffix = absolute ? :url : @configuration[:compact] ? nil : :path
       apply_case(base_name, suffix)
     end
 
+    sig { returns(String) }
     def documentation
-      return nil unless @configuration[:documentation]
+      return '' unless @configuration[:documentation]
       <<-JS
 /**
  * Generates rails route to
@@ -99,18 +128,22 @@ module JsRoutes
 JS
     end
 
+    sig { returns(T::Array[Symbol]) }
     def required_parts
       route.required_parts
     end
 
+    sig { returns(T::Array[Symbol]) }
     def optional_parts
       route.path.optional_names
     end
 
+    sig { returns(T::Array[T.untyped]) }
     def base_arguments
-      @base_arguments ||= [parts_table, serialize(spec, parent_spec)]
+      @base_arguments ||= T.let([parts_table, serialize(spec, parent_spec)], T.nilable(T::Array[T.untyped]))
     end
 
+    sig { returns(T::Hash[Symbol, T::Hash[Symbol, T.untyped]]) }
     def parts_table
       parts_table = {}
       route.parts.each do |part, hash|
@@ -131,16 +164,19 @@ JS
       parts_table
     end
 
+    sig { returns(String) }
     def documentation_params
       required_parts.map do |param|
         "\n * @param {any} #{apply_case(param)}"
       end.join
     end
 
+    sig { params(matchers: Clusivity).returns(T::Boolean) }
     def match?(matchers)
       Array(matchers).any? { |regex| base_name =~ regex }
     end
 
+    sig { params(values: T.nilable(Literal)).returns(String) }
     def apply_case(*values)
       value = values.compact.map(&:to_s).join('_')
       @configuration[:camel_case] ? value.camelize(:lower) : value
@@ -150,6 +186,7 @@ JS
     # We do not use Hash for human readable serialization
     # And preffer Array serialization because it is shorter.
     # Routes.js file will be smaller.
+    sig { params(spec: RouteSpec, parent_spec: T.nilable(RouteSpec)).returns(T.nilable(T.any(T::Array[T.untyped], String))) }
     def serialize(spec, parent_spec=nil)
       return nil unless spec
       # Rails 4 globbing requires * removal
@@ -168,6 +205,7 @@ JS
       result
     end
 
+    sig { params(spec: RouteSpec, parent_spec: T.nilable(RouteSpec)).returns(T::Array[T.untyped]) }
     def serialize_spec(spec, parent_spec = nil)
       [
         NODE_TYPES[spec.type],

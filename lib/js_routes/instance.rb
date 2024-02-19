@@ -1,26 +1,34 @@
+# typed: strict
 require "js_routes/configuration"
 require "js_routes/route"
+require "js_routes/types"
 
 module JsRoutes
   class Instance # :nodoc:
+    include JsRoutes::Types
+    extend T::Sig
 
+    sig { returns(JsRoutes::Configuration) }
     attr_reader :configuration
     #
     # Implementation
     #
 
+    sig { params(options: Attributes).void }
     def initialize(options = {})
-      @configuration = JsRoutes.configuration.merge(options)
+      @configuration = T.let(JsRoutes.configuration.merge(options), JsRoutes::Configuration)
     end
 
+    sig {returns(String)}
     def generate
       # Ensure routes are loaded. If they're not, load them.
-      if named_routes.empty? && application.respond_to?(:reload_routes!)
+      application = T.unsafe(self.application)
+      if named_routes.empty? && application.respond_to?(:reload_routes!, true)
         application.reload_routes!
       end
       content = File.read(@configuration.source_file)
 
-      if !@configuration.dts?
+      unless @configuration.dts?
         content = js_variables.inject(content) do |js, (key, value)|
           js.gsub!("RubyVariables.#{key}", value.to_s) ||
           raise("Missing key #{key} in JS template")
@@ -29,11 +37,12 @@ module JsRoutes
       content + routes_export + prevent_types_export
     end
 
+    sig { void }
     def generate!
       # Some libraries like Devise did not load their routes yet
       # so we will wait until initialization process finishes
       # https://github.com/railsware/js-routes/issues/7
-      Rails.configuration.after_initialize do
+      T.unsafe(Rails).configuration.after_initialize do
         file_path = Rails.root.join(@configuration.output_file)
         source_code = generate
 
@@ -49,16 +58,20 @@ module JsRoutes
 
     protected
 
+    sig { returns(T::Hash[String, String]) }
     def js_variables
+      version = Rails.version
+      prefix = @configuration.prefix
+      prefix = prefix.call if prefix.is_a?(Proc)
       {
         'GEM_VERSION'         => JsRoutes::VERSION,
         'ROUTES_OBJECT'       => routes_object,
-        'RAILS_VERSION'       => ActionPack.version,
-        'DEPRECATED_GLOBBING_BEHAVIOR' => ActionPack::VERSION::MAJOR == 4 && ActionPack::VERSION::MINOR == 0,
-        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => ActionPack::VERSION::MAJOR < 7,
+        'RAILS_VERSION'       => ::Rails.version,
+        'DEPRECATED_GLOBBING_BEHAVIOR' => version >= '4.0.0' && version < '4.1.0',
+        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => version < '7.0.0',
         'APP_CLASS'           => application.class.to_s,
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
-        'PREFIX'              => json(@configuration.prefix),
+        'PREFIX'              => json(prefix),
         'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
         'SERIALIZER'          => @configuration.serializer || json(nil),
         'MODULE_TYPE'         => json(@configuration.module_type),
@@ -66,6 +79,7 @@ module JsRoutes
       }
     end
 
+    sig { returns(String) }
     def wrapper_variable
       case @configuration.module_type
       when 'ESM'
@@ -86,18 +100,22 @@ module JsRoutes
       end
     end
 
+    sig { returns(Application) }
     def application
-      @configuration.application
+      @configuration.application.call
     end
 
-    def json(string)
-      JsRoutes.json(string)
+    sig { params(value: T.untyped).returns(String) }
+    def json(value)
+      JsRoutes.json(value)
     end
 
+    sig { returns(T::Hash[Symbol, JourneyRoute]) }
     def named_routes
-      application.routes.named_routes.to_a
+      T.unsafe(application).routes.named_routes.to_h
     end
 
+    sig { returns(String) }
     def routes_object
       return json({}) if @configuration.modern?
       properties = routes_list.map do |comment, name, body|
@@ -106,10 +124,11 @@ module JsRoutes
       "{\n" + properties.join(",\n\n") + "}\n"
     end
 
+    sig { returns(T::Array[T::Array[String]]) }
     def static_exports
       [:configure, :config, :serialize].map do |name|
         [
-          "", name,
+          "", name.to_s,
           @configuration.dts? ?
           "RouterExposedMethods['#{name}']" :
           "__jsr.#{name}"
@@ -117,6 +136,7 @@ module JsRoutes
       end
     end
 
+    sig { returns(String) }
     def routes_export
       return "" unless @configuration.modern?
       [*static_exports, *routes_list].map do |comment, name, body|
@@ -124,6 +144,7 @@ module JsRoutes
       end.join
     end
 
+    sig { returns(String) }
     def prevent_types_export
       return "" unless @configuration.dts?
       <<-JS
@@ -133,18 +154,21 @@ export {};
       JS
     end
 
+    sig { returns(String) }
     def export_separator
       @configuration.dts? ? ': ' : ' = '
     end
 
+    sig { returns(T::Array[T::Array[String]]) }
     def routes_list
       named_routes.sort_by(&:first).flat_map do |_, route|
         route_helpers_if_match(route) + mounted_app_routes(route)
       end
     end
 
+    sig { params(route: JourneyRoute).returns(T::Array[T::Array[String]]) }
     def mounted_app_routes(route)
-      rails_engine_app = app_from_route(route)
+      rails_engine_app = T.unsafe(app_from_route(route))
       if rails_engine_app.respond_to?(:superclass) &&
           rails_engine_app.superclass == Rails::Engine && !route.path.anchored
         rails_engine_app.routes.named_routes.flat_map do |_, engine_route|
@@ -155,6 +179,7 @@ export {};
       end
     end
 
+    sig { params(route: JourneyRoute).returns(T.untyped) }
     def app_from_route(route)
       app = route.app
       # rails engine in Rails 4.2 use additional
@@ -166,6 +191,7 @@ export {};
       end
     end
 
+    sig { params(route: JourneyRoute, parent_route: T.nilable(JourneyRoute)).returns(T::Array[T::Array[String]]) }
     def route_helpers_if_match(route, parent_route = nil)
       Route.new(@configuration, route, parent_route).helpers
     end

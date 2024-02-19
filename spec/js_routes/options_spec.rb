@@ -64,7 +64,7 @@ describe JsRoutes, "options" do
 
   context "when exclude is specified" do
 
-    let(:_options) { {:exclude => /^admin_/} }
+    let(:_options) { {exclude: [/^admin_/]} }
 
     it "should exclude specified routes from file" do
       expectjs("Routes.admin_users_path").to be_nil
@@ -75,7 +75,7 @@ describe JsRoutes, "options" do
     end
 
     context "for rails engine" do
-      let(:_options) { {:exclude => /^blog_app_posts/} }
+      let(:_options) { {:exclude => [/^blog_app_posts/]} }
 
       it "should exclude specified engine route" do
         expectjs("Routes.blog_app_posts_path").to be_nil
@@ -85,7 +85,7 @@ describe JsRoutes, "options" do
 
   context "when include is specified" do
 
-    let(:_options) { {:include => /^admin_/} }
+    let(:_options) { {include: [/^admin_/]} }
 
     it "should exclude specified routes from file" do
       expectjs("Routes.admin_users_path()").not_to be_nil
@@ -96,7 +96,7 @@ describe JsRoutes, "options" do
     end
 
     context "with camel_case option" do
-      let(:_options) { {include: /^admin_/, camel_case: true} }
+      let(:_options) { {include: [/^admin_/], camel_case: true} }
 
       it "should exclude specified routes from file" do
         expectjs("Routes.adminUsersPath()").not_to be_nil
@@ -108,7 +108,7 @@ describe JsRoutes, "options" do
     end
 
     context "for rails engine" do
-      let(:_options) { {:include => /^blog_app_posts/} }
+      let(:_options) { {include: [/^blog_app_posts/]} }
 
       it "should include specified engine route" do
         expectjs("Routes.blog_app_posts_path()").not_to be_nil
@@ -490,7 +490,7 @@ describe JsRoutes, "options" do
   end
 
   describe "when application is specified" do
-    let(:_options) { {:application => BlogEngine::Engine} }
+    let(:_options) { {application: -> {BlogEngine::Engine}} }
 
     it "should include specified engine route" do
       expectjs("Routes.posts_path()").not_to be_nil

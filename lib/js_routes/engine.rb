@@ -1,3 +1,5 @@
+require "rails/engine"
+
 module JsRoutes
 class SprocketsExtension
   def initialize(filename, &block)
