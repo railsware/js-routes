@@ -4,6 +4,6 @@ source "http://rubygems.org"
 gemspec
 
 group :development do
-  gem 'sorbet'
+  gem 'sorbet', '>= 0.5.11518'
   gem 'tapioca'
 end

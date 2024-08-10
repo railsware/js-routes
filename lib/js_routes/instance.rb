@@ -14,8 +14,9 @@ module JsRoutes
     # Implementation
     #
 
-    sig { params(options: Attributes).void }
-    def initialize(options = {})
+    sig { params(options: T.untyped).void }
+    def initialize(**options)
+      options = T.let(options, Options)
       @configuration = T.let(JsRoutes.configuration.merge(options), JsRoutes::Configuration)
     end
 
@@ -124,7 +125,7 @@ module JsRoutes
       "{\n" + properties.join(",\n\n") + "}\n"
     end
 
-    sig { returns(T::Array[T::Array[String]]) }
+    sig { returns(T::Array[StringArray]) }
     def static_exports
       [:configure, :config, :serialize].map do |name|
         [
@@ -159,14 +160,14 @@ export {};
       @configuration.dts? ? ': ' : ' = '
     end
 
-    sig { returns(T::Array[T::Array[String]]) }
+    sig { returns(T::Array[StringArray]) }
     def routes_list
       named_routes.sort_by(&:first).flat_map do |_, route|
         route_helpers_if_match(route) + mounted_app_routes(route)
       end
     end
 
-    sig { params(route: JourneyRoute).returns(T::Array[T::Array[String]]) }
+    sig { params(route: JourneyRoute).returns(T::Array[StringArray]) }
     def mounted_app_routes(route)
       rails_engine_app = T.unsafe(app_from_route(route))
       if rails_engine_app.respond_to?(:superclass) &&
@@ -191,7 +192,7 @@ export {};
       end
     end
 
-    sig { params(route: JourneyRoute, parent_route: T.nilable(JourneyRoute)).returns(T::Array[T::Array[String]]) }
+    sig { params(route: JourneyRoute, parent_route: T.nilable(JourneyRoute)).returns(T::Array[StringArray]) }
     def route_helpers_if_match(route, parent_route = nil)
       Route.new(@configuration, route, parent_route).helpers
     end

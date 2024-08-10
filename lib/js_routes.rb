@@ -31,7 +31,7 @@ module JsRoutes
 
     sig { params(opts: T.untyped).returns(String) }
     def generate(**opts)
-      Instance.new(opts).generate
+      Instance.new(**opts).generate
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }

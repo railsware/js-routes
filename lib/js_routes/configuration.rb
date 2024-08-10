@@ -7,10 +7,6 @@ module JsRoutes
     include JsRoutes::Types
     extend T::Sig
 
-    Prefix = T.type_alias do
-      T.any(T.proc.returns(String), String, NilClass)
-    end
-
     DEFAULTS = T.let({
       namespace: nil,
       exclude: [],
@@ -42,7 +38,7 @@ module JsRoutes
     attr_accessor :url_links
     sig { returns(T::Boolean) }
     attr_accessor :camel_case
-    sig { returns(T::Hash[Symbol, T.untyped]) }
+    sig { returns(Options) }
     attr_accessor :default_url_options
     sig { returns(T::Boolean) }
     attr_accessor :compact
@@ -57,16 +53,16 @@ module JsRoutes
     sig { returns(T.nilable(String)) }
     attr_accessor :module_type
 
-    sig {params(attributes: T.nilable(Attributes)).void }
+    sig {params(attributes: T.nilable(Options)).void }
     def initialize(attributes = nil)
       @namespace = nil
       @exclude = T.let([], Clusivity)
       @include = T.let([//], Clusivity)
       @file = T.let(nil, FileName)
-      @prefix = T.let(-> { Rails.application.config.relative_url_root || "" }, Prefix)
+      @prefix = T.let(-> { Rails.application.config.relative_url_root || "" }, T.untyped)
       @url_links = T.let(false, T::Boolean)
       @camel_case = T.let(false, T::Boolean)
-      @default_url_options = T.let({}, T::Hash[T.untyped, T.untyped])
+      @default_url_options = T.let(T.unsafe({}), Options)
       @compact = T.let(false, T::Boolean)
       @serializer = T.let(nil, T.nilable(String))
       @special_options_key = T.let("_options", Literal)
@@ -80,7 +76,7 @@ module JsRoutes
 
     sig do
       params(
-        attributes: Attributes,
+        attributes: Options,
       ).returns(JsRoutes::Configuration)
     end
     def assign(attributes)
@@ -100,17 +96,12 @@ module JsRoutes
 
     sig { params(attribute: Literal).returns(T.untyped) }
     def [](attribute)
-      send(attribute)
+      public_send(attribute)
     end
 
-    sig { params(attributes: Attributes).returns(JsRoutes::Configuration) }
+    sig { params(attributes: Options).returns(JsRoutes::Configuration) }
     def merge(attributes)
       clone.assign(attributes)
-    end
-
-    sig { returns(NilClass) }
-    def to_hash
-
     end
 
     sig {returns(T::Boolean)}
@@ -152,7 +143,7 @@ module JsRoutes
 
     protected
 
-    sig { returns(NilClass) }
+    sig { void }
     def normalize_and_verify
       normalize
       verify
@@ -173,7 +164,7 @@ module JsRoutes
       self.module_type = module_type&.upcase || 'NIL'
     end
 
-    sig { returns(NilClass) }
+    sig { void }
     def verify
       if module_type != 'NIL' && namespace
         raise "JsRoutes namespace option can only be used if module_type is nil"
