@@ -41,13 +41,13 @@ module JsRoutes
 
     sig { params(opts: T.untyped).returns(String) }
     def definitions(**opts)
-      generate(module_type: 'DTS', **opts)
+      generate(**opts, module_type: 'DTS',)
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }
     def definitions!(file_name = nil, **opts)
       file_name ||= configuration.file&.sub(%r{(\.d)?\.(j|t)s\Z}, ".d.ts")
-      generate!(file_name, module_type: 'DTS', **opts)
+      generate!(file_name, **opts, module_type: 'DTS')
     end
 
     sig { params(value: T.untyped).returns(String) }

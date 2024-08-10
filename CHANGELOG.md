@@ -1,4 +1,10 @@
+# Changelog
+
 ## master
+
+## v2.2.9
+
+* Always use DTS module type when calling JsRoutes.definitions or .definitions!. [#313](https://github.com/railsware/js-routes/issues/313)
 
 ## v2.2.8
 
@@ -156,10 +162,9 @@ See [UPGRADE TO 2.0](./VERSION_2_UPGRADE.md) for guidance.
 
 * Fixed bug when js-routes is used in envs without window.location #224
 
-
 ## v1.4.0
 
-* __breaking change!__ Implemented Routes.config() and Routes.configure instead of Routes.defaults
+* Implemented Routes.config() and Routes.configure instead of Routes.defaults
 
 New methods support 4 options at the moment:
 
@@ -245,7 +250,7 @@ Routes.configure({
 
 * Support host, port and protocol inline parameters
 * Support host, port and protocol parameters given to a route explicitly
-* Remove all incompatibilities between actiondispatch and js-routes in handling route URLs
+* Remove all incompatibilities between Actiondispatch and js-routes
 
 ## v1.1.2
 
@@ -271,10 +276,10 @@ Routes.configure({
 
 ## v1.0.0
 
- * Add the compact mode [#125](https://github.com/railsware/js-routes/pull/125)
- * Add support for host, protocol, and port configuration [#137](https://github.com/railsware/js-routes/pull/137)
- * Routes path specs [#135](https://github.com/railsware/js-routes/pull/135)
- * Support Rails 4.2 and Ruby 2.2 [#140](https://github.com/railsware/js-routes/pull/140)
+* Add the compact mode [#125](https://github.com/railsware/js-routes/pull/125)
+* Add support for host, protocol, and port configuration [#137](https://github.com/railsware/js-routes/pull/137)
+* Routes path specs [#135](https://github.com/railsware/js-routes/pull/135)
+* Support Rails 4.2 and Ruby 2.2 [#140](https://github.com/railsware/js-routes/pull/140)
 
 ## v0.9.9
 
