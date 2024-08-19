@@ -32,9 +32,9 @@ module JsRoutes
 
     sig { params(configuration: JsRoutes::Configuration, route: JourneyRoute, parent_route: T.nilable(JourneyRoute)).void }
     def initialize(configuration, route, parent_route = nil)
-      @configuration = T.let(configuration, JsRoutes::Configuration)
-      @route = T.let(route, JourneyRoute)
-      @parent_route = T.let(parent_route, T.nilable(JourneyRoute))
+      @configuration = configuration
+      @route = route
+      @parent_route = parent_route
     end
 
     sig { returns(T::Array[StringArray]) }

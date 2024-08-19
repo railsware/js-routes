@@ -4,6 +4,7 @@
 
 ## v2.2.9
 
+* Added [Sorbet](https://sorbet.org/) method signatures.
 * Always use DTS module type when calling JsRoutes.definitions or .definitions!. [#313](https://github.com/railsware/js-routes/issues/313)
 
 ## v2.2.8
@@ -34,10 +35,10 @@
 ## v2.2.3
 
 * Fixed NIL module type namespace defintion [#297](https://github.com/railsware/js-routes/issues/297).
-  * The patch may cause a problem with nested `namespace` option 
+  * The patch may cause a problem with nested `namespace` option.
   * Ex. Value like `MyProject.Routes` requires to define `window.MyProject` before importing the routes file
 
-## v2.2.2.
+## v2.2.2
 
 * Fix custom file path [#295](https://github.com/railsware/js-routes/issues/295)
 

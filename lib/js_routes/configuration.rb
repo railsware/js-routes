@@ -7,23 +7,6 @@ module JsRoutes
     include JsRoutes::Types
     extend T::Sig
 
-    DEFAULTS = T.let({
-      namespace: nil,
-      exclude: [],
-      include: [//],
-      file: nil,
-      prefix: -> { Rails.application.config.relative_url_root || "" },
-      url_links: false,
-      camel_case: false,
-      default_url_options: {},
-      compact: false,
-      serializer: nil,
-      special_options_key: "_options",
-      application: -> { Rails.application },
-      module_type: 'ESM',
-      documentation: true,
-    }, T::Hash[Symbol, T.untyped]) #:nodoc:
-
     sig { returns(T.nilable(String)) }
     attr_accessor :namespace
     sig { returns(Clusivity) }
