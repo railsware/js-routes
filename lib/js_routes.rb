@@ -57,7 +57,7 @@ module JsRoutes
 
     sig { returns(T.nilable(String)) }
     def default_module_type
-      'DTS' if configuration.module_type
+      'DTS' if configuration.module_type && configuration.module_type != 'NIL'
     end
 
 
