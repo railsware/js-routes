@@ -29,7 +29,9 @@ There are several possible ways to setup JsRoutes:
 4. [Sprockets](#sprockets) - Legacy
   * Deprecated and not recommended for modern apps
 
-### Quick Start {#quick-start}
+<div id="quick-start"></div>
+
+### Quick Start
 
 Setup [Rack Middleware](https://guides.rubyonrails.org/rails_on_rack.html#action-dispatcher-middleware-stack) 
 to automatically generate and maintain `routes.js` file and corresponding 
@@ -75,7 +77,9 @@ Add js-routes files to `.gitignore`:
 /app/javascript/routes.d.ts
 ```
 
-### Webpacker ERB loader {#webpack}
+<div id="webpack"></div>
+
+### Webpacker ERB loader
 
 **IMPORTANT**: the setup doesn't support IDE autocompletion with [Typescript](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html)
 
@@ -136,7 +140,9 @@ import {post_path} from 'routes.js.erb';
 alert(post_path(2));
 ```
 
-### Advanced Setup {#advanced-setup}
+<div id="advanced-setup"></div>
+
+### Advanced Setup
 
 In case you need multiple route files for different parts of your application, there are low level methods:
 
@@ -201,7 +207,9 @@ class AdvancedJsRoutesMiddleware < JsRoutes::Middleware
 end
 ```
 
-#### Typescript Definitions {#definitions}
+<div id="definitions"></div>
+
+#### Typescript Definitions
 
 JsRoutes has typescript support out of the box.
 
@@ -222,7 +230,9 @@ JsRoutes.definitions # to output to string
 Even more advanced setups can be achieved by setting `module_type` to `DTS` inside [configuration](#module_type) 
 which will cause any `JsRoutes` instance to generate defintions instead of routes themselves.
 
-### Sprockets (Deprecated) {#sprockets}
+<div id="sprockets"></div>
+
+### Sprockets (Deprecated)
 
 If you are using [Sprockets](https://github.com/rails/sprockets-rails) you may configure js-routes in the following way.
 
