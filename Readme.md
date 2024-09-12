@@ -145,51 +145,67 @@ alert(post_path(2));
 
 ### Advanced Setup
 
-**IMPORTANT**: that this setup requires the JS routes file to be updates manually
+In case you need multiple route files for different parts of your application, there are low level methods:
 
-Routes file can be generated with a `rake` task:
-
-``` sh
-rake js:routes 
-# OR for typescript support
-rake js:routes:typescript
+```
+# Returns a routes file as a string
+JsRoutes.generate(options)
+# Writes routes to specific file location
+JsRoutes.generate!(file_name, options)
+# Writes Typescript definitions file for routes
+JsRoutes.definitions!(file_name, options)
 ```
 
-In case you need multiple route files for different parts of your application, you have to create the files manually.
-If your application has an `admin` and an `application` namespace for example:
-
-**IMPORTANT**: Requires [Webpacker ERB Loader](#webpacker) setup.
+They can also be used in ERB context
 
 ``` erb
-// app/javascript/admin/routes.js.erb
-<%= JsRoutes.generate(include: /admin/) %>
+<script>
+    var AdminRoutes = <%= JsRoutes.generate(
+      include: /admin/, module_type: nil, namespace: nil
+    ) %>;
+</script>
 ```
 
-``` erb
-// app/javascript/customer/routes.js.erb
-<%= JsRoutes.generate(exclude: /admin/) %>
-```
-
-You can manipulate the generated helper manually by injecting ruby into javascript:
-
-``` erb
-export const routes = <%= JsRoutes.generate(module_type: nil, namespace: nil) %>
-```
-
-If you want to generate the routes files manually with custom options, you can use `JsRoutes.generate!`:
+Routes can be returns via API:
 
 ``` ruby
-path = Rails.root.join("app/javascript")
+class Api::RoutesController < Api::BaseController
+  def index
+    options = {
+      include: /\Aapi_/,
+      default_url_options: { format: 'json' },
+    }
+    render json: {
+      routes: {
+        source: JsRoutes.generate(options),
+        definitions: JsRoutes.definitions(options),
+      }
+    }
+  end
+end
 
-JsRoutes.generate!(
-  "#{path}/app_routes.js", exclude: [/^admin_/, /^api_/]
-)
-JsRoutes.generate!(
-"#{path}/adm_routes.js", include: /^admin_/
-)
-JsRoutes.generate!(
-  "#{path}/api_routes.js", include: /^api_/, default_url_options: {format: "json"}
-)
+```
+
+Default auto-update middleware for development
+doesn't support configuration out of the box,
+but it can be extended through inheritence:
+
+``` ruby
+class AdvancedJsRoutesMiddleware < JsRoutes::Middleware
+  def regenerate
+    path = Rails.root.join("app/javascript")
+
+    JsRoutes.generate!(
+      "#{path}/app_routes.js", exclude: [/^admin_/, /^api_/]
+    )
+    JsRoutes.generate!(
+    "#{path}/adm_routes.js", include: /^admin_/
+    )
+    JsRoutes.generate!(
+      "#{path}/api_routes.js", include: /^api_/, default_url_options: {format: "json"}
+    )
+  end
+end
 ```
 
 <div id='definitions'></div>
