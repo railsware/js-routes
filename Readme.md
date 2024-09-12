@@ -16,17 +16,17 @@ gem "js-routes"
 
 There are several possible ways to setup JsRoutes:
 
-* [Quick and easy](#quick-start) - Recommended
+1. [Quick and easy](#quick-start) - Recommended
   * Uses Rack Middleware to automatically update routes locally
   * Automatically generates routes files on javascript build
   * Works great for a simple Rails application
-* [Advanced Setup](#advanced-setup)
+2. [Advanced Setup](#advanced-setup)
   * Allows very custom setups
   * Automatic updates need to be customized
-* [Webpacker ERB Loader](#webpacker) - Legacy
+3. [Webpacker ERB Loader](#webpacker) - Legacy
   * Requires ESM module system (the default)
   * Doesn't support typescript definitions
-* [Sprockets](#sprockets) - Legacy
+4. [Sprockets](#sprockets) - Legacy
   * Deprecated and not recommended for modern apps
 
 <div id='quick-start'></div>
