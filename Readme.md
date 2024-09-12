@@ -29,9 +29,7 @@ There are several possible ways to setup JsRoutes:
 4. [Sprockets](#sprockets) - Legacy
   * Deprecated and not recommended for modern apps
 
-<div id='quick-start'></div>
-
-### Quick Start 
+### Quick Start {#quick-start}
 
 Setup [Rack Middleware](https://guides.rubyonrails.org/rails_on_rack.html#action-dispatcher-middleware-stack) 
 to automatically generate and maintain `routes.js` file and corresponding 
@@ -77,12 +75,9 @@ Add js-routes files to `.gitignore`:
 /app/javascript/routes.d.ts
 ```
 
-<div id='webpacker'></div>
-
-### Webpacker ERB loader
+### Webpacker ERB loader {#webpack}
 
 **IMPORTANT**: the setup doesn't support IDE autocompletion with [Typescript](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html)
-
 
 #### Use a Generator
 
@@ -133,7 +128,7 @@ Create routes file `app/javascript/routes.js.erb`:
 <%= JsRoutes.generate() %>
 ```
 
-Use routes wherever you need them: 
+Use routes wherever you need them:
 
 ``` javascript
 import {post_path} from 'routes.js.erb';
@@ -141,9 +136,7 @@ import {post_path} from 'routes.js.erb';
 alert(post_path(2));
 ```
 
-<div id='advanced-setup'></div>
-
-### Advanced Setup
+### Advanced Setup {#advanced-setup}
 
 In case you need multiple route files for different parts of your application, there are low level methods:
 
@@ -208,11 +201,9 @@ class AdvancedJsRoutesMiddleware < JsRoutes::Middleware
 end
 ```
 
-<div id='definitions'></div>
+#### Typescript Definitions {#definitions}
 
-#### Typescript Definitions
-
-JsRoutes has typescript support out of the box. 
+JsRoutes has typescript support out of the box.
 
 Restrictions:
 
@@ -224,16 +215,14 @@ More advanced setup would involve calling manually:
 
 ``` ruby
 JsRoutes.definitions! # to output to file
-# or 
+# or
 JsRoutes.definitions # to output to string
 ```
 
 Even more advanced setups can be achieved by setting `module_type` to `DTS` inside [configuration](#module_type) 
 which will cause any `JsRoutes` instance to generate defintions instead of routes themselves.
 
-<div id="sprockets"></div>
-
-### Sprockets (Deprecated)
+### Sprockets (Deprecated) {#sprockets}
 
 If you are using [Sprockets](https://github.com/rails/sprockets-rails) you may configure js-routes in the following way.
 
