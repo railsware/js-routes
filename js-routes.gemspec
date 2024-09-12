@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.summary = %q{Brings Rails named routes to javascript}
+  s.metadata = { "github_repo" => "ssh://github.com/railsware/js-routes" }
 
   s.add_runtime_dependency(%q<railties>, [">= 4"])
   s.add_runtime_dependency(%q<sorbet-runtime>)
