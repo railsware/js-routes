@@ -2,6 +2,10 @@
 
 ## master
 
+## v2.2.10
+
+* Fix middleware error for non-modern setup.
+
 ## v2.2.9
 
 * Added [Sorbet](https://sorbet.org/) method signatures.

@@ -146,7 +146,7 @@ alert(post_path(2));
 
 In case you need multiple route files for different parts of your application, there are low level methods:
 
-```
+``` ruby
 # Returns a routes file as a string
 JsRoutes.generate(options)
 # Writes routes to specific file location

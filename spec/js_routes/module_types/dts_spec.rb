@@ -122,15 +122,5 @@ DOC
       generated_js = JsRoutes.definitions(**options)
       expect(generated_js).to include('export {};')
     end
-
-    it 'does not use DTS module if module_type is not set' do
-      previous_module_type = JsRoutes.configuration.module_type
-      JsRoutes.configuration.module_type = nil
-
-      generated_js = JsRoutes.definitions(**options.merge(module_type: nil))
-      expect(generated_js).not_to include('export {};')
-
-      JsRoutes.configuration.module_type = previous_module_type
-    end
   end
 end

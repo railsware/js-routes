@@ -38,7 +38,7 @@ module JsRoutes
     sig { void }
     def regenerate
       JsRoutes.generate!
-      JsRoutes.definitions!
+      JsRoutes.definitions! if JsRoutes.configuration.modern?
     end
 
     sig { returns(T.nilable(Time)) }
