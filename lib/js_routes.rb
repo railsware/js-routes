@@ -41,19 +41,26 @@ module JsRoutes
 
     sig { params(opts: T.untyped).returns(String) }
     def definitions(**opts)
-      generate(**opts, module_type: 'DTS',)
+      generate(**opts, module_type: default_module_type,)
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }
     def definitions!(file_name = nil, **opts)
       file_name ||= configuration.file&.sub(%r{(\.d)?\.(j|t)s\Z}, ".d.ts")
-      generate!(file_name, **opts, module_type: 'DTS')
+      generate!(file_name, **opts, module_type: default_module_type)
     end
 
     sig { params(value: T.untyped).returns(String) }
     def json(value)
       ActiveSupport::JSON.encode(value)
     end
+
+    sig { returns(T.nilable(String)) }
+    def default_module_type
+      'DTS' if configuration.module_type && configuration.module_type != 'NIL'
+    end
+
+
   end
   module Generators
   end
