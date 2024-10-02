@@ -4,10 +4,9 @@
 
 ## v2.2.10
 
-* Fix middleware error for non-modern setup.
-
 ## v2.2.9
 
+* Fix middleware error for non-modern setup.
 * Added [Sorbet](https://sorbet.org/) method signatures.
 * Always use DTS module type when calling JsRoutes.definitions or .definitions!. [#313](https://github.com/railsware/js-routes/issues/313)
 
