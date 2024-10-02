@@ -62,4 +62,5 @@ gemfiles/*.lock
 /spec/dummy/logs
 /spec/dummy/tmp
 node_modules
+sorbet/rbi
 
