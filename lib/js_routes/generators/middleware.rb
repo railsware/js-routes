@@ -11,7 +11,7 @@ class JsRoutes::Generators::Middleware < JsRoutes::Generators::Base
       inject_into_file path, pack_content
     end
     JsRoutes.generate!
-    JsRoutes.definitions!
+    JsRoutes.definitions! if JsRoutes.configuration.modern?
   end
 
   protected
@@ -34,9 +34,10 @@ alert(`JsRoutes installed.\\nYour root path is ${root_path()}`)
 
   def rakefile_content
     enhanced_task = depends_on_js_bundling? ? "javascript:build" : "assets:precompile"
+    dependency_task = JsRoutes.configuration.modern? ? "js:routes:typescript" : 'js:routes'
     <<-RB
 # Update js-routes file before javascript build
-task "#{enhanced_task}" => "js:routes:typescript"
+task "#{enhanced_task}" => "#{dependency_task}"
     RB
   end
 
