@@ -3,7 +3,10 @@ require "rails/generators"
 
 class JsRoutes::Generators::Base < Rails::Generators::Base
 
-  source_root File.expand_path(__FILE__ + "/../../../templates")
+  def self.inherited(subclass)
+    super
+    subclass.source_root(File.expand_path(__FILE__ + "/../../../templates"))
+  end
 
   protected
 
