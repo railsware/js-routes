@@ -6,6 +6,7 @@
 
 * Remove sorbet files from repo
 * Clearly define files included in gem
+* Fix Middleware and Middleware generator bugs [#316](https://github.com/railsware/js-routes/issue/316)
 
 ## v2.2.9
 
