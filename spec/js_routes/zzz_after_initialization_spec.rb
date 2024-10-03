@@ -9,6 +9,7 @@ require "fileutils"
 
 describe "after Rails initialization", :slow do
   NAME = Rails.root.join('app', 'assets', 'javascripts', 'routes.js').to_s
+  CONFIG_ROUTES = Rails.root.join('config','routes.rb').to_s
 
   def sprockets_v3?
     Sprockets::VERSION.to_i >= 3
@@ -65,6 +66,28 @@ describe "after Rails initialization", :slow do
     expect(File.mtime(NAME)).not_to eq(routes_file_mtime)
   end
 
+  describe JsRoutes::Middleware do
+
+    it "works" do
+      JsRoutes.remove!
+      expect(File.exists?(NAME)).to be(false)
+      app = lambda do |env|
+        [200, {}, ""]
+      end
+      middleware = JsRoutes::Middleware.new(app)
+      middleware.call({})
+
+      expect(File.exists?(NAME)).to be(true)
+      JsRoutes.remove!
+      middleware.call({})
+      expect(File.exists?(NAME)).to be(false)
+      FileUtils.touch(CONFIG_ROUTES)
+      middleware.call({})
+      expect(File.exists?(NAME)).to be(true)
+    end
+
+  end
+
   context "JsRoutes::Engine" do
     TEST_ASSET_PATH = Rails.root.join('app','assets','javascripts','test.js')
 
@@ -79,11 +102,10 @@ describe "after Rails initialization", :slow do
 
     context "the preprocessor" do
       before(:each) do
-        path = Rails.root.join('config','routes.rb').to_s
         if sprockets_v3? || sprockets_v4?
-          expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(path)
+          expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(CONFIG_ROUTES.to_s)
         else
-          expect(ctx).to receive(:depend_on).with(path)
+          expect(ctx).to receive(:depend_on).with(CONFIG_ROUTES.to_s)
         end
       end
       let!(:ctx) do

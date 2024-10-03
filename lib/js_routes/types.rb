@@ -24,5 +24,15 @@ module JsRoutes
     Prefix = T.type_alias do
       T.any(T.proc.returns(String), String, NilClass)
     end
+
+    module RackApp
+      extend T::Sig
+      extend T::Helpers
+
+      interface!
+
+      sig { abstract.params(input: StringHash).returns(UntypedArray) }
+      def call(input); end
+    end
   end
 end

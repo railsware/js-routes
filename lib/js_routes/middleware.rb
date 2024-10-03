@@ -9,16 +9,18 @@ module JsRoutes
   # https://github.com/fnando/i18n-js/blob/main/lib/i18n/js/middleware.rb
   class Middleware
     include JsRoutes::Types
+    include RackApp
+
     extend T::Sig
 
-    sig { params(app: T.proc.params(a0: StringHash).returns(UntypedArray)).void }
+    sig { params(app: T.untyped).void }
     def initialize(app)
       @app = app
       @routes_file = T.let(Rails.root.join("config/routes.rb"), Pathname)
       @mtime = T.let(nil, T.nilable(Time))
     end
 
-    sig { params(env: StringHash).returns(UntypedArray) }
+    sig { override.params(env: StringHash).returns(UntypedArray) }
     def call(env)
       update_js_routes
       @app.call(env)
