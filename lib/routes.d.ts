@@ -76,5 +76,5 @@ declare const define: undefined | (((arg: unknown[], callback: () => unknown) =>
     amd?: unknown;
 });
 declare const module: {
-    exports: any;
+    exports: unknown;
 } | undefined;

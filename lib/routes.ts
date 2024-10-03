@@ -94,7 +94,7 @@ declare const define:
   | undefined
   | (((arg: unknown[], callback: () => unknown) => void) & { amd?: unknown });
 
-declare const module: { exports: any } | undefined;
+declare const module: { exports: unknown } | undefined;
 
 // eslint-disable-next-line
 RubyVariables.WRAPPER(
@@ -148,8 +148,9 @@ RubyVariables.WRAPPER(
     const ModuleReferences: Record<ModuleType, ModuleDefinition> = {
       CJS: {
         define(routes) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          module!.exports = routes;
+          if (module) {
+            module.exports = routes;
+          }
         },
         isSupported() {
           return typeof module === "object";
@@ -157,10 +158,11 @@ RubyVariables.WRAPPER(
       },
       AMD: {
         define(routes) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          define!([], function () {
-            return routes;
-          });
+          if (define) {
+            define([], function () {
+              return routes;
+            });
+          }
         },
         isSupported() {
           return typeof define === "function" && !!define.amd;
