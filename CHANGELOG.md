@@ -4,6 +4,9 @@
 
 ## v2.2.10
 
+* Remove sorbet files from repo
+* Clearly define files included in gem
+
 ## v2.2.9
 
 * Fix middleware error for non-modern setup.
