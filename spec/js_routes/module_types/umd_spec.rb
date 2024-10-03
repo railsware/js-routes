@@ -28,7 +28,7 @@ describe JsRoutes, "compatibility with UMD" do
       is_expected.to include('inbox_message_path: __jsr.r({"inbox_id":{"r":true},"id":{"r":true},"format":{}}')
     end
     it "should have correct function signature with unordered hash" do
-      is_expected.to include('inbox_message_attachment_path: __jsr.r({"inbox_id":{"r":true},"message_id":{"r":true},"id":{"r":true},"format":{}}')
+      is_expected.to include('inbox_message_attachment_path: __jsr.r({"inbox_id":{"r":true},"message_id":{"r":true},"id":{"r":true}}')
     end
 
     it "should have correct function comment with options argument" do
@@ -46,7 +46,7 @@ DOC
       is_expected.to include(<<-DOC.rstrip)
   /**
    * Generates rails route to
-   * /inboxes/:inbox_id/messages/:message_id/attachments/new(.:format)
+   * /inboxes/:inbox_id/messages/:message_id/attachments/new
    * @param {any} inbox_id
    * @param {any} message_id
    * @param {object | undefined} options

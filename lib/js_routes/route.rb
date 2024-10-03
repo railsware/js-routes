@@ -65,13 +65,15 @@ module JsRoutes
 
     sig { returns(String) }
     def definition_body
+      options_type = optional_parts_type ? "#{optional_parts_type} & RouteOptions" : "RouteOptions"
       args = required_parts.map{|p| "#{apply_case(p)}: RequiredRouteParameter"}
-      args << "options?: #{optional_parts_type} & RouteOptions"
+      args << "options?: #{options_type}"
       "((\n#{args.join(",\n").indent(2)}\n) => string) & RouteHelperExtras"
     end
 
-    sig { returns(String) }
+    sig { returns(T.nilable(String)) }
     def optional_parts_type
+      return nil if optional_parts.empty?
       @optional_parts_type ||= T.let(
         "{" + optional_parts.map {|p| "#{p}?: OptionalRouteParameter"}.join(', ') + "}",
         T.nilable(String)

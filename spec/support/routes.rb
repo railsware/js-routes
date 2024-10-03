@@ -16,7 +16,7 @@ def draw_routes
 
     resources :inboxes, only: [:index, :show] do
       resources :messages, only: [:index, :show] do
-        resources :attachments, only: [:new, :show]
+        resources :attachments, only: [:new, :show], format: false
       end
     end
 

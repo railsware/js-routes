@@ -52,7 +52,7 @@ describe JsRoutes, "compatibility with DTS"  do
       expect(generated_js).to include(<<-DOC.rstrip)
 /**
  * Generates rails route to
- * /inboxes/:inbox_id/messages/:message_id/attachments/:id(.:format)
+ * /inboxes/:inbox_id/messages/:message_id/attachments/:id
  * @param {any} inboxId
  * @param {any} messageId
  * @param {any} id
@@ -63,7 +63,7 @@ export const inboxMessageAttachmentPath: ((
   inboxId: RequiredRouteParameter,
   messageId: RequiredRouteParameter,
   id: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
+  options?: RouteOptions
 ) => string) & RouteHelperExtras;
 DOC
     end
@@ -84,7 +84,7 @@ DOC
     expect(generated_js).to include(<<-DOC.rstrip)
 /**
  * Generates rails route to
- * /inboxes/:inbox_id/messages/:message_id/attachments/:id(.:format)
+ * /inboxes/:inbox_id/messages/:message_id/attachments/:id
  * @param {any} inbox_id
  * @param {any} message_id
  * @param {any} id
@@ -95,7 +95,7 @@ export const inbox_message_attachment_path: ((
   inbox_id: RequiredRouteParameter,
   message_id: RequiredRouteParameter,
   id: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
+  options?: RouteOptions
 ) => string) & RouteHelperExtras
 DOC
   end
