@@ -8,6 +8,7 @@
 * Clearly define files included in gem
 * Fix Middleware and Middleware generator bugs [#316](https://github.com/railsware/js-routes/issue/316)
 * Remove empty object linter warning on DTS module
+* Generators: Add `.ts` extension when searching for main JS file of the project
 
 ## v2.2.9
 

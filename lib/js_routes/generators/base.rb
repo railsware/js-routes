@@ -12,7 +12,9 @@ class JsRoutes::Generators::Base < Rails::Generators::Base
 
   def application_js_path
     [
+      "app/javascript/packs/application.ts",
       "app/javascript/packs/application.js",
+      "app/javascript/controllers/application.ts",
       "app/javascript/controllers/application.js",
     ].find do |path|
       File.exist?(Rails.root.join(path))
