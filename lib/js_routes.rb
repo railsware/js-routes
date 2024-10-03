@@ -39,6 +39,11 @@ module JsRoutes
       Instance.new(file: file_name, **opts).generate!
     end
 
+    sig { params(file_name: FileName, opts: T.untyped).void }
+    def remove!(file_name = configuration.file, **opts)
+      Instance.new(file: file_name, **opts).remove!
+    end
+
     sig { params(opts: T.untyped).returns(String) }
     def definitions(**opts)
       generate(**opts, module_type: 'DTS',)

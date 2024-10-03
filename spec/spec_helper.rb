@@ -78,6 +78,10 @@ def expectjs(string)
   expect(evaljs(string))
 end
 
+def gem_root
+  Pathname.new(File.expand_path('..', __dir__))
+end
+
 ActiveSupport::Inflector.inflections do |inflect|
   inflect.irregular "budgie", "budgies"
 end

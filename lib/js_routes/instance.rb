@@ -2,6 +2,7 @@
 require "js_routes/configuration"
 require "js_routes/route"
 require "js_routes/types"
+require 'fileutils'
 
 module JsRoutes
   class Instance # :nodoc:
@@ -55,6 +56,13 @@ module JsRoutes
           f.write source_code
         end
       end
+    end
+
+    sig { void }
+    def remove!
+      path = Rails.root.join(@configuration.output_file)
+      FileUtils.rm_rf(path)
+      FileUtils.rm_rf(path.sub(%r{\.js\z}, '.d.ts'))
     end
 
     protected

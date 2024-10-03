@@ -36,7 +36,7 @@ describe "after Rails initialization", :slow do
 
   before(:each) do
     FileUtils.rm_rf Rails.root.join('tmp/cache')
-    FileUtils.rm_f NAME
+    JsRoutes.remove!(NAME)
     JsRoutes.generate!(NAME)
   end
 

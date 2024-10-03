@@ -66,12 +66,12 @@ DOC
     let(:name) { Rails.root.join('app', 'assets', 'javascripts', 'routes.js') }
 
     before(:each) do
-      FileUtils.rm_f(name)
+      JsRoutes.remove!(name)
       JsRoutes.generate!(file: name)
     end
 
     after(:each) do
-      FileUtils.rm_f(name)
+      JsRoutes.remove!(name)
     end
 
     after(:all) do
