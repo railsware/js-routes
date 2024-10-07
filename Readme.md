@@ -2,7 +2,16 @@
 
 [![CI](https://github.com/railsware/js-routes/actions/workflows/ci.yml/badge.svg)](https://github.com/railsware/js-routes/actions/workflows/ci.yml)
 
-Generates javascript file that defines all Rails named routes as javascript helpers
+Generates javascript file that defines all Rails named routes as javascript helpers:
+
+``` js
+import { root_path, api_user_path } from './routes';
+
+root_path() # => /
+api_user_path(25, include_profile: true, format: 'json') // => /api/users/25.json?include_profile=true
+```
+
+[More Examples](#usage)
 
 ## Intallation
 
