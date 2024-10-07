@@ -468,15 +468,13 @@ console.log(routes.inbox_path); // OK, only `inbox_path` is included in the bund
 console.log(Object.keys(routes)); // forces bundler to include all exports, breaking tree shaking
 ```
 
-### Exclude option
+### Exclude/Include options
 
 Split your routes into multiple files related to each section of your website like:
 
-``` javascript
-// admin-routes.js.erb
-<%= JsRoutes.generate(include: /^admin_/) %>
-// app-routes.js.erb
-<%= JsRoutes.generate(exclude: /^admin_/) %>
+``` ruby
+JsRoutes.generate!('app/javascript/admin-routes.js', include: /^admin_/) %>
+JsRoutes.generate!('app/javascript/app-routes.js', exclude: /^admin_/) %>
 ```
 
 ## Advantages over alternatives
