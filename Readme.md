@@ -484,17 +484,11 @@ Split your routes into multiple files related to each section of your website li
 There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept.
 Advantages of this one are:
 
-* Rails 4,5,6 support
+* Actively maintained
 * [ESM Tree shaking](https://webpack.js.org/guides/tree-shaking/) support
 * Rich options set
 * Full rails compatibility
 * Support Rails `#to_param` convention for seo optimized paths
 * Well tested
 
-#### Thanks to [contributors](https://github.com/railsware/js-routes/contributors)
 
-#### Have fun
-
-
-## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Frailsware%2Fjs-routes.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Frailsware%2Fjs-routes?ref=badge_large)
