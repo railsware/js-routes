@@ -70,20 +70,20 @@ describe "after Rails initialization", :slow do
 
     it "works" do
       JsRoutes.remove!
-      expect(File.exists?(NAME)).to be(false)
+      expect(File.exist?(NAME)).to be(false)
       app = lambda do |env|
         [200, {}, ""]
       end
       middleware = JsRoutes::Middleware.new(app)
       middleware.call({})
 
-      expect(File.exists?(NAME)).to be(true)
+      expect(File.exist?(NAME)).to be(true)
       JsRoutes.remove!
       middleware.call({})
-      expect(File.exists?(NAME)).to be(false)
+      expect(File.exist?(NAME)).to be(false)
       FileUtils.touch(CONFIG_ROUTES)
       middleware.call({})
-      expect(File.exists?(NAME)).to be(true)
+      expect(File.exist?(NAME)).to be(true)
     end
 
   end
