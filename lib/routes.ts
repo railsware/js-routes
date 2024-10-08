@@ -719,13 +719,17 @@ RubyVariables.WRAPPER(
         }
       }
 
-      define_module(name: ModuleType, module: RouterExposedMethods): void {
+      define_module(
+        name: ModuleType,
+        module: RouterExposedMethods
+      ): RouterExposedMethods {
         this.ensure_module_supported(name);
         ModuleReferences[name].define(module);
+        return module;
       }
     }
 
-    const Utils = new UtilsClass();
+    const utils = new UtilsClass();
 
     // We want this helper name to be short
     const __jsr = {
@@ -734,25 +738,22 @@ RubyVariables.WRAPPER(
         route_spec: RouteTree,
         absolute?: boolean
       ): RouteHelper {
-        return Utils.route(parts_table, route_spec, absolute);
+        return utils.route(parts_table, route_spec, absolute);
       },
     };
 
-    const result = {
+    return utils.define_module(RubyVariables.MODULE_TYPE, {
       ...__jsr,
       configure: (config: Partial<Configuration>) => {
-        return Utils.configure(config);
+        return utils.configure(config);
       },
       config: (): Configuration => {
-        return Utils.config();
+        return utils.config();
       },
       serialize: (object: Serializable): string => {
-        return Utils.serialize(object);
+        return utils.serialize(object);
       },
       ...RubyVariables.ROUTES_OBJECT,
-    };
-
-    Utils.define_module(RubyVariables.MODULE_TYPE, result);
-    return result;
+    });
   }
 )();
