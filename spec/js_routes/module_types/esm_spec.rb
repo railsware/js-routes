@@ -4,7 +4,7 @@ require "spec_helper"
 describe JsRoutes, "compatibility with ESM"  do
 
   let(:generated_js) {
-    JsRoutes.generate(module_type: 'ESM')
+    JsRoutes.generate(module_type: 'ESM', include: /\Ainbox/)
   }
 
   before(:each) do
