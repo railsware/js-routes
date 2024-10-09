@@ -5,6 +5,7 @@
 declare type Optional<T> = {
     [P in keyof T]?: T[P] | null;
 };
+declare type Collection<T> = Record<string, T>;
 declare type BaseRouteParameter = string | boolean | Date | number;
 declare type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
 declare type ModelRouteParameter = {
@@ -19,8 +20,8 @@ declare type OptionalRouteParameter = undefined | null | RequiredRouteParameter;
 declare type QueryRouteParameter = OptionalRouteParameter | QueryRouteParameter[] | {
     [k: string]: QueryRouteParameter;
 };
-declare type RouteParameters = Record<string, QueryRouteParameter>;
-declare type Serializable = Record<string, unknown>;
+declare type RouteParameters = Collection<QueryRouteParameter>;
+declare type Serializable = Collection<unknown>;
 declare type Serializer = (value: Serializable) => string;
 declare type RouteHelperExtras = {
     requiredParams(): string[];
@@ -32,9 +33,9 @@ declare type RequiredParameters<T extends number> = T extends 1 ? [RequiredRoute
     RequiredRouteParameter,
     RequiredRouteParameter
 ] : RequiredRouteParameter[];
-declare type RouteHelperOptions = RouteOptions & Record<string, OptionalRouteParameter>;
+declare type RouteHelperOptions = RouteOptions & Collection<OptionalRouteParameter>;
 declare type RouteHelper<T extends number = number> = ((...args: [...RequiredParameters<T>, RouteHelperOptions]) => string) & RouteHelperExtras;
-declare type RouteHelpers = Record<string, RouteHelper>;
+declare type RouteHelpers = Collection<RouteHelper>;
 declare type Configuration = {
     prefix: string;
     default_url_options: RouteParameters;
@@ -56,7 +57,7 @@ declare type KeywordUrlOptions = Optional<{
     params: RouteParameters;
 }>;
 declare type RouteOptions = KeywordUrlOptions & RouteParameters;
-declare type PartsTable = Record<string, {
+declare type PartsTable = Collection<{
     r?: boolean;
     d?: OptionalRouteParameter;
 }>;

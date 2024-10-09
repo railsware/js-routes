@@ -2,6 +2,11 @@
 
 ## master
 
+## v2.3.0
+
+* Deprecated `rake js:routes:typescript`.
+  `rake js:routes` now automatically detects if types support can be used on not.
+
 ## v2.2.10
 
 * Remove sorbet files from repo
@@ -14,7 +19,8 @@
 
 * Fix middleware error for non-modern setup.
 * Added [Sorbet](https://sorbet.org/) method signatures.
-* Always use DTS module type when calling JsRoutes.definitions or .definitions!. [#313](https://github.com/railsware/js-routes/issues/313)
+* Always use DTS module type when calling JsRoutes.definitions or .definitions!.
+  [#313](https://github.com/railsware/js-routes/issues/313)
 
 ## v2.2.8
 

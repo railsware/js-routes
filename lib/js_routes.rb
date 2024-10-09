@@ -34,9 +34,10 @@ module JsRoutes
       Instance.new(**opts).generate
     end
 
-    sig { params(file_name: FileName, opts: T.untyped).void }
-    def generate!(file_name = configuration.file, **opts)
+    sig { params(file_name: FileName, typed: T::Boolean, opts: T.untyped).void }
+    def generate!(file_name = configuration.file, typed: false, **opts)
       Instance.new(file: file_name, **opts).generate!
+      definitions!(file_name, **opts) if typed
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }
@@ -46,12 +47,14 @@ module JsRoutes
 
     sig { params(opts: T.untyped).returns(String) }
     def definitions(**opts)
-      generate(**opts, module_type: 'DTS',)
+      generate(**opts, module_type: 'DTS')
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }
     def definitions!(file_name = nil, **opts)
-      file_name ||= configuration.file&.sub(%r{(\.d)?\.(j|t)s\Z}, ".d.ts")
+      file_name ||= configuration.file
+
+      file_name = file_name&.sub(%r{(\.d)?\.(j|t)s\Z}, ".d.ts")
       generate!(file_name, **opts, module_type: 'DTS')
     end
 

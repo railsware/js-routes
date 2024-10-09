@@ -67,7 +67,6 @@ describe "after Rails initialization", :slow do
   end
 
   describe JsRoutes::Middleware do
-
     it "works" do
       JsRoutes.remove!
       expect(File.exist?(NAME)).to be(false)
@@ -85,8 +84,22 @@ describe "after Rails initialization", :slow do
       middleware.call({})
       expect(File.exist?(NAME)).to be(true)
     end
-
   end
+
+
+  describe ".generate!" do
+    let(:dir) { Pathname.new(__dir__).join('../../tmp') }
+    it "works" do
+      file = dir.join('typed_routes.js')
+      JsRoutes.remove!(file)
+      expect(File.exist?(file)).to be(false)
+      expect(File.exist?(dir.join('typed_routes.d.ts'))).to be(false)
+      JsRoutes.generate!(file, module_type: 'ESM', typed: true)
+      expect(File.exist?(file)).to be(true)
+      expect(File.exist?(dir.join('typed_routes.d.ts'))).to be(true)
+    end
+  end
+
 
   context "JsRoutes::Engine" do
     TEST_ASSET_PATH = Rails.root.join('app','assets','javascripts','test.js')
