@@ -4,6 +4,8 @@
  */
 
 type Optional<T> = { [P in keyof T]?: T[P] | null };
+type Collection<T> = Record<string, T>;
+
 type BaseRouteParameter = string | boolean | Date | number;
 type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
 type ModelRouteParameter =
@@ -16,9 +18,9 @@ type QueryRouteParameter =
   | OptionalRouteParameter
   | QueryRouteParameter[]
   | { [k: string]: QueryRouteParameter };
-type RouteParameters = Record<string, QueryRouteParameter>;
+type RouteParameters = Collection<QueryRouteParameter>;
 
-type Serializable = Record<string, unknown>;
+type Serializable = Collection<unknown>;
 type Serializer = (value: Serializable) => string;
 type RouteHelperExtras = {
   requiredParams(): string[];
@@ -40,14 +42,14 @@ type RequiredParameters<T extends number> = T extends 1
     ]
   : RequiredRouteParameter[];
 
-type RouteHelperOptions = RouteOptions & Record<string, OptionalRouteParameter>;
+type RouteHelperOptions = RouteOptions & Collection<OptionalRouteParameter>;
 
 type RouteHelper<T extends number = number> = ((
   ...args: [...RequiredParameters<T>, RouteHelperOptions]
 ) => string) &
   RouteHelperExtras;
 
-type RouteHelpers = Record<string, RouteHelper>;
+type RouteHelpers = Collection<RouteHelper>;
 
 type Configuration = {
   prefix: string;
@@ -74,7 +76,7 @@ type KeywordUrlOptions = Optional<{
 
 type RouteOptions = KeywordUrlOptions & RouteParameters;
 
-type PartsTable = Record<string, { r?: boolean; d?: OptionalRouteParameter }>;
+type PartsTable = Collection<{ r?: boolean; d?: OptionalRouteParameter }>;
 
 type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
 
@@ -421,6 +423,7 @@ RubyVariables.WRAPPER(
         }
         return { keyword_parameters, query_parameters };
       }
+
       build_route(
         parts: string[],
         required_params: string[],
@@ -452,9 +455,9 @@ RubyVariables.WRAPPER(
         if (url_params.length) {
           result += "?" + url_params;
         }
-        result += keyword_parameters.anchor
-          ? "#" + keyword_parameters.anchor
-          : "";
+        if (keyword_parameters.anchor) {
+          result += "#" + keyword_parameters.anchor;
+        }
         if (absolute) {
           result = this.route_url(keyword_parameters) + result;
         }
@@ -681,7 +684,7 @@ RubyVariables.WRAPPER(
         return (isBrowser && window?.location?.port) || "";
       }
 
-      is_object(value: unknown): value is Record<string, unknown> {
+      is_object(value: unknown): value is Collection<unknown> {
         return (
           typeof value === "object" &&
           Object.prototype.toString.call(value) === "[object Object]"
