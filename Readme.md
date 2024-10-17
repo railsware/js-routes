@@ -13,6 +13,15 @@ api_user_path(25, include_profile: true, format: 'json') // => /api/users/25.jso
 
 [More Examples](#usage)
 
+JsRoutes is maintaining a high quality standards and supports all modern JavaScript features:
+
+* Actively maintained
+* [ESM Tree shaking](https://webpack.js.org/guides/tree-shaking/) support
+* Small JavaScript bundle size though zero dependencies
+* Rich configuration options
+* TypeScript type hinting support
+* Full rails router compatibility
+
 ## Intallation
 
 Your Rails Gemfile:
@@ -477,15 +486,6 @@ JsRoutes.generate!('app/javascript/admin-routes.js', include: /^admin_/) %>
 JsRoutes.generate!('app/javascript/app-routes.js', exclude: /^admin_/) %>
 ```
 
-## Advantages over alternatives
-
-There are some alternatives available. Most of them has only basic feature and don't reach the level of quality I accept.
-Advantages of this one are:
-
-* Actively maintained
-* [ESM Tree shaking](https://webpack.js.org/guides/tree-shaking/) support
-* Rich options set
-* Full rails compatibility
 * Support Rails `#to_param` convention for seo optimized paths
 * Well tested
 
