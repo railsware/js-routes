@@ -36,6 +36,7 @@ describe "after Rails initialization", :slow do
   end
 
   before(:each) do
+    FileUtils.mkdir_p(Rails.root.join('tmp'))
     FileUtils.rm_rf Rails.root.join('tmp/cache')
     JsRoutes.remove!(NAME)
     JsRoutes.generate!(NAME)
@@ -88,7 +89,7 @@ describe "after Rails initialization", :slow do
 
 
   describe ".generate!" do
-    let(:dir) { Pathname.new(__dir__).join('../../tmp') }
+    let(:dir) { Rails.root.join('tmp') }
     it "works" do
       file = dir.join('typed_routes.js')
       JsRoutes.remove!(file)
