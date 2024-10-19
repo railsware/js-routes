@@ -357,7 +357,7 @@ Configuration above will create a nice javascript file with `Routes` object that
 ``` js
 import {
   user_path, user_project_path, company_path
-} as Routes from 'routes';
+} from 'routes';
 
 users_path() 
   // => "/users"
