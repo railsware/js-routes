@@ -24,9 +24,14 @@ module JsRoutes
     sig {returns(String)}
     def generate
       # Ensure routes are loaded. If they're not, load them.
+
       application = T.unsafe(self.application)
-      if named_routes.empty? && application.respond_to?(:reload_routes!, true)
-        application.reload_routes!
+      if named_routes.empty?
+        if application.respond_to?(:reload_routes_unless_loaded, true)
+          application.reload_routes_unless_loaded
+        elsif application.respond_to?(:reload_routes!, true)
+          application.reload_routes!
+        end
       end
       content = File.read(@configuration.source_file)
 
