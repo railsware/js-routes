@@ -466,7 +466,8 @@ describe JsRoutes, "options" do
 
     context "with url_links option" do
       around(:each) do |example|
-        (Rails.try(:deprecator) || ActiveSupport::Deprecation).silence do
+        deprecator_object = Rails.version.start_with?('8') ? Rails.deprecator : ActiveSupport::Deprecation
+        deprecator_object.silence do
           example.run
         end
       end

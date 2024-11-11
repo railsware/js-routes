@@ -27,7 +27,7 @@ module JsRoutes
 
       application = T.unsafe(self.application)
       if named_routes.empty?
-        if application.respond_to?(:reload_routes_unless_loaded, true)
+        if Rails.version.start_with?("8")
           application.reload_routes_unless_loaded
         elsif application.respond_to?(:reload_routes!, true)
           application.reload_routes!
