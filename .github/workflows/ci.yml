@@ -12,15 +12,16 @@ jobs:
     strategy:
       matrix:
         include: 
-          - ruby: ["2.7"]
-            gemfile:
-              - gemfiles/rails50_sprockets_3.gemfile
-              - gemfiles/rails51_sprockets_3.gemfile
-              - gemfiles/rails52_sprockets_3.gemfile
-              - gemfiles/rails70_sprockets_4.gemfile
-          - ruby: ["3.2"]
-            gemfile:
-              - gemfiles/rails80_sprockets_4.gemfile
+          - ruby: "2.7"
+            gemfile: gemfiles/rails50_sprockets_3.gemfile
+          - ruby: "2.7"
+            gemfile: gemfiles/rails51_sprockets_3.gemfile
+          - ruby: "2.7"
+            gemfile: gemfiles/rails52_sprockets_3.gemfile
+          - ruby: "2.7"
+            gemfile: gemfiles/rails70_sprockets_4.gemfile
+          - ruby: "3.3"
+            gemfile: gemfiles/rails80_sprockets_4.gemfile
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
