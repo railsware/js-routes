@@ -1,6 +1,8 @@
 # Changelog
 
-## master
+## main
+
+* Fix support of shakapacker [#321](https://github.com/railsware/js-routes/issue/321).
 
 ## v2.3.0
 
