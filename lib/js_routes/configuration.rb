@@ -1,6 +1,7 @@
 # typed: strict
 require "pathname"
 require "js_routes/types"
+require 'js_routes/utils'
 
 module JsRoutes
   class Configuration
@@ -114,14 +115,14 @@ module JsRoutes
 
     sig { returns(Pathname) }
     def output_file
-      webpacker_dir = defined?(::Webpacker) ?
-        T.unsafe(::Webpacker).config.source_path :
-        pathname('app', 'javascript')
+      shakapacker = JsRoutes::Utils.shakapacker
+      shakapacker_dir = shakapacker ?
+        shakapacker.config.source_path : pathname('app', 'javascript')
       sprockets_dir = pathname('app','assets','javascripts')
       file_name = file || default_file_name
       sprockets_file = sprockets_dir.join(file_name)
-      webpacker_file = webpacker_dir.join(file_name)
-      !Dir.exist?(webpacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
+      webpacker_file = shakapacker_dir.join(file_name)
+      !Dir.exist?(shakapacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
     end
 
     protected

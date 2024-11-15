@@ -3,7 +3,7 @@
 ### Using ESM module by default
 
 New version of JsRoutes doesn't try to guess your javascript environment module system because JS has generated a ton of legacy module systems in the past. 
-[ESM+Webpacker](/Readme.md#webpacker) upgrade is recommended. 
+[ESM](/Readme.md#webpacker) upgrade is recommended. 
 
 However, if you don't want to follow that pass, specify `module_type` configuration option instead based on module system available in your JS environment.
 Here are supported values:
