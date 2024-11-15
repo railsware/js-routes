@@ -465,13 +465,6 @@ describe JsRoutes, "options" do
     end
 
     context "with url_links option" do
-      around(:each) do |example|
-        Rails.version >= "7.1.0" ? Rails.deprecator : ActiveSupport::Deprecation
-        deprecator_object.silence do
-          example.run
-        end
-      end
-
       let(:_options) { { :compact => true, :url_links => true, default_url_options: {host: 'localhost'} } }
       it "should not strip urls" do
         expectjs("Routes.inbox(1)").to eq(test_routes.inbox_path(1))

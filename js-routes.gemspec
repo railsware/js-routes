@@ -42,12 +42,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<rspec>, [">= 3.10.0"])
   s.add_development_dependency(%q<bundler>, [">= 2.2.25"])
   s.add_development_dependency(%q<appraisal>, [">= 0.5.2"])
-  s.add_development_dependency(%q<bump>, [">= 0.10.0"])
   if defined?(JRUBY_VERSION)
     s.add_development_dependency(%q<therubyrhino>, [">= 2.0.4"])
   else
-    s.add_development_dependency(%q<byebug>)
-    s.add_development_dependency(%q<pry-byebug>)
     s.add_development_dependency(%q<mini_racer>, [">= 0.4.0"])
   end
 end

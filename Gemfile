@@ -6,4 +6,6 @@ gemspec
 group :development do
   gem 'sorbet', '>= 0.5.11518'
   gem 'tapioca'
+  gem 'debug'
+  gem 'bump'
 end
