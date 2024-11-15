@@ -1,4 +1,5 @@
 # typed: strict
+
 require "pathname"
 require "js_routes/types"
 require 'js_routes/utils'
