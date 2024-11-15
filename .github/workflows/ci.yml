@@ -17,6 +17,7 @@ jobs:
           - gemfiles/rails51_sprockets_3.gemfile
           - gemfiles/rails52_sprockets_3.gemfile
           - gemfiles/rails70_sprockets_4.gemfile
+          - gemfiles/rails80_sprockets_4.gemfile
 
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
