@@ -27,8 +27,7 @@ module JsRoutes
 
       application = T.unsafe(self.application)
       if named_routes.empty?
-        rails8_or_newer = Gem::Version.new(Rails.version) >= Gem::Version.new('8')
-        if rails8_or_newer
+        if Rails.version >= "8.0.0"
           application.reload_routes_unless_loaded
         elsif application.respond_to?(:reload_routes!, true)
           application.reload_routes!
