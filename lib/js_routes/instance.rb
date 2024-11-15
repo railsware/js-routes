@@ -27,10 +27,12 @@ module JsRoutes
 
       application = T.unsafe(self.application)
       if named_routes.empty?
-        if Rails.version >= "8.0.0"
-          application.reload_routes_unless_loaded
-        elsif application.respond_to?(:reload_routes!, true)
-          application.reload_routes!
+        if application.is_a?(Rails::Application)
+          if Rails.version >= "8.0.0"
+            application.reload_routes_unless_loaded
+          else
+            application.reload_routes!
+          end
         end
       end
       content = File.read(@configuration.source_file)
