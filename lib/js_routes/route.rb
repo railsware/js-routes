@@ -194,7 +194,9 @@ JS
     sig { params(spec: SpecNode, parent_spec: T.nilable(RouteSpec)).returns(T.nilable(T.any(UntypedArray, String))) }
     def serialize(spec, parent_spec=nil)
       return nil unless spec
-      # Rails 4 globbing requires * removal
+      # Removing special character prefix from route variable name
+      # * for globbing
+      # : for common parameter
       return spec.tr(':*', '') if spec.is_a?(String)
 
       result = serialize_spec(spec, parent_spec)
