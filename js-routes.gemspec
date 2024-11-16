@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
     "github_repo" => "ssh://github.com/railsware/js-routes",
   }
 
-  s.add_runtime_dependency(%q<railties>, [">= 4"])
+  s.add_runtime_dependency(%q<railties>, [">= 5"])
   s.add_runtime_dependency(%q<sorbet-runtime>)
 
   s.add_development_dependency(%q<sprockets-rails>)
