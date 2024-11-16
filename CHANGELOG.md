@@ -1,8 +1,9 @@
 # Changelog
 
-## main
+## v2.3.1
 
 * Fix support of shakapacker [#321](https://github.com/railsware/js-routes/issue/321).
+* Fix support for Rails 8 [#319](https://github.com/railsware/js-routes/issue/319)
 
 ## v2.3.0
 
