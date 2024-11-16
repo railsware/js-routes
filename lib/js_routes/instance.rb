@@ -185,8 +185,8 @@ export {};
     sig { params(route: JourneyRoute).returns(T::Array[StringArray]) }
     def mounted_app_routes(route)
       rails_engine_app = T.unsafe(app_from_route(route))
-      if rails_engine_app.respond_to?(:superclass) &&
-          rails_engine_app.superclass == Rails::Engine && !route.path.anchored
+      if rails_engine_app.is_a?(Class) &&
+          rails_engine_app < Rails::Engine && !route.path.anchored
         rails_engine_app.routes.named_routes.flat_map do |_, engine_route|
           route_helpers_if_match(engine_route, route)
         end
@@ -198,9 +198,9 @@ export {};
     sig { params(route: JourneyRoute).returns(T.untyped) }
     def app_from_route(route)
       app = route.app
-      # rails engine in Rails 4.2 use additional
+      # Rails Engine can use additional
       # ActionDispatch::Routing::Mapper::Constraints, which contain app
-      if app.respond_to?(:app) && app.respond_to?(:constraints)
+      if app.is_a?(ActionDispatch::Routing::Mapper::Constraints)
         app.app
       else
         app
