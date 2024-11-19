@@ -160,14 +160,12 @@ describe JsRoutes, "options" do
     let(:_options) { {:default_url_options => {format: "json"}} }
     let(:_warnings) { nil }
 
-    if Rails.version >= "5"
-      it "should render routing with default_format" do
-        expectjs("Routes.inbox_path(1)").to eq(test_routes.inbox_path(1))
-      end
+    it "should render routing with default_format" do
+      expectjs("Routes.inbox_path(1)").to eq(test_routes.inbox_path(1))
+    end
 
-      it "should render routing with default_format and zero object" do
-        expectjs("Routes.inbox_path(0)").to eq(test_routes.inbox_path(0))
-      end
+    it "should render routing with default_format and zero object" do
+      expectjs("Routes.inbox_path(0)").to eq(test_routes.inbox_path(0))
     end
 
     it "should override default_format when spefified implicitly" do

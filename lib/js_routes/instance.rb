@@ -76,15 +76,14 @@ module JsRoutes
 
     sig { returns(T::Hash[String, String]) }
     def js_variables
-      version = Rails.version
       prefix = @configuration.prefix
       prefix = prefix.call if prefix.is_a?(Proc)
       {
         'GEM_VERSION'         => JsRoutes::VERSION,
+        'TIMESTAMP'           => Time.now.to_s,
         'ROUTES_OBJECT'       => routes_object,
         'RAILS_VERSION'       => ::Rails.version,
-        'DEPRECATED_GLOBBING_BEHAVIOR' => version >= '4.0.0' && version < '4.1.0',
-        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => version < '7.0.0',
+        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => Rails.version < '7.0.0',
         'APP_CLASS'           => application.class.to_s,
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(prefix),

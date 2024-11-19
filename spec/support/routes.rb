@@ -39,10 +39,6 @@ def draw_routes
     get "(/sep1/:first_optional)/sep2/:second_required/sep3/:third_required(/:forth_optional)",
       as: :thing_deep, controller: :things, action: :show
 
-    if Rails.version < "5.0.0"
-      get "/:controller(/:action(/:id))" => "classic#classic", :as => :classic
-    end
-
     get "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
     get '/other_optional(/*optional_id)' => 'foo#foo', :as => :foo_all
 

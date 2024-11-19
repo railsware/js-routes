@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.1
+
+* Add timestamp on when routes where generated into banner
+
 ## v2.3.0
 
 * Drop support of Rails 4.x
