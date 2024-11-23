@@ -165,7 +165,7 @@ module JsRoutes
       <<-JS
 export { #{[*static_exports, *routes_list].map do |comment, name, body|
   name
-end.select{|name| name =~ /.*_path$/}.join(", ")} };
+end.join(", ")} };
       JS
     end
 
