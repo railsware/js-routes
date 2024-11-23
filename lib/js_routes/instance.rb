@@ -43,7 +43,7 @@ module JsRoutes
           raise("Missing key #{key} in JS template")
         end
       end
-      content + routes_export + prevent_types_export
+      content + routes_export + routes_types_export
     end
 
     sig { void }
@@ -160,13 +160,12 @@ module JsRoutes
     end
 
     sig { returns(String) }
-    def prevent_types_export
+    def routes_types_export
       return "" unless @configuration.dts?
       <<-JS
-// By some reason this line prevents all types in a file
-// from being automatically exported
-// - source: kryali/js-routes fork
-export {};
+export { #{[*static_exports, *routes_list].map do |comment, name, body|
+  name
+end.select{|name| name =~ /.*_path$/}.join(", ")} };
       JS
     end
 
