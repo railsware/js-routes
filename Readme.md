@@ -73,10 +73,9 @@ alert(post_path(1))
 Upgrade js building process to update js-routes files in `Rakefile`: 
 
 ``` ruby
-task "javascript:build" => "js:routes:typescript"
+task "javascript:build" => "js:routes"
 # For setups without jsbundling-rails
-task "assets:precompile" => "js:routes:typescript"
-
+task "assets:precompile" => "js:routes"
 ```
 
 Add js-routes files to `.gitignore`:
