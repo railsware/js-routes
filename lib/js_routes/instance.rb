@@ -155,7 +155,7 @@ module JsRoutes
     def routes_export
       return "" unless @configuration.modern?
       [*static_exports, *routes_list].map do |comment, name, body|
-        "#{comment}export const #{name}#{export_separator}#{body};\n\n"
+        "#{comment}declare const #{name}#{export_separator}#{body};\n\n"
       end.join
     end
 
@@ -165,6 +165,7 @@ module JsRoutes
       <<-JS
 // By some reason this line prevents all types in a file
 // from being automatically exported
+// - source: kryali/js-routes fork
 export {};
       JS
     end
