@@ -3,6 +3,7 @@
 ## v2.3.1
 
 * Add timestamp on when routes where generated into banner
+* Fix application specified directly without proc. [#323](https://github.com/railsware/js-routes/issues/323)
 
 ## v2.3.0
 

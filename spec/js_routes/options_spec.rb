@@ -482,10 +482,21 @@ describe JsRoutes, "options" do
   end
 
   describe "when application is specified" do
-    let(:_options) { {application: -> {BlogEngine::Engine}} }
+    context "as proc" do
+      let(:_options) { {application: -> {BlogEngine::Engine}} }
 
-    it "should include specified engine route" do
-      expectjs("Routes.posts_path()").not_to be_nil
+      it "should include specified engine route" do
+        expectjs("Routes.posts_path()").not_to be_nil
+      end
+    end
+
+    context "directly" do
+      let(:_options) { {application: BlogEngine::Engine} }
+
+      it "should include specified engine route" do
+        expectjs("Routes.posts_path()").not_to be_nil
+      end
+
     end
   end
 

@@ -117,7 +117,8 @@ module JsRoutes
 
     sig { returns(Application) }
     def application
-      @configuration.application.call
+      app = @configuration.application
+      app.is_a?(Proc) ? app.call : app
     end
 
     sig { params(value: T.untyped).returns(String) }
