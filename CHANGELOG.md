@@ -7,8 +7,8 @@
 ## v2.3.0
 
 * Drop support of Rails 4.x
-* Fix support of shakapacker [#321](https://github.com/railsware/js-routes/issue/321).
-* Fix support for Rails 8 [#319](https://github.com/railsware/js-routes/issue/319)
+* Fix support of shakapacker [#321](https://github.com/railsware/js-routes/issues/321).
+* Fix support for Rails 8 [#319](https://github.com/railsware/js-routes/issues/319)
 * Deprecated `rake js:routes:typescript`.
   `rake js:routes` now automatically detects if types support can be used on not.
 
@@ -16,7 +16,7 @@
 
 * Remove sorbet files from repo
 * Clearly define files included in gem
-* Fix Middleware and Middleware generator bugs [#316](https://github.com/railsware/js-routes/issue/316)
+* Fix Middleware and Middleware generator bugs [#316](https://github.com/railsware/js-routes/issues/316)
 * Remove empty object linter warning on DTS module
 * Generators: Add `.ts` extension when searching for main JS file of the project
 
