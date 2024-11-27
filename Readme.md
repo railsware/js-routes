@@ -421,7 +421,10 @@ user_path.requiredParams() // => ['id']
 
 ## Rails Compatibility
 
-JsRoutes tries to replicate the Rails routing API as closely as possible. If you find any incompatibilities (outside of what is described below), please [open an issue](https://github.com/railsware/js-routes/issues/new).
+JsRoutes tries to replicate the Rails routing API as closely as possible. 
+There are only 2 known issues with compatibility that happen very rarely and have their workarounds.
+
+If you find any incompatibilities outside of ones below, please [open an issue](https://github.com/railsware/js-routes/issues/new).
 
 ### Object and Hash distinction issue
 
