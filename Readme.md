@@ -42,8 +42,8 @@ There are several possible ways to setup JsRoutes:
 
 ### Quick Start
 
-Setup [Rack Middleware](https://guides.rubyonrails.org/rails_on_rack.html#action-dispatcher-middleware-stack) 
-to automatically generate and maintain `routes.js` file and corresponding 
+Setup [Rack Middleware](https://guides.rubyonrails.org/rails_on_rack.html#action-dispatcher-middleware-stack)
+to automatically generate and maintain `routes.js` file and corresponding
 [Typescript definitions](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html) `routes.d.ts`:
 
 #### Use a Generator
@@ -70,7 +70,7 @@ import {post_path} from '../routes';
 alert(post_path(1))
 ```
 
-Upgrade js building process to update js-routes files in `Rakefile`: 
+Upgrade js building process to update js-routes files in `Rakefile`:
 
 ``` ruby
 task "javascript:build" => "js:routes"
@@ -235,7 +235,7 @@ JsRoutes.definitions! # to output to file
 JsRoutes.definitions # to output to string
 ```
 
-Even more advanced setups can be achieved by setting `module_type` to `DTS` inside [configuration](#module_type) 
+Even more advanced setups can be achieved by setting `module_type` to `DTS` inside [configuration](#module_type)
 which will cause any `JsRoutes` instance to generate defintions instead of routes themselves.
 
 <div id="sprockets"></div>
@@ -324,9 +324,13 @@ Options to configure JavaScript file generator. These options are only available
   * Sample route call when option is set to true: `users() // => /users`
 * `application` - a key to specify which rails engine you want to generate routes too.
   * This option allows to only generate routes for a specific rails engine, that is mounted into routes instead of all Rails app routes
-  * Default: `Rails.application`
+  * It is recommended to wrap the value with `lambda`. This will reduce the reliance on order during initialization your application.
+  * Default: `-> { Rails.application }`
 * `file` - a file location where generated routes are stored
   * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
+* `optional_definition_params` - make all route paramters in definition optional
+  * See [related compatibility issue](#optional-definition-params)
+  * Default: `false`
 
 <div id="formatter-options"></div>
 
@@ -358,33 +362,33 @@ import {
   user_path, user_project_path, company_path
 } from 'routes';
 
-users_path() 
+users_path()
   // => "/users"
 
-user_path(1) 
+user_path(1)
   // => "/users/1"
-  
-user_path(1, {format: 'json'}) 
+
+user_path(1, {format: 'json'})
   // => "/users/1.json"
 
-user_path(1, {anchor: 'profile'}) 
+user_path(1, {anchor: 'profile'})
   // => "/users/1#profile"
 
-new_user_project_path(1, {format: 'json'}) 
+new_user_project_path(1, {format: 'json'})
   // => "/users/1/projects/new.json"
 
-user_project_path(1,2, {q: 'hello', custom: true}) 
+user_project_path(1,2, {q: 'hello', custom: true})
   // => "/users/1/projects/2?q=hello&custom=true"
 
-user_project_path(1,2, {hello: ['world', 'mars']}) 
+user_project_path(1,2, {hello: ['world', 'mars']})
   // => "/users/1/projects/2?hello%5B%5D=world&hello%5B%5D=mars"
 
 var google = {id: 1, name: "Google"};
-company_path(google) 
+company_path(google)
   // => "/companies/1"
 
 var google = {id: 1, name: "Google", to_param: "google"};
-company_path(google) 
+company_path(google)
   // => "/companies/google"
 ```
 
@@ -427,14 +431,63 @@ In this case you would need to pass a special key to help:
 ``` js
 import {company_project_path} from '../routes'
 
-company_project_path({company_id: 1, id: 2}) // => Not enough parameters
-company_project_path({company_id: 1, id: 2, _options: true}) // => "/companies/1/projects/2"
+company_project_path({company_id: 1, id: 2})
+    // => Not enough parameters
+company_project_path({company_id: 1, id: 2, _options: true})
+    // => "/companies/1/projects/2"
 ```
 
+Use `special_options_key` to configure the `_options` parameter name.
+
+<div id="optional-definition-params"></div>
+
+### Rails required parameters specified as optional
+
+Rails is very flexible on how route parameters can be specified.
+All of the following calls will make the same result:
+
+``` ruby
+# Given route
+# /inboxes/:inbox_id/messages/:message_id/attachments/:id
+# every call below returns:
+# => "/inboxes/1/messages/2/attachments/3"
+
+inbox_message_attachment_path(1, 2, 3)
+inbox_message_attachment_path(1, 2, id: 3)
+inbox_message_attachment_path(1, message_id: 2, id: 3)
+inbox_message_attachment_path(inbox_id: 1, message_id: 2, id: 3)
+
+# including these mad versions
+inbox_message_attachment_path(2, inbox_id: 1, id: 3)
+inbox_message_attachment_path(1, 3, message_id: 2)
+inbox_message_attachment_path(3, inbox_id: 1, message_id: 2)
+```
+
+While all of these methods are supported by JsRoutes, it is impossible to support them in `DTS` type definitions.
+If you are using routes like this, use the following configuration that will prevent required parameters presence to be validated by definition:
+
+``` ruby
+JsRoutes.configure do |c|
+  c.optional_definition_params = true
+end
+```
+
+This will enforce the following route signature:
+
+``` typescript
+export const inbox_message_attachment_path: ((
+  inbox_id?: RequiredRouteParameter,
+  message_id?: RequiredRouteParameter,
+  id?: RequiredRouteParameter,
+  options?: RouteOptions
+) => string) & RouteHelperExtras;
+```
+
+That will make every call above valid.
 
 ## What about security?
 
-JsRoutes itself does not have security holes. 
+JsRoutes itself does not have security holes.
 It makes URLs without access protection more reachable by potential attacker.
 If that is an issue for you, you may use one of the following solutions:
 
@@ -487,5 +540,3 @@ Advantages of this one are:
 * Full rails compatibility
 * Support Rails `#to_param` convention for seo optimized paths
 * Well tested
-
-

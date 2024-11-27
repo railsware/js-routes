@@ -6,19 +6,24 @@ require "spec_helper"
 
 describe JsRoutes, "compatibility with DTS"  do
 
-  INCLUDE_OPTION = [/^inboxes$/, /^inbox_message_attachment$/]
-  OPTIONS = {module_type: 'DTS', include: INCLUDE_OPTION}
-
   let(:extra_options) do
     {}
   end
 
   let(:options) do
-    { module_type: 'DTS', include: INCLUDE_OPTION, **extra_options }
+    {
+      module_type: 'DTS',
+      include: [/^inboxes$/, /^inbox_message_attachment$/],
+      **extra_options
+    }
   end
 
   let(:generated_js) do
-    JsRoutes.generate(**options)
+    JsRoutes.generate(
+      module_type: 'DTS',
+      include: [/^inboxes$/, /^inbox_message_attachment$/],
+      **extra_options
+    )
   end
 
   context "when file is generated" do
@@ -66,6 +71,21 @@ export const inboxMessageAttachmentPath: ((
   options?: RouteOptions
 ) => string) & RouteHelperExtras;
 DOC
+    end
+  end
+
+  context "when optional_definition_params specified" do
+    let(:extra_options) { { optional_definition_params: true } }
+
+    it "makes all route params optional" do
+      expect(generated_js).to include(<<~JS.rstrip)
+        export const inbox_message_attachment_path: ((
+          inbox_id?: RequiredRouteParameter,
+          message_id?: RequiredRouteParameter,
+          id?: RequiredRouteParameter,
+          options?: RouteOptions
+        ) => string) & RouteHelperExtras;
+      JS
     end
   end
 

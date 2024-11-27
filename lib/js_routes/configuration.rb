@@ -37,6 +37,8 @@ module JsRoutes
     attr_accessor :documentation
     sig { returns(T.nilable(String)) }
     attr_accessor :module_type
+    sig { returns(T::Boolean) }
+    attr_accessor :optional_definition_params
 
     sig {params(attributes: T.nilable(Options)).void }
     def initialize(attributes = nil)
@@ -54,6 +56,7 @@ module JsRoutes
       @application = T.let(-> { Rails.application }, ApplicationCaller)
       @module_type = T.let('ESM', T.nilable(String))
       @documentation = T.let(true, T::Boolean)
+      @optional_definition_params = T.let(false, T::Boolean)
 
       return unless attributes
       assign(attributes)

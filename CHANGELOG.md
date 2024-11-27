@@ -2,8 +2,9 @@
 
 ## v2.3.1
 
-* Add timestamp on when routes where generated into banner
+* Add timestamp on when routes.js was generated into banner.
 * Fix application specified directly without proc. [#323](https://github.com/railsware/js-routes/issues/323)
+* Support `optional_definition_params` option. See [Related Docs](./Readme.md#optional-definition-params).
 
 ## v2.3.0
 

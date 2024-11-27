@@ -66,7 +66,8 @@ module JsRoutes
     sig { returns(String) }
     def definition_body
       options_type = optional_parts_type ? "#{optional_parts_type} & RouteOptions" : "RouteOptions"
-      args = required_parts.map{|p| "#{apply_case(p)}: RequiredRouteParameter"}
+      predicate = @configuration.optional_definition_params ? '?' : ''
+      args = required_parts.map{|p| "#{apply_case(p)}#{predicate}: RequiredRouteParameter"}
       args << "options?: #{options_type}"
       "((\n#{args.join(",\n").indent(2)}\n) => string) & RouteHelperExtras"
     end
