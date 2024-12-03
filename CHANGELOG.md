@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.3.2
+
+* Add `banner` option that allow to control JSDoc on top of generated file. [#324](https://github.com/bogdan/repo/issues/324).
+
+``` ruby
+JsRoutes.configure do |c|
+c.banner = -> {
+  commit_hash = `git rev-parse --short HEAD`.strip
+
+  <<~DOC
+  @file Javascript Route helpers of my magic pony app.
+  @author Bogdan Gusiev
+  @license MIT
+  @version #{commit_hash}
+  DOC
+}
+end
+```
+
 ## v2.3.1
 
 * Add timestamp on when routes.js was generated into banner.

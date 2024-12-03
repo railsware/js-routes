@@ -6,7 +6,7 @@ module JsRoutes
   # whenever routes.rb is modified
   #
   # Inspired by
-  # https://github.com/fnando/i18n-js/blob/main/lib/i18n/js/middleware.rb
+  # https://github.com/fnando/i18n-js/blob/v3/lib/i18n/js/middleware.rb
   class Middleware
     include JsRoutes::Types
     include RackApp

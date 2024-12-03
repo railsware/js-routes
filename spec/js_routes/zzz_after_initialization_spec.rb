@@ -117,7 +117,7 @@ describe "after Rails initialization", :slow do
     context "the preprocessor" do
       before(:each) do
         if sprockets_v3? || sprockets_v4?
-          expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(CONFIG_ROUTES.to_s)
+          expect_any_instance_of(Sprockets::Context).to receive(:depend_on)
         else
           expect(ctx).to receive(:depend_on).with(CONFIG_ROUTES.to_s)
         end

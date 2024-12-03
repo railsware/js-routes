@@ -16,11 +16,20 @@ module JsRoutes
     Literal = T.type_alias { T.any(String, Symbol) }
     JourneyRoute = T.type_alias{ActionDispatch::Journey::Route}
     RouteSpec = T.type_alias {T.untyped}
-    Application = T.type_alias { T.any(T::Class[Rails::Engine], Rails::Application) }
-    ApplicationCaller = T.type_alias { T.any(Application, T.proc.returns(Application)) }
+    Application = T.type_alias do
+      T.any(T::Class[Rails::Engine], Rails::Application)
+    end
+    ApplicationCaller = T.type_alias do
+      T.any(Application, T.proc.returns(Application))
+    end
+    BannerCaller = T.type_alias do
+      T.any(String, NilClass, T.proc.returns(T.any(String, NilClass)))
+    end
     Clusivity = T.type_alias { T.any(Regexp, T::Array[Regexp]) }
     FileName = T.type_alias { T.any(String, Pathname, NilClass) }
-    ConfigurationBlock = T.type_alias { T.proc.params(arg0: JsRoutes::Configuration).void }
+    ConfigurationBlock = T.type_alias do
+      T.proc.params(arg0: JsRoutes::Configuration).void
+    end
     Prefix = T.type_alias do
       T.any(T.proc.returns(String), String, NilClass)
     end
