@@ -27,6 +27,10 @@ describe JsRoutes, "compatibility with DTS"  do
   end
 
   context "when file is generated" do
+    let(:extra_options) do
+      { banner: nil }
+    end
+
     let(:dir_name) do
        File.expand_path(__dir__ + "/dts")
     end
