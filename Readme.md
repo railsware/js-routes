@@ -483,7 +483,7 @@ While all of these methods are supported by JsRoutes, it is impossible to suppor
 If you are using routes like this, use the following configuration that will prevent required parameters presence to be validated by definition:
 
 ``` ruby
-JsRoutes.configure do |c|
+JsRoutes.setup do |c|
   c.optional_definition_params = true
 end
 ```
