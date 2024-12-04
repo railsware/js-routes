@@ -68,8 +68,16 @@ describe "after Rails initialization", :slow do
   end
 
   describe JsRoutes::Middleware do
+    def file_content
+      File.read(NAME)
+    end
+
     it "works" do
       JsRoutes.remove!
+
+      real_digest = JsRoutes.digest
+      stub_digest = '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
+
       expect(File.exist?(NAME)).to be(false)
       app = lambda do |env|
         [200, {}, ""]
@@ -78,15 +86,18 @@ describe "after Rails initialization", :slow do
       middleware.call({})
 
       expect(File.exist?(NAME)).to be(true)
+      expect(file_content).to include(real_digest)
       JsRoutes.remove!
       middleware.call({})
       expect(File.exist?(NAME)).to be(false)
-      FileUtils.touch(CONFIG_ROUTES)
+
+      allow(JsRoutes).to receive(:digest).and_return(stub_digest)
       middleware.call({})
+
       expect(File.exist?(NAME)).to be(true)
+      expect(file_content).to include(stub_digest)
     end
   end
-
 
   describe ".generate!" do
     let(:dir) { Rails.root.join('tmp') }

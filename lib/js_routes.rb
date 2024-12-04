@@ -7,6 +7,7 @@ require "js_routes/configuration"
 require "js_routes/instance"
 require "js_routes/types"
 require 'active_support/core_ext/string/indent'
+require "digest/sha2"
 
 module JsRoutes
   extend T::Sig
@@ -61,6 +62,13 @@ module JsRoutes
     sig { params(value: T.untyped).returns(String) }
     def json(value)
       ActiveSupport::JSON.encode(value)
+    end
+
+    sig { returns(String) }
+    def digest
+      Digest::SHA256.file(
+        Rails.root.join("config/routes.rb")
+      ).hexdigest
     end
   end
   module Generators

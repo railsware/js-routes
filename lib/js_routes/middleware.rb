@@ -16,8 +16,7 @@ module JsRoutes
     sig { params(app: T.untyped).void }
     def initialize(app)
       @app = app
-      @routes_file = T.let(Rails.root.join("config/routes.rb"), Pathname)
-      @mtime = T.let(nil, T.nilable(Time))
+      @digest = T.let(nil, T.nilable(String))
     end
 
     sig { override.params(env: StringHash).returns(UntypedArray) }
@@ -30,10 +29,10 @@ module JsRoutes
 
     sig { void }
     def update_js_routes
-      new_mtime = routes_mtime
-      unless new_mtime == @mtime
+      new_digest = fetch_digest
+      unless new_digest == @digest
         regenerate
-        @mtime = new_mtime
+        @digest = new_digest
       end
     end
 
@@ -42,9 +41,9 @@ module JsRoutes
       JsRoutes.generate!(typed: true)
     end
 
-    sig { returns(T.nilable(Time)) }
-    def routes_mtime
-      File.mtime(@routes_file)
+    sig { returns(T.nilable(String)) }
+    def fetch_digest
+      JsRoutes.digest
     rescue Errno::ENOENT
       nil
     end
