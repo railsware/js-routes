@@ -5,17 +5,16 @@
 * Add `banner` option that allow to control JSDoc on top of generated file. [#324](https://github.com/bogdan/repo/issues/324).
 
 ``` ruby
-JsRoutes.configure do |c|
-c.banner = -> {
-  commit_hash = `git rev-parse --short HEAD`.strip
-
-  <<~DOC
-  @file Javascript Route helpers of my magic pony app.
-  @author Bogdan Gusiev
-  @license MIT
-  @version #{commit_hash}
-  DOC
-}
+JsRoutes.setup do |c|
+  c.banner = -> {
+    commit_hash = `git rev-parse --short HEAD`.strip
+    <<~DOC
+    @file Javascript Route helpers of my magic pony app.
+    @author Bogdan Gusiev
+    @license MIT
+    @version #{commit_hash}
+    DOC
+  }
 end
 ```
 
