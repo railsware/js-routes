@@ -29,9 +29,9 @@ module JsRoutes
       if named_routes.empty?
         if application.is_a?(Rails::Application)
           if Rails.version >= "8.0.0"
-            application.reload_routes_unless_loaded
+            T.unsafe(application).reload_routes_unless_loaded
           else
-            application.reload_routes!
+            T.unsafe(application).reload_routes!
           end
         end
       end
@@ -43,7 +43,20 @@ module JsRoutes
           raise("Missing key #{key} in JS template")
         end
       end
-      content + routes_export + prevent_types_export
+      banner + content + routes_export + prevent_types_export
+    end
+
+    sig { returns(String) }
+    def banner
+      banner = @configuration.banner
+      banner = banner.call if banner.is_a?(Proc)
+      return "" if banner.blank?
+      [
+        "/**",
+        *banner.split("\n").map { |line| " * #{line}" },
+        " */",
+        "",
+      ].join("\n")
     end
 
     sig { void }
@@ -79,12 +92,8 @@ module JsRoutes
       prefix = @configuration.prefix
       prefix = prefix.call if prefix.is_a?(Proc)
       {
-        'GEM_VERSION'         => JsRoutes::VERSION,
-        'TIMESTAMP'           => Time.now.to_s,
         'ROUTES_OBJECT'       => routes_object,
-        'RAILS_VERSION'       => ::Rails.version,
         'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => Rails.version < '7.0.0',
-        'APP_CLASS'           => application.class.to_s,
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(prefix),
         'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
@@ -187,7 +196,7 @@ export {};
       rails_engine_app = T.unsafe(app_from_route(route))
       if rails_engine_app.is_a?(Class) &&
           rails_engine_app < Rails::Engine && !route.path.anchored
-        rails_engine_app.routes.named_routes.flat_map do |_, engine_route|
+        T.unsafe(rails_engine_app).routes.named_routes.flat_map do |_, engine_route|
           route_helpers_if_match(engine_route, route)
         end
       else
@@ -200,7 +209,7 @@ export {};
       app = route.app
       # Rails Engine can use additional
       # ActionDispatch::Routing::Mapper::Constraints, which contain app
-      if app.is_a?(ActionDispatch::Routing::Mapper::Constraints)
+      if app.is_a?(T.unsafe(ActionDispatch::Routing::Mapper::Constraints))
         app.app
       else
         app

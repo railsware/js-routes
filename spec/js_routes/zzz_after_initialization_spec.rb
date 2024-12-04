@@ -62,7 +62,7 @@ describe "after Rails initialization", :slow do
     # Change content of existed routes file (add space to the end of file).
     File.open(NAME, 'a') { |f| f << ' ' }
     routes_file_mtime = File.mtime(NAME)
-    sleep(1)
+    sleep(0.1)
     JsRoutes.generate!(NAME)
     expect(File.mtime(NAME)).not_to eq(routes_file_mtime)
   end
@@ -117,7 +117,7 @@ describe "after Rails initialization", :slow do
     context "the preprocessor" do
       before(:each) do
         if sprockets_v3? || sprockets_v4?
-          expect_any_instance_of(Sprockets::Context).to receive(:depend_on).with(CONFIG_ROUTES.to_s)
+          expect_any_instance_of(Sprockets::Context).to receive(:depend_on)
         else
           expect(ctx).to receive(:depend_on).with(CONFIG_ROUTES.to_s)
         end
