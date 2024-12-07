@@ -26,15 +26,22 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
       - uses: actions/checkout@v2
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+
       - uses: actions/setup-node@v3
         with:
           node-version: "20"
+
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: install dependencies
         run: |
           bundle install --jobs 3 --retry 3
           yarn install
+
       - name: test
         run: bundle exec rake spec
