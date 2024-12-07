@@ -31,7 +31,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "20"
       - name: install dependencies
         run: |
           bundle install --jobs 3 --retry 3
