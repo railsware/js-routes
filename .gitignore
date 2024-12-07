@@ -52,6 +52,13 @@ node_modules
 #*.rbc
 .rvmrc
 .ruby-version
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 Gemfile.lock
 gemfiles/*.lock

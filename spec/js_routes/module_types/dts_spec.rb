@@ -48,7 +48,7 @@ describe JsRoutes, "compatibility with DTS"  do
       command = "yarn tsc --strict --noEmit -p spec/tsconfig.json"
       stdout, stderr, status = Open3.capture3(command)
       expect(stderr).to eq("")
-      expect(stdout).to include("Done in ")
+      expect(stdout).to eq("")
       expect(status).to eq(0)
     end
   end

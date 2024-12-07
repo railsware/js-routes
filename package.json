@@ -5,7 +5,6 @@
   "repository": "git@github.com:railsware/js-routes.git",
   "author": "Bogdan Gusiev <agresso@gmail.com>, Alexey Vasiliev <https://leopard.in.ua> ",
   "license": "MIT",
-  "private": false,
   "devDependencies": {
     "typescript": "^4.1.2"
   },
@@ -34,5 +33,6 @@
     "./lib/routes.ts": [
       "yarn lint:fix"
     ]
-  }
+  },
+  "packageManager": "yarn@4.5.3"
 }
