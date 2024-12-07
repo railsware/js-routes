@@ -26,7 +26,7 @@ module JsRoutes
       # Ensure routes are loaded. If they're not, load them.
 
       application = T.unsafe(self.application)
-      if named_routes.empty?
+      if routes_from(application).empty?
         if application.is_a?(Rails::Application)
           if Rails.version >= "8.0.0"
             T.unsafe(application).reload_routes_unless_loaded
@@ -135,9 +135,9 @@ module JsRoutes
       JsRoutes.json(value)
     end
 
-    sig { returns(T::Hash[Symbol, JourneyRoute]) }
-    def named_routes
-      T.unsafe(application).routes.named_routes.to_h
+    sig {params(application: Application).returns(T::Array[JourneyRoute])}
+    def routes_from(application)
+      T.unsafe(application).routes.named_routes.to_h.values.sort_by(&:name)
     end
 
     sig { returns(String) }
@@ -186,7 +186,7 @@ export {};
 
     sig { returns(T::Array[StringArray]) }
     def routes_list
-      named_routes.sort_by(&:first).flat_map do |_, route|
+      routes_from(application).flat_map do |route|
         route_helpers_if_match(route) + mounted_app_routes(route)
       end
     end
@@ -196,7 +196,7 @@ export {};
       rails_engine_app = T.unsafe(app_from_route(route))
       if rails_engine_app.is_a?(Class) &&
           rails_engine_app < Rails::Engine && !route.path.anchored
-        T.unsafe(rails_engine_app).routes.named_routes.flat_map do |_, engine_route|
+        routes_from(rails_engine_app).flat_map do |engine_route|
           route_helpers_if_match(engine_route, route)
         end
       else
