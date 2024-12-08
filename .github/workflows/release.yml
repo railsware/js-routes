@@ -1,6 +1,13 @@
 name: Publish RubyGem
 
 on:
+  workflow_call:
+    secrets:
+      JS_ROUTES_RUBYGEMS_KEY:
+        description: "RubyGems account API key"
+        required: true
+
+
   workflow_dispatch: # Trigger the workflow manually
     inputs:
       otp_code:
