@@ -1,0 +1,61 @@
+name: Publish RubyGem
+
+on:
+  workflow_dispatch: # Trigger the workflow manually
+    inputs:
+      otp_code:
+        description: 'Enter the RubyGems OTP code'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3.4'
+
+    - name: Extract Gem Version
+      id: extract_version
+      run: |
+        VERSION=$(./.github/workflows/scripts/version.sh)
+        echo "Version: $VERSION"
+        echo "gem_version=$VERSION" >> $GITHUB_ENV
+
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Extract Changelog
+      run: ./.github/workflows/scripts/changelog.sh
+
+    - name: Build the gem
+      run: gem build *.gemspec
+
+    - name: Tag the release version
+      run: ./.github/workflows/scripts/tag.sh
+
+    - name: Publish to RubyGems
+      env:
+        GEM_HOST_API_KEY: ${{ secrets.JS_ROUTES_RUBYGEMS_KEY }}
+      run: |
+        gem push *.gem --otp ${{ github.event.inputs.otp_code }}
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: "v${{ env.gem_version }}"
+        tag_name: "v${{ env.gem_version }}"
+        body_path: ./release_changelog.md
+        draft: false
+        prerelease: false
+

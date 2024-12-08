@@ -71,3 +71,4 @@ gemfiles/*.lock
 node_modules
 sorbet/rbi
 
+/release_changelog.md

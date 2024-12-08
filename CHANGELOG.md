@@ -1,6 +1,10 @@
 # Changelog
 
-## v2.3.3
+## [2.3.4]
+
+* Migrate to yarn 4
+
+## [2.3.3]
 
 * Rework default banner to use `routes.rb` digest instead of timestamp to ensure
   consistent routes.js version accross environments. 
@@ -17,7 +21,7 @@ The new default banner:
  */
 ```
 
-## v2.3.2
+## [2.3.2]
 
 * Add `banner` option that allow to control JSDoc on top of generated file. [#324](https://github.com/bogdan/repo/issues/324).
 
@@ -34,13 +38,13 @@ JsRoutes.setup do |c|
 end
 ```
 
-## v2.3.1
+## [2.3.1]
 
 * Add timestamp on when routes.js was generated into banner.
 * Fix application specified directly without proc. [#323](https://github.com/railsware/js-routes/issues/323)
 * Support `optional_definition_params` option. See [Related Docs](./Readme.md#optional-definition-params).
 
-## v2.3.0
+## [2.3.0]
 
 * Drop support of Rails 4.x
 * Fix support of shakapacker [#321](https://github.com/railsware/js-routes/issues/321).
@@ -48,7 +52,7 @@ end
 * Deprecated `rake js:routes:typescript`.
   `rake js:routes` now automatically detects if types support can be used on not.
 
-## v2.2.10
+## [2.2.10]
 
 * Remove sorbet files from repo
 * Clearly define files included in gem
@@ -56,109 +60,109 @@ end
 * Remove empty object linter warning on DTS module
 * Generators: Add `.ts` extension when searching for main JS file of the project
 
-## v2.2.9
+## [2.2.9]
 
 * Fix middleware error for non-modern setup.
 * Added [Sorbet](https://sorbet.org/) method signatures.
 * Always use DTS module type when calling JsRoutes.definitions or .definitions!.
   [#313](https://github.com/railsware/js-routes/issues/313)
 
-## v2.2.8
+## [2.2.8]
 
 * Leave emoji symbols intact when encoding URI fragment [#312](https://github.com/railsware/js-routes/issues/312)
 * Use webpacker config variable instead of hardcode [#309](https://github.com/railsware/js-routes/issues/309)
 * Use `File.exist?` to be compatible with all versions of ruby [#310](https://github.com/railsware/js-routes/issues/310)
 
-## v2.2.7
+## [2.2.7]
 
 * Fix ESM Tree Shaking [#306](https://github.com/railsware/js-routes/issues/306)
 
-## v2.2.6
+## [2.2.6]
 
 * Prefer to extend `javascript:build` instead of `assets:precompile`. [#305](https://github.com/railsware/js-routes/issues/305)
 * Add stimulus framework application.js location to generators
 
-## v2.2.5
+## [2.2.5]
 
 * Upgraded eslint and prettier versions [#304](https://github.com/railsware/js-routes/issues/304)
 * Fix middleware generator [#300](https://github.com/railsware/js-routes/issues/300)
 * Support `params` special parameter
 
-## v2.2.4
+## [2.2.4]
 
 * Fix rails engine loading if sprockets is not in Gemfile. Fixes [#294](https://github.com/railsware/js-routes/issues/294)
 
-## v2.2.3
+## [2.2.3]
 
 * Fixed NIL module type namespace defintion [#297](https://github.com/railsware/js-routes/issues/297).
   * The patch may cause a problem with nested `namespace` option.
   * Ex. Value like `MyProject.Routes` requires to define `window.MyProject` before importing the routes file
 
-## v2.2.2
+## [2.2.2]
 
 * Fix custom file path [#295](https://github.com/railsware/js-routes/issues/295)
 
-## v2.2.1
+## [2.2.1]
 
 * Improve generator to update route files on `assets:precompile` and add them to `.gitignore by default` [#288](https://github.com/railsware/js-routes/issues/288#issuecomment-1012182815)
 
-## v2.2.0
+## [2.2.0]
 
 * Use Rack Middleware to automatically update routes file in development [#288](https://github.com/railsware/js-routes/issues/288)
   * This setup is now a default recommended due to lack of any downside comparing to [ERB Loader](./Readme.md#webpacker) and [Manual Setup](./Readme.md#advanced-setup)
 
-## v2.1.3
+## [2.1.3]
 
 * Fix `default_url_options` bug. [#290](https://github.com/railsware/js-routes/issues/290)
 
-## v2.1.2
+## [2.1.2]
 
 * Improve browser window object detection. [#287](https://github.com/railsware/js-routes/issues/287)
 
-## v2.1.1
+## [2.1.1]
 
 * Added webpacker generator `./bin/rails generate js_routes:webpacker`
 * Reorganized Readme to describe different setups with their pros and cons more clearly
 
-## v2.1.0
+## [2.1.0]
 
 * Support typescript defintions file aka `routes.d.ts`. See [Readme.md](./Readme.md#definitions) for more information.
 
-## v2.0.8
+## [2.0.8]
 
 * Forbid usage of `namespace` option if `module_type` is not `nil`. [#281](https://github.com/railsware/js-routes/issues/281).
 
-## v2.0.7
+## [2.0.7]
 
 * Remove source map annotation from JS file. Fixes [#277](https://github.com/railsware/js-routes/issues/277)
   * Generated file is not minified, so it is better to use app side bundler/compressor for source maps
 
 
-## v2.0.6
+## [2.0.6]
 
 * Disable `namespace` option default for all envs [#278](https://github.com/railsware/js-routes/issues/278)
 
-## v2.0.5
+## [2.0.5]
 
 * Fixed backward compatibility issue [#276](https://github.com/railsware/js-routes/issues/276)
 
-## v2.0.4
+## [2.0.4]
 
 * Fixed backward compatibility issue [#275](https://github.com/railsware/js-routes/issues/275)
 
-## v2.0.3
+## [2.0.3]
 
 * Fixed backward compatibility issue [#275](https://github.com/railsware/js-routes/issues/275)
 
-## v2.0.2
+## [2.0.2]
 
 * Fixed backward compatibility issue [#274](https://github.com/railsware/js-routes/issues/274)
 
-## v2.0.1
+## [2.0.1]
 
 * Fixed backward compatibility issue [#272](https://github.com/railsware/js-routes/issues/272)
 
-## v2.0.0
+## [2.0.0]
 
 Version 2.0 has some breaking changes.
 See [UPGRADE TO 2.0](./VERSION_2_UPGRADE.md) for guidance.
