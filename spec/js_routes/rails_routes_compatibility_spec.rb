@@ -316,28 +316,72 @@ describe JsRoutes, "compatibility with Rails"  do
       it "should include the optional parts" do
         expectjs("Routes.things_path({optional_id: 5})").to eq(test_routes.things_path(:optional_id => 5))
         expectjs("Routes.things_path(5)").to eq(test_routes.things_path(5))
-        expectjs("Routes.thing_deep_path(1, { third_required: 3, second_required: 2 })").to eq(test_routes.thing_deep_path(1, third_required: 3, second_required: 2))
-        expectjs("Routes.thing_deep_path(1, { third_required: 3, second_required: 2, forth_optional: 4 })").to eq(test_routes.thing_deep_path(1, third_required: 3, second_required: 2, forth_optional: 4))
-        expectjs("Routes.thing_deep_path(2, { third_required: 3, first_optional: 1 })").to eq(test_routes.thing_deep_path(2, third_required: 3, first_optional: 1))
-        expectjs("Routes.thing_deep_path(3, { first_optional: 1, second_required: 2 })").to eq(test_routes.thing_deep_path(3, first_optional: 1, second_required: 2))
-        expectjs("Routes.thing_deep_path(3, { first_optional: 1, second_required: 2, forth_optional: 4 })").to eq(test_routes.thing_deep_path(3, first_optional: 1, second_required: 2, forth_optional: 4))
-        expectjs("Routes.thing_deep_path(4, { first_optional: 1, second_required: 2, third_required: 3 })").to eq(test_routes.thing_deep_path(4, first_optional: 1, second_required: 2, third_required: 3))
-        expectjs("Routes.thing_deep_path(2, 3)").to eq(test_routes.thing_deep_path(2, 3))
-        expectjs("Routes.thing_deep_path(1, 2, { third_required: 3 })").to eq(test_routes.thing_deep_path(1, 2, third_required: 3))
-        expectjs("Routes.thing_deep_path(1,2, {third_required: 3, q: 'bogdan'})").to eq(test_routes.thing_deep_path(1,2, {third_required: 3, q: 'bogdan'}))
-        expectjs("Routes.thing_deep_path(1, 2, { forth_optional: 4, third_required: 3 })").to eq(test_routes.thing_deep_path(1, 2, forth_optional: 4, third_required: 3))
-        expectjs("Routes.thing_deep_path(1, 3, { second_required: 2 })").to eq(test_routes.thing_deep_path(1, 3, second_required: 2))
-        expectjs("Routes.thing_deep_path(1, 4, { second_required: 2, third_required: 3 })").to eq(test_routes.thing_deep_path(1, 4, second_required: 2, third_required: 3))
-        expectjs("Routes.thing_deep_path(2, 3, { first_optional: 1 })").to eq(test_routes.thing_deep_path(2, 3, first_optional: 1))
-        expectjs("Routes.thing_deep_path(2, 3, { first_optional: 1, forth_optional: 4 })").to eq(test_routes.thing_deep_path(2, 3, first_optional: 1, forth_optional: 4))
-        expectjs("Routes.thing_deep_path(2, 4, { first_optional: 1, third_required: 3 })").to eq(test_routes.thing_deep_path(2, 4, first_optional: 1, third_required: 3))
-        expectjs("Routes.thing_deep_path(3, 4, { first_optional: 1, second_required: 2 })").to eq(test_routes.thing_deep_path(3, 4, first_optional: 1, second_required: 2))
-        expectjs("Routes.thing_deep_path(1, 2, 3)").to eq(test_routes.thing_deep_path(1, 2, 3))
-        expectjs("Routes.thing_deep_path(1, 2, 3, { forth_optional: 4 })").to eq(test_routes.thing_deep_path(1, 2, 3, forth_optional: 4))
-        expectjs("Routes.thing_deep_path(1, 2, 4, { third_required: 3 })").to eq(test_routes.thing_deep_path(1, 2, 4, third_required: 3))
-        expectjs("Routes.thing_deep_path(1, 3, 4, { second_required: 2 })").to eq(test_routes.thing_deep_path(1, 3, 4, second_required: 2))
-        expectjs("Routes.thing_deep_path(2, 3, 4, { first_optional: 1 })").to eq(test_routes.thing_deep_path(2, 3, 4, first_optional: 1))
-        expectjs("Routes.thing_deep_path(1, 2, 3, 4)").to eq(test_routes.thing_deep_path(1, 2, 3, 4))
+        expectjs("Routes.thing_deep_path(1, { third_required: 3, second_required: 2 })").to eq(
+          test_routes.thing_deep_path(1, third_required: 3, second_required: 2)
+        )
+        expectjs("Routes.thing_deep_path(1, { third_required: 3, second_required: 2, forth_optional: 4 })").to eq(
+          test_routes.thing_deep_path(1, third_required: 3, second_required: 2, forth_optional: 4)
+        )
+        expectjs("Routes.thing_deep_path(2, { third_required: 3, first_optional: 1 })").to eq(
+          test_routes.thing_deep_path(2, third_required: 3, first_optional: 1)
+        )
+        expectjs("Routes.thing_deep_path(3, { first_optional: 1, second_required: 2 })").to eq(
+          test_routes.thing_deep_path(3, first_optional: 1, second_required: 2)
+        )
+        expectjs("Routes.thing_deep_path(3, { first_optional: 1, second_required: 2, forth_optional: 4 })").to eq(
+          test_routes.thing_deep_path(3, first_optional: 1, second_required: 2, forth_optional: 4)
+        )
+        expectjs("Routes.thing_deep_path(4, { first_optional: 1, second_required: 2, third_required: 3 })").to eq(
+          test_routes.thing_deep_path(4, first_optional: 1, second_required: 2, third_required: 3)
+        )
+        expectjs("Routes.thing_deep_path(2, 3)").to eq(
+          test_routes.thing_deep_path(2, 3)
+        )
+        expectjs("Routes.thing_deep_path(1, 2, { third_required: 3 })").to eq(
+          test_routes.thing_deep_path(1, 2, third_required: 3)
+        )
+        expectjs("Routes.thing_deep_path(1,2, {third_required: 3, q: 'bogdan'})").to eq(
+          test_routes.thing_deep_path(1,2, {third_required: 3, q: 'bogdan'})
+        )
+        expectjs("Routes.thing_deep_path(1, 2, { forth_optional: 4, third_required: 3 })").to eq(
+          test_routes.thing_deep_path(1, 2, forth_optional: 4, third_required: 3)
+        )
+        expectjs("Routes.thing_deep_path(1, 3, { second_required: 2 })").to eq(
+          test_routes.thing_deep_path(1, 3, second_required: 2)
+        )
+        expectjs("Routes.thing_deep_path(1, 4, { second_required: 2, third_required: 3 })").to eq(
+          test_routes.thing_deep_path(1, 4, second_required: 2, third_required: 3)
+        )
+        expectjs("Routes.thing_deep_path(2, 3, { first_optional: 1 })").to eq(
+          test_routes.thing_deep_path(2, 3, first_optional: 1)
+        )
+        expectjs("Routes.thing_deep_path(2, 3, { first_optional: 1, forth_optional: 4 })").to eq(
+          test_routes.thing_deep_path(2, 3, first_optional: 1, forth_optional: 4)
+        )
+        expectjs("Routes.thing_deep_path(2, 4, { first_optional: 1, third_required: 3 })").to eq(
+          test_routes.thing_deep_path(2, 4, first_optional: 1, third_required: 3)
+        )
+        expectjs("Routes.thing_deep_path(3, 4, { first_optional: 1, second_required: 2 })").to eq(
+          test_routes.thing_deep_path(3, 4, first_optional: 1, second_required: 2)
+        )
+        expectjs("Routes.thing_deep_path(1, 2, 3)").to eq(
+          test_routes.thing_deep_path(1, 2, 3)
+        )
+        expectjs("Routes.thing_deep_path(1, 2, 3, { forth_optional: 4 })").to eq(
+          test_routes.thing_deep_path(1, 2, 3, forth_optional: 4)
+        )
+        expectjs("Routes.thing_deep_path(1, 2, 4, { third_required: 3 })").to eq(
+          test_routes.thing_deep_path(1, 2, 4, third_required: 3)
+        )
+        expectjs("Routes.thing_deep_path(1, 3, 4, { second_required: 2 })").to eq(
+          test_routes.thing_deep_path(1, 3, 4, second_required: 2)
+        )
+        expectjs("Routes.thing_deep_path(2, 3, 4, { first_optional: 1 })").to eq(
+          test_routes.thing_deep_path(2, 3, 4, first_optional: 1)
+        )
+        expectjs("Routes.thing_deep_path(1, 2, 3, 4)").to eq(
+          test_routes.thing_deep_path(1, 2, 3, 4)
+        )
 
       end
 
