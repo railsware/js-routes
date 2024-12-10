@@ -3,6 +3,7 @@
 ## [2.3.4]
 
 * Migrate to yarn 4
+* Deprecated `prefix` option in favor of `default_url_options.script_name`.
 * Add support for `script_name` [Rails helper option](https://api.rubyonrails.org/classes/ActionDispatch/Routing/UrlFor.html#method-i-url_for).
 
 ``` javascript

@@ -116,44 +116,54 @@ describe JsRoutes, "options" do
     end
   end
 
-  context "when prefix with trailing slash is specified" do
+  describe "prefix option" do
+    around do |e|
+      JsRoutes::Utils.deprecator.silence do
+        e.run
+      end
+    end
 
-    let(:_options) { {:prefix => "/myprefix/" } }
+    context "with trailing slash is specified" do
+      let(:_options) { {:prefix => "/myprefix/" } }
 
-    it "should render routing with prefix" do
+      it "should render routing with prefix" do
         expectjs("Routes.inbox_path(1)").to eq("/myprefix#{test_routes.inbox_path(1)}")
+      end
+
+      it "should render routing with prefix set in JavaScript" do
+        evaljs("Routes.configure({prefix: '/newprefix/'})")
+        expectjs("Routes.config().prefix").to eq("/newprefix/")
+        expectjs("Routes.inbox_path(1)").to eq("/newprefix#{test_routes.inbox_path(1)}")
+      end
     end
 
-    it "should render routing with prefix set in JavaScript" do
-      evaljs("Routes.configure({prefix: '/newprefix/'})")
-      expectjs("Routes.config().prefix").to eq("/newprefix/")
-      expectjs("Routes.inbox_path(1)").to eq("/newprefix#{test_routes.inbox_path(1)}")
+    context "with http:// is specified" do
+      let(:_options) { {:prefix => "http://localhost:3000" } }
+
+      it "should render routing with prefix" do
+        expectjs("Routes.inbox_path(1)").to eq(_options[:prefix] + test_routes.inbox_path(1))
+      end
     end
 
-  end
+    context "without trailing slash is specified" do
+      let(:_options) { {:prefix => "/myprefix" } }
 
-  context "when prefix with http:// is specified" do
+      it "should render routing with prefix" do
+        expectjs("Routes.inbox_path(1)").to eq("/myprefix#{test_routes.inbox_path(1)}")
+      end
 
-    let(:_options) { {:prefix => "http://localhost:3000" } }
-
-    it "should render routing with prefix" do
-      expectjs("Routes.inbox_path(1)").to eq(_options[:prefix] + test_routes.inbox_path(1))
-    end
-  end
-
-  context "when prefix without trailing slash is specified" do
-
-    let(:_options) { {:prefix => "/myprefix" } }
-
-    it "should render routing with prefix" do
-      expectjs("Routes.inbox_path(1)").to eq("/myprefix#{test_routes.inbox_path(1)}")
+      it "should render routing with prefix set in JavaScript" do
+        evaljs("Routes.configure({prefix: '/newprefix/'})")
+        expectjs("Routes.inbox_path(1)").to eq("/newprefix#{test_routes.inbox_path(1)}")
+      end
     end
 
-    it "should render routing with prefix set in JavaScript" do
-      evaljs("Routes.configure({prefix: '/newprefix/'})")
-      expectjs("Routes.inbox_path(1)").to eq("/newprefix#{test_routes.inbox_path(1)}")
+    context "combined with url links and default_url_options" do
+      let(:_options) { { :prefix => "/api", :url_links => true, :default_url_options => {:host => 'example.com'} } }
+      it "should generate path and url links" do
+        expectjs("Routes.inbox_url(1)").to eq("http://example.com/api#{test_routes.inbox_path(1)}")
+      end
     end
-
   end
 
   context "when default format is specified" do
@@ -378,13 +388,6 @@ describe JsRoutes, "options" do
         let(:_options) { { :camel_case => true, :url_links => true, :default_url_options => {:host => "example.com"} } }
         it "should generate path and url links" do
           expectjs("Routes.inboxUrl(1)").to eq("http://example.com#{test_routes.inbox_path(1)}")
-        end
-      end
-
-      context "with prefix option" do
-        let(:_options) { { :prefix => "/api", :url_links => true, :default_url_options => {:host => 'example.com'} } }
-        it "should generate path and url links" do
-          expectjs("Routes.inbox_url(1)").to eq("http://example.com/api#{test_routes.inbox_path(1)}")
         end
       end
 

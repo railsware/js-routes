@@ -13,6 +13,15 @@ module JsRoutes
         nil
       end
     end
+
+    sig { returns(T.untyped) }
+    def self.deprecator
+      if defined?(Rails) && Rails.version >= "7.1.0"
+        Rails.deprecator
+      else
+        ActiveSupport::Deprecation
+      end
+    end
   end
 
 end

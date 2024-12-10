@@ -708,6 +708,11 @@ RubyVariables.WRAPPER(
       }
 
       configure(new_config: Partial<Configuration>): Configuration {
+        if (new_config.prefix) {
+          console.warn(
+            "JsRoutes configuration prefix option is deprecated in favor of default_url_options.script_name."
+          );
+        }
         this.configuration = { ...this.configuration, ...new_config };
         return this.configuration;
       }

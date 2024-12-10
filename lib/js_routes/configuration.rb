@@ -19,7 +19,7 @@ module JsRoutes
     sig { returns(FileName) }
     attr_accessor :file
     sig { returns(Prefix) }
-    attr_accessor :prefix
+    attr_reader :prefix
     sig { returns(T::Boolean) }
     attr_accessor :url_links
     sig { returns(T::Boolean) }
@@ -89,6 +89,11 @@ module JsRoutes
     sig { params(attribute: Literal).returns(T.untyped) }
     def [](attribute)
       public_send(attribute)
+    end
+
+    def prefix=(value)
+      JsRoutes::Utils.deprecator.warn("JsRoutes configuration prefix is deprecated in favor of default_url_options.script_name.")
+      @prefix = value
     end
 
     sig { params(attributes: Options).returns(JsRoutes::Configuration) }

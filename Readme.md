@@ -353,10 +353,8 @@ Options to configure routes formatting. These options are available both in Ruby
 
 * `default_url_options` - default parameters used when generating URLs
   * Example: `{format: "json", trailing_slash: true, protocol: "https", subdomain: "api", host: "example.com", port: 3000}`
+  * See [`url_for` doc](https://api.rubyonrails.org/classes/ActionDispatch/Routing/UrlFor.html#method-i-url_for) for list of supported options
   * Default: `{}`
-* `prefix` - string that will prepend any generated URL. Usually used when app URL root includes a path component.
-  * Example: `/rails-app`
-  * Default: `Rails.application.config.relative_url_root`
 * `serializer` - a JS function that serializes a Javascript Hash object into URL paramters like `{a: 1, b: 2} => "a=1&b=2"`.
   * Default: `nil`. Uses built-in serializer compatible with Rails
   * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
