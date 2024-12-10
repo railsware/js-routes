@@ -66,6 +66,7 @@ type KeywordUrlOptions = Optional<{
   port: string | number;
   anchor: string;
   trailing_slash: boolean;
+  script_name: string;
   params: RouteParameters;
 }>;
 
@@ -230,7 +231,9 @@ RubyVariables.WRAPPER(
       "host",
       "port",
       "protocol",
+      "script_name",
     ] as const;
+
     type ReservedOption = (typeof ReservedOptions)[any];
 
     class UtilsClass {
@@ -433,6 +436,8 @@ RubyVariables.WRAPPER(
             default_options,
             args
           );
+
+        let { trailing_slash, anchor, script_name } = keyword_parameters;
         const missing_params = required_params.filter(
           (param) =>
             !hasProp(query_parameters, param) ||
@@ -442,15 +447,22 @@ RubyVariables.WRAPPER(
           throw new ParametersMissing(...missing_params);
         }
         let result = this.get_prefix() + this.visit(route, query_parameters);
-        if (keyword_parameters.trailing_slash) {
+        if (trailing_slash) {
           result = result.replace(/(.*?)[/]?$/, "$1/");
         }
         const url_params = this.serialize(query_parameters);
         if (url_params.length) {
           result += "?" + url_params;
         }
-        if (keyword_parameters.anchor) {
-          result += "#" + keyword_parameters.anchor;
+        if (anchor) {
+          result += "#" + anchor;
+        }
+        if (script_name) {
+          const last_index = script_name.length - 1;
+          if (script_name[last_index] == "/" && result[0] == "/") {
+            script_name = script_name.slice(0, last_index);
+          }
+          result = script_name + result;
         }
         if (absolute) {
           result = this.route_url(keyword_parameters) + result;

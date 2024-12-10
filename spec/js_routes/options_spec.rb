@@ -225,8 +225,18 @@ describe JsRoutes, "options" do
 
       context "when passing options that do not have defaults" do
         it "should use this options to fill the optional parameters" do
-          expectjs("Routes.thing_path(1, { format: 'json' })").to eq test_routes.thing_path(1, { optional_id: "12", format: "json" } ) # test_routes.thing_path needs optional_id here to generate the correct route. Not sure why.
+          # test_routes.thing_path needs optional_id here to generate the correct route. Not sure why.
+          expectjs("Routes.thing_path(1, { format: 'json' })").to eq test_routes.thing_path(1, { optional_id: "12", format: "json" } )
         end
+      end
+    end
+
+    describe "script_name option" do
+      let(:_options) { { default_url_options: { script_name: "/myapp" } }}
+      it "is supported" do
+        expectjs("Routes.inboxes_path()").to eq(
+          test_routes.inboxes_path(script_name: '/myapp')
+        )
       end
     end
 

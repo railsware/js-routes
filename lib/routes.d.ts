@@ -50,6 +50,7 @@ declare type KeywordUrlOptions = Optional<{
     port: string | number;
     anchor: string;
     trailing_slash: boolean;
+    script_name: string;
     params: RouteParameters;
 }>;
 declare type RouteOptions = KeywordUrlOptions & RouteParameters;

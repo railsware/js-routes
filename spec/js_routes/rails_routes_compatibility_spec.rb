@@ -514,4 +514,30 @@ describe JsRoutes, "compatibility with Rails"  do
       end
     end
   end
+
+  describe "script_name option" do
+    it "preceeds the path" do
+      expectjs(
+        "Routes.inboxes_path({ script_name: '/myapp' })"
+      ).to eq(
+        test_routes.inboxes_path(script_name: '/myapp')
+      )
+    end
+
+    it "strips double slash" do
+      expectjs(
+        "Routes.inboxes_path({ script_name: '/myapp/' })"
+      ).to eq(
+        test_routes.inboxes_path(script_name: '/myapp/')
+      )
+    end
+
+    it "preserves no preceding slash" do
+      expectjs(
+        "Routes.inboxes_path({ script_name: 'myapp' })"
+      ).to eq(
+        test_routes.inboxes_path(script_name: 'myapp')
+      )
+    end
+  end
 end

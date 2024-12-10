@@ -3,6 +3,18 @@
 ## [2.3.4]
 
 * Migrate to yarn 4
+* Add support for `script_name` [Rails helper option](https://api.rubyonrails.org/classes/ActionDispatch/Routing/UrlFor.html#method-i-url_for).
+
+``` javascript
+Routes.post_path(1, { script_name: "/myapp" })
+  // => /myapp/post/1
+
+Routes.configure({
+  default_url_options: { script_name: "/myapp" }
+})
+
+Routes.post_path(1) // => /myapp/post/1
+```
 
 ## [2.3.3]
 
