@@ -8,7 +8,7 @@ namespace :js do
   namespace :routes do
     desc "Make a js file with all rails route URL helpers and typescript definitions for them"
     task typescript: "js:routes" do
-      ActiveSupport::Deprecation.warn(
+      JsRoutes::Utils.deprecator.warn(
         "`js:routes:typescript` task is deprecated. Please use `js:routes` instead."
       )
     end
