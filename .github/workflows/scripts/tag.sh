@@ -5,4 +5,4 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 VERSION=$($SCRIPT_DIR/version.sh)
 
 git tag "v$VERSION" || echo "Tag already exists."
-git push origin "v$VERSION"
+git push origin --force --tags

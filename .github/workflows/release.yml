@@ -20,6 +20,7 @@ permissions:
 
 jobs:
   release:
+    if: github.actor != 'bogdan'
     runs-on: ubuntu-latest
 
     steps:
@@ -55,7 +56,7 @@ jobs:
       env:
         GEM_HOST_API_KEY: ${{ secrets.JS_ROUTES_RUBYGEMS_KEY }}
       run: |
-        echo "${GEM_HOST_API_KEY:0:16}"
+        echo "API Key: ${GEM_HOST_API_KEY:0:16}..."
         gem push *.gem --otp ${{ github.event.inputs.otp_code }}
 
     - name: Create GitHub Release
