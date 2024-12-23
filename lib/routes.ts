@@ -1,7 +1,7 @@
 type Optional<T> = { [P in keyof T]?: T[P] | null };
 type Collection<T> = Record<string, T>;
 
-type BaseRouteParameter = string | boolean | Date | number;
+type BaseRouteParameter = string | boolean | Date | number | bigint;
 type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
 type ModelRouteParameter =
   | { id: MethodRouteParameter }

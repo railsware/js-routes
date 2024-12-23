@@ -2,7 +2,7 @@ declare type Optional<T> = {
     [P in keyof T]?: T[P] | null;
 };
 declare type Collection<T> = Record<string, T>;
-declare type BaseRouteParameter = string | boolean | Date | number;
+declare type BaseRouteParameter = string | boolean | Date | number | bigint;
 declare type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
 declare type ModelRouteParameter = {
     id: MethodRouteParameter;

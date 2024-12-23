@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.3.5]
+
+* Support `bigint` route parameter
+
+``` typescript
+import {nft_path} from "./routes"
+
+nft_path(123456789012345678901234567890n)
+    // => /nfts/123456789012345678901234567890
+```
+
 ## [2.3.4]
 
 * Fix deprecator usage in `rake js:routes:typescript` [#327](https://github.com/railsware/js-routes/issues/327)

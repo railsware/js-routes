@@ -540,4 +540,15 @@ describe JsRoutes, "compatibility with Rails"  do
       )
     end
   end
+
+  describe "bigint parameter" do
+    it "works" do
+      number = 10**20
+      expectjs(
+        "Routes.inbox_path(#{number}n)"
+      ).to eq(
+        test_routes.inbox_path(number)
+      )
+    end
+  end
 end
