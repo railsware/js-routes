@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/railsware/js-routes/actions/workflows/ci.yml/badge.svg)](https://github.com/railsware/js-routes/actions/workflows/ci.yml)
 
+<img src="/logo.webp" alt="Logo" width="200" height="200">
+
 Generates javascript file that defines all Rails named routes as javascript helpers:
 
 ``` js
