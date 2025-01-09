@@ -11,6 +11,8 @@ nft_path(123456789012345678901234567890n)
     // => /nfts/123456789012345678901234567890
 ```
 
+* Fix rake task for non-esm modules. [#316](https://github.com/railsware/js-routes/issues/316)
+
 ## [2.3.4]
 
 * Fix deprecator usage in `rake js:routes:typescript` [#327](https://github.com/railsware/js-routes/issues/327)

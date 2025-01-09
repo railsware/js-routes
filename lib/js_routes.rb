@@ -37,8 +37,11 @@ module JsRoutes
 
     sig { params(file_name: FileName, typed: T::Boolean, opts: T.untyped).void }
     def generate!(file_name = configuration.file, typed: false, **opts)
-      Instance.new(file: file_name, **opts).generate!
-      definitions!(file_name, **opts) if typed
+      instance = Instance.new(file: file_name, **opts)
+      instance.generate!
+      if typed && instance.configuration.modern?
+        definitions!(file_name, **opts)
+      end
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }

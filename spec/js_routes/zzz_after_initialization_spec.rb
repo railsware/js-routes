@@ -110,6 +110,17 @@ describe "after Rails initialization", :slow do
       expect(File.exist?(file)).to be(true)
       expect(File.exist?(dir.join('typed_routes.d.ts'))).to be(true)
     end
+
+    it "skips definitions if module is not ESM" do
+      file = dir.join('typed_routes.js')
+      definitions = dir.join('typed_routes.d.ts')
+      JsRoutes.remove!(file)
+      expect(File.exist?(file)).to be(false)
+      expect(File.exist?(definitions)).to be(false)
+      JsRoutes.generate!(file, module_type: nil, typed: true)
+      expect(File.exist?(file)).to be(true)
+      expect(File.exist?(definitions)).to be(false)
+    end
   end
 
 
