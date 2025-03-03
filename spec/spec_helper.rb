@@ -3,6 +3,8 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $:.unshift(File.dirname(__FILE__))
 require 'rspec'
+# https://github.com/rails/rails/issues/54263
+require 'logger'
 require 'rails/all'
 require 'js-routes'
 require 'active_support/core_ext/hash/slice'
