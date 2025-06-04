@@ -117,15 +117,13 @@ Create webpack ERB config `config/webpack/loaders/erb.js`:
 
 ``` javascript
 module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.erb$/,
-        enforce: 'pre',
-        loader: 'rails-erb-loader'
-      },
-    ]
-  }
+  rules: [
+    {
+      test: /\.erb$/,
+      enforce: "pre",
+      loader: "rails-erb-loader",
+    },
+  ],
 };
 ```
 
