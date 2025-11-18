@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
     "bug_tracker_uri"   => "https://github.com/railsware/js-routes/issues",
     "changelog_uri"     => "https://github.com/railsware/js-routes/blob/v#{version}/CHANGELOG.md",
     "documentation_uri" => "https://github.com/railsware/js-routes",
-    "source_code_uri"   => "https://github.com/railsware/js-routes/tree/v#{version}/activerecord",
+    "source_code_uri"   => "https://github.com/railsware/js-routes/tree/v#{version}",
     "rubygems_mfa_required" => "true",
     "github_repo" => "ssh://github.com/railsware/js-routes",
   }
