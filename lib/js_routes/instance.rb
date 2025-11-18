@@ -94,6 +94,7 @@ module JsRoutes
       {
         'ROUTES_OBJECT'       => routes_object,
         'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => Rails.version < '7.0.0',
+        'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => Rails.version < '8.1.0',
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(prefix),
         'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),

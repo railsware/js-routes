@@ -62,6 +62,7 @@ declare type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
 declare const RubyVariables: {
     PREFIX: string;
     DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;
+    DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR: boolean;
     SPECIAL_OPTIONS_KEY: string;
     DEFAULT_URL_OPTIONS: RouteParameters;
     SERIALIZER: Serializer;

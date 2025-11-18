@@ -79,6 +79,7 @@ type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
 declare const RubyVariables: {
   PREFIX: string;
   DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;
+  DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR: boolean;
   SPECIAL_OPTIONS_KEY: string;
   DEFAULT_URL_OPTIONS: RouteParameters;
   SERIALIZER: Serializer;
@@ -246,9 +247,6 @@ RubyVariables.WRAPPER(
       };
 
       default_serializer(value: unknown, prefix?: string | null): string {
-        if (this.is_nullable(value)) {
-          return "";
-        }
         if (!prefix && !this.is_object(value)) {
           throw new Error("Url parameters should be a javascript hash");
         }
@@ -262,22 +260,20 @@ RubyVariables.WRAPPER(
           for (let key in value) {
             if (!hasProp(value, key)) continue;
             let prop = value[key];
-            if (this.is_nullable(prop) && prefix) {
-              prop = "";
+            if (prefix) {
+              key = prefix + "[" + key + "]";
             }
-            if (this.is_not_nullable(prop)) {
-              if (prefix) {
-                key = prefix + "[" + key + "]";
-              }
-              result.push(this.default_serializer(prop, key));
-            }
+            result.push(this.default_serializer(prop, key));
           }
         } else {
-          if (this.is_not_nullable(value)) {
-            result.push(
-              encodeURIComponent(prefix) + "=" + encodeURIComponent("" + value)
-            );
-          }
+          result.push(
+            this.is_not_nullable(value) ||
+              RubyVariables.DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR
+              ? encodeURIComponent(prefix) +
+                  "=" +
+                  encodeURIComponent("" + (value ?? ""))
+              : encodeURIComponent(prefix)
+          );
         }
         return result.join("&");
       }
