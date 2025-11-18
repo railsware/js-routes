@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.3.6]
+
+* Support new Rails 8.1 nil parameter serialization.
+  [Rails #53962](https://github.com/rails/rails/pull/53962)
+  JsRoutes consistently follows current rails version behavior:
+
+``` ruby
+root_path(hello: nil)
+  # 8.0 => "/?hello="
+  # 8.1 => "/?hello"
+```
+
 ## [2.3.5]
 
 * Support `bigint` route parameter
