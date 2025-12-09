@@ -191,6 +191,10 @@ describe JsRoutes, "compatibility with Rails"  do
       expectjs("Routes.inbox_path(1, {hello: ['world', 'mars']})").to eq(test_routes.inbox_path(1, :hello => [:world, :mars]))
     end
 
+    it "should support empty array get parameters" do
+      expectjs("Routes.inboxes_path({ a: [], b: {} })").to eq(test_routes.inboxes_path({ a: [], b: {} }))
+    end
+
     context "object without prototype" do
       before(:each) do
         evaljs("let params = Object.create(null); params.q = 'hello';")

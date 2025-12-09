@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.7]
+
+* Fixed serialization of empty `Array` and empty `Hash`. Fixes [#336](https://github.com/railsware/js-routes/issues/336).
+
+``` javascript
+blog_path({filters: {}, columns: []}) // => /blog
+```
+
 ## [2.3.6]
 
 * Support new Rails 8.1 nil parameter serialization.
