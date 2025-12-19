@@ -147,7 +147,12 @@ RubyVariables.WRAPPER(
       CJS: {
         define(routes) {
           if (module) {
-            module.exports = routes;
+            // Some javascript processors (like vite/rolldown)
+            // warn on using `module.exports` in an ESM module.
+            // This just obfuscates that assignment a little so
+            // users don't get a warning they can't fix.
+            const _mod = module;
+            _mod.exports = routes;
           }
         },
         isSupported() {

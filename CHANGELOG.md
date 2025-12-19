@@ -1,5 +1,9 @@
 # Changelog
 
+## Pending
+
+* Obfuscate assignment to module.exports in order to prevent warnings in javascript bundlers, like Vite. Fixes [#337](https://github.com/railsware/js-routes/issues/337).
+
 ## [2.3.6]
 
 * Fixed serialization of empty `Array` and empty `Hash`. Fixes [#336](https://github.com/railsware/js-routes/issues/336).
