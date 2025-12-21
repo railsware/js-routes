@@ -522,6 +522,15 @@ describe JsRoutes, "options" do
     end
   end
 
+  describe "module.exports usage" do
+    it "doesn't include module.exports" do
+      # We mention `module.exports` in the comments of routes.ts, just so it's clear
+      # why the expression is so weird there.
+      js_without_comments = generated_js.lines.map { it.gsub(/\/\/.*$/, "") }.join("\n")
+      expect(js_without_comments).not_to include("module.exports")
+    end
+  end
+
   describe "banner option" do
     let(:_options) { {banner: nil} }
 
