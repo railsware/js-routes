@@ -203,7 +203,7 @@ RubyVariables.WRAPPER(
       },
       NIL: {
         define() {
-          // Defined using RubyVariables.WRAPPER
+          // Defined using RubyVariables . WRAPPER
         },
         isSupported() {
           return true;
@@ -274,13 +274,12 @@ RubyVariables.WRAPPER(
             }
           }
         } else {
+          const key = encodeURIComponent(prefix);
           result.push(
             this.is_not_nullable(value) ||
               RubyVariables.DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR
-              ? encodeURIComponent(prefix) +
-                  "=" +
-                  encodeURIComponent("" + (value ?? ""))
-              : encodeURIComponent(prefix)
+              ? key + "=" + encodeURIComponent("" + (value ?? ""))
+              : key
           );
         }
         return result.join("&");
@@ -749,13 +748,7 @@ RubyVariables.WRAPPER(
 
     // We want this helper name to be short
     const __jsr = {
-      r(
-        parts_table: PartsTable,
-        route_spec: RouteTree,
-        absolute?: boolean
-      ): RouteHelper {
-        return utils.route(parts_table, route_spec, absolute);
-      },
+      r: utils.route.bind(utils),
     };
 
     return utils.define_module(RubyVariables.MODULE_TYPE, {

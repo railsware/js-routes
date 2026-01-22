@@ -55,7 +55,7 @@ module JsRoutes
       if @configuration.dts?
         definition_body
       else
-        # For tree-shaking ESM, add a #__PURE__ comment informing Webpack/minifiers that the call to `__jsr.r`
+        # For tree-shaking ESM, add a #__PURE__ comment informing js bundlers that the call to `__jsr.r`
         # has no side-effects (e.g. modifying global variables) and is safe to remove when unused.
         # https://webpack.js.org/guides/tree-shaking/#clarifying-tree-shaking-and-sidyeeffects
         pure_comment = @configuration.esm? ? '/*#__PURE__*/ ' : ''
