@@ -753,15 +753,9 @@ RubyVariables.WRAPPER(
 
     return utils.define_module(RubyVariables.MODULE_TYPE, {
       ...__jsr,
-      configure: (config: Partial<Configuration>) => {
-        return utils.configure(config);
-      },
-      config: (): Configuration => {
-        return utils.config();
-      },
-      serialize: (object: Serializable): string => {
-        return utils.serialize(object);
-      },
+      configure: utils.configure.bind(utils),
+      config: utils.config.bind(utils),
+      serialize: utils.serialize.bind(utils),
       ...RubyVariables.ROUTES_OBJECT,
     });
   }
