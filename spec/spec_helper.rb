@@ -41,7 +41,7 @@ def js_error_class
   end
 end
 
-def evaljs(string, force: false, filename: 'context.js')
+def evaljs(string, force: false, filename: 'context.mjs')
   jscontext(force).eval(string, filename: filename)
 rescue MiniRacer::ParseError => e
   trace = e.message
