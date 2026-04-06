@@ -43,7 +43,12 @@ module JsRoutes
           raise("Missing key #{key} in JS template")
         end
       end
-      banner + content + routes_export + prevent_types_export
+      unless @configuration.module_type == "NIL"
+        banner + content + routes_export + prevent_types_export
+      else
+        content.sub('"use strict";', "")
+      end
+
     end
 
     sig { returns(String) }
