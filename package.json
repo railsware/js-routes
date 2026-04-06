@@ -6,18 +6,18 @@
   "author": "Bogdan Gusiev <agresso@gmail.com>, Alexey Vasiliev <https://leopard.in.ua> ",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^4.1.2"
+    "typescript": "^6.0.2"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.9.0",
-    "@typescript-eslint/parser": "^4.9.0",
-    "eslint": "^8.35.0",
-    "eslint-config-prettier": "^8.7.0",
-    "eslint-plugin-import": "^2.27.5",
-    "husky": "^4.3.0",
-    "lint-staged": "^10.5.2",
-    "pinst": "^2.1.1",
-    "prettier": "^2.8.4"
+    "@typescript-eslint/eslint-plugin": "^8.58.0",
+    "@typescript-eslint/parser": "^8.58.0",
+    "eslint": "^10.2.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "pinst": "^3.0.0",
+    "prettier": "^3.8.1"
   },
   "scripts": {
     "build": "tsc && yarn lint:fix",
