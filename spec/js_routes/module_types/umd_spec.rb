@@ -82,4 +82,29 @@ DOC
       expect(File.exist?(name)).to be_falsey
     end
   end
+
+  describe '.generate_package' do
+    let(:generated_package) {
+      JsRoutes.generate_package(module_type: 'UMD')
+    }
+
+    it 'returns empty string' do
+      expect(generated_package).to eq ''
+    end
+  end
+
+  describe '.generate_package!' do
+    let(:path) { Rails.root.join('app', 'assets', 'javascripts', 'routes_core.js') }
+    let(:generated_package) {
+      JsRoutes.generate_package!(module_type: 'UMD')
+    }
+
+    after(:each) do
+      JsRoutes.remove!
+    end
+
+    it "should not generate package file" do
+      expect(File.exist?(path)).to be_falsey
+    end
+  end
 end

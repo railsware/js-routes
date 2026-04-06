@@ -35,15 +35,27 @@ module JsRoutes
           end
         end
       end
-      content = File.read(@configuration.source_file)
 
-      unless @configuration.dts?
-        content = js_variables.inject(content) do |js, (key, value)|
-          js.gsub!("RubyVariables.#{key}", value.to_s) ||
-          raise("Missing key #{key} in JS template")
-        end
+      if @configuration.package_mode?
+        content = "import { __jsr } from '#{@configuration.package}';\n\n"
+      else
+        content = jsr
       end
+
       banner + content + routes_export + prevent_types_export
+    end
+
+    sig {returns(String)}
+    def generate_package
+      return '' unless @configuration.esm?
+
+      exports = static_exports.map do |comment, name, body|
+        "export const #{name}#{export_separator}#{body};\n\n"
+      end.join
+
+      exports << "\n\nexport { __jsr };"
+
+      jsr + exports
     end
 
     sig { returns(String) }
@@ -79,13 +91,44 @@ module JsRoutes
     end
 
     sig { void }
+    def generate_package!
+      return unless @configuration.esm?
+
+      file_path = Rails.root.join(@configuration.output_package_file)
+      source_code = generate_package
+
+      # We don't need to rewrite file if it already exist and have same content.
+      # It helps asset pipeline or webpack understand that file wasn't changed.
+      return if File.exist?(file_path) && File.read(file_path) == source_code
+
+      File.open(file_path, 'w') do |f|
+        f.write source_code
+      end
+    end
+
+    sig { void }
     def remove!
       path = Rails.root.join(@configuration.output_file)
+      package_path = Rails.root.join(@configuration.output_package_file)
       FileUtils.rm_rf(path)
+      FileUtils.rm_rf(package_path)
       FileUtils.rm_rf(path.sub(%r{\.js\z}, '.d.ts'))
     end
 
     protected
+
+    def jsr
+      content = File.read(@configuration.source_file)
+
+      unless @configuration.dts?
+        content = js_variables.inject(content) do |js, (key, value)|
+          js.gsub!("RubyVariables.#{key}", value.to_s) ||
+          raise("Missing key #{key} in JS template")
+        end
+      end
+
+      content
+    end
 
     sig { returns(T::Hash[String, String]) }
     def js_variables

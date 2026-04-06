@@ -44,6 +44,17 @@ module JsRoutes
       end
     end
 
+    sig { params(opts: T.untyped).returns(String) }
+    def generate_package(**opts)
+      Instance.new(**opts).generate_package
+    end
+
+    sig { params(file_name: FileName, typed: T::Boolean, opts: T.untyped).void }
+    def generate_package!(file_name = configuration.package_file, typed: false, **opts)
+      instance = Instance.new(file: file_name, **opts)
+      instance.generate_package!
+    end
+
     sig { params(file_name: FileName, opts: T.untyped).void }
     def remove!(file_name = configuration.file, **opts)
       Instance.new(file: file_name, **opts).remove!

@@ -18,6 +18,10 @@ module JsRoutes
     attr_accessor :include
     sig { returns(FileName) }
     attr_accessor :file
+    sig { returns(FileName) }
+    attr_accessor :package_file
+    sig { returns(T.nilable(String)) }
+    attr_accessor :package
     sig { returns(Prefix) }
     attr_reader :prefix
     sig { returns(T::Boolean) }
@@ -61,6 +65,7 @@ module JsRoutes
       @documentation = T.let(true, T::Boolean)
       @optional_definition_params = T.let(false, T::Boolean)
       @banner = T.let(default_banner, BannerCaller)
+      @package = T.let(nil, T.nilable(String))
 
       return unless attributes
       assign(attributes)
@@ -116,6 +121,10 @@ module JsRoutes
       esm? || dts?
     end
 
+    def package_mode?
+      esm? && package
+    end
+
     sig { void }
     def require_esm
       raise "ESM module type is required" unless modern?
@@ -128,17 +137,26 @@ module JsRoutes
 
     sig { returns(Pathname) }
     def output_file
+      output_file_path(file || default_file_name)
+    end
+
+    sig { returns(Pathname) }
+    def output_package_file
+      output_file_path(package_file || 'routes_core.js')
+    end
+
+    protected
+
+    sig { params(file_name: FileName).returns(Pathname) }
+    def output_file_path(file_name)
       shakapacker = JsRoutes::Utils.shakapacker
       shakapacker_dir = shakapacker ?
         shakapacker.config.source_path : pathname('app', 'javascript')
       sprockets_dir = pathname('app','assets','javascripts')
-      file_name = file || default_file_name
       sprockets_file = sprockets_dir.join(file_name)
       webpacker_file = shakapacker_dir.join(file_name)
       !Dir.exist?(shakapacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
     end
-
-    protected
 
     sig { void }
     def normalize_and_verify
