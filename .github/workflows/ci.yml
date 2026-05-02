@@ -35,10 +35,9 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
           node-version: "20"
-          cache: 'yarn'
 
       - name: Enable Corepack
         run: corepack enable
