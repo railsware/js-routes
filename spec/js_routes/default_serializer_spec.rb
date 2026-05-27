@@ -97,6 +97,6 @@ describe JsRoutes, "#serialize" do
   end
 
   def rails_nil_query_parameter(key)
-    Rails.version < "8.1.0" ? "#{key}=" : key
+    Gem::Version.new(Rails.version) < Gem::Version.new("8.1.0") ? "#{key}=" : key
   end
 end
