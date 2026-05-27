@@ -35,6 +35,7 @@ type RouteHelpers = Collection<RouteHelper>;
 type Configuration = {
     prefix: string;
     default_url_options: RouteParameters;
+    omit_undefined_query_parameters: boolean;
     special_options_key: string;
     serializer: Serializer;
 };
@@ -63,6 +64,7 @@ declare const RubyVariables: {
     PREFIX: string;
     DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;
     DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR: boolean;
+    OMIT_UNDEFINED_QUERY_PARAMETERS: boolean;
     SPECIAL_OPTIONS_KEY: string;
     DEFAULT_URL_OPTIONS: RouteParameters;
     SERIALIZER: Serializer;

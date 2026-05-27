@@ -359,6 +359,10 @@ Options to configure routes formatting. These options are available both in Ruby
   * Default: `nil`. Uses built-in serializer compatible with Rails
   * Example: `jQuery.param` - use jQuery's serializer algorithm. You can attach serialize function from your favorite AJAX framework.
   * Example: `function (object) { ... }` - use completely custom serializer of your application.
+* `omit_undefined_query_parameters` - when using the built-in serializer, omit query object properties whose value is `undefined` instead of serializing them as Rails `nil`.
+  * Default: `false`
+  * Compatible with Rails nil query serialization: `undefined` is omitted only when this option is enabled, while explicit `null` still serializes as Rails `nil`, including the Rails 8.1 bare-key behavior.
+  * Custom `serializer` functions remain responsible for their own `undefined` handling.
 * `special_options_key` - a special key that helps JsRoutes to destinguish serialized model from options hash
   * This option exists because JS doesn't provide a difference between an object and a hash
   * Default: `_options`

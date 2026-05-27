@@ -294,6 +294,11 @@ describe JsRoutes, "compatibility with Rails"  do
         expectjs("Routes.thing_path(5, {optional_id: undefined})").to eq(test_routes.thing_path(5, :optional_id => nil))
       end
 
+      it "should treat undefined as non-given optional part with undefined query omission enabled" do
+        evallib(module_type: nil, namespace: 'Routes', omit_undefined_query_parameters: true)
+        expectjs("Routes.thing_path(5, {optional_id: undefined})").to eq(test_routes.thing_path(5, :optional_id => nil))
+      end
+
       it "should raise error when passing non-full list of arguments and some query params" do
         expect { evaljs("Routes.thing_path(5, {q: 'hello'})") }
           .to raise_error(/Route missing required keys: id/)

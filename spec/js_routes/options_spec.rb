@@ -62,6 +62,14 @@ describe JsRoutes, "options" do
     end
   end
 
+  describe "omit_undefined_query_parameters" do
+    let(:_options) { {omit_undefined_query_parameters: true} }
+
+    it "should expose the setting to the generated runtime" do
+      expectjs("Routes.config().omit_undefined_query_parameters").to eq(true)
+    end
+  end
+
   context "when exclude is specified" do
 
     let(:_options) { {exclude: [/^admin_/]} }
