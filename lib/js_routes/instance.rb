@@ -103,7 +103,7 @@ module JsRoutes
         'ROUTES_OBJECT'       => routes_object,
         'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => rails_version < Gem::Version.new('7.0.0'),
         'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => rails_version < Gem::Version.new('8.1.0'),
-        'OMIT_UNDEFINED_QUERY_PARAMETERS' => json(@configuration.omit_undefined_query_parameters),
+        'OMIT_UNDEFINED_QUERY_PARAMETERS' => json(@configuration.omit_undefined_query_parameters == true),
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(prefix),
         'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
