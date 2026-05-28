@@ -529,4 +529,3 @@ export const serialize = __jsr.serialize;
 
 export const __route__ = __jsr.__route__;
 
-export const __route__;

@@ -57,8 +57,6 @@ module JsRoutes
         "export const #{name}#{export_separator}#{body};\n\n"
       end.join
 
-      exports << "export const __route__;\n"
-
       jsr + exports
     end
 

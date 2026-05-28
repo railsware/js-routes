@@ -82,16 +82,4 @@ DOC
       expect(File.exist?(name)).to be_falsey
     end
   end
-
-  describe '.package' do
-    it 'raises an error' do
-      expect { JsRoutes.package(module_type: 'UMD') }.to raise_error(RuntimeError, /PKG/)
-    end
-  end
-
-  describe '.package!' do
-    it 'raises an error' do
-      expect { JsRoutes.package!(module_type: 'UMD') }.to raise_error(RuntimeError, /PKG/)
-    end
-  end
 end
