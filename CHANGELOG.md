@@ -3,11 +3,11 @@
 ## Pending
 
 * Support `config.javascript_path` Rails configuration. Fixes [#344](https://github.com/railsware/js-routes/issues/344).
-* Add `omit_undefined_query_parameters` migration option for query parameter serialization.
-  Existing applications preserve legacy behavior until configured and will see a warning while the option is unset.
-  Set it to `true` to omit object properties whose value is `undefined`, matching typical JavaScript semantics.
-  Set it to `false` only when the application depends on serializing `undefined` as Rails `nil`.
-  Explicit `null` values continue to serialize as Rails `nil`.
+* Add `omit_undefined_query_parameters` configuration option for query parameter serialization.
+  Existing applications preserve legacy behavior to process `undefined` as `nil` until configured and will see a warning while the option is unset. 
+  * Set it to `true` to omit object properties whose value is `undefined`, matching typical JavaScript semantics.
+  * Set it to `false` only when the application depends on serializing `undefined` as Rails `nil`.
+  * Explicit `null` values continue to serialize as Rails `nil`, as if it were `false`
 
 ## [2.3.7]
 

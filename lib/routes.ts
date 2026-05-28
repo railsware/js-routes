@@ -260,7 +260,10 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       const result: string[] = [];
       if (this.is_array(value)) {
         for (const element of value) {
-          result.push(this.default_serializer(element, prefix + "[]"));
+          const subvalue = this.default_serializer(element, prefix + "[]");
+          if (subvalue.length) {
+            result.push(subvalue);
+          }
         }
       } else if (this.is_object(value)) {
         for (let key in value) {

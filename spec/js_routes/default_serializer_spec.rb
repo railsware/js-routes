@@ -63,6 +63,10 @@ describe JsRoutes, "#serialize" do
       expectjs("Routes.serialize({a: {b: 1, c: undefined}, d: undefined})").to eq("a%5Bb%5D=1")
     end
 
+    it "omits empty serialized array elements" do
+      expectjs("Routes.serialize({a: [{b: undefined}, {c: 1}]})").to eq("a%5B%5D%5Bc%5D=1")
+    end
+
     it "preserves explicit null as Rails nil" do
       expectjs("Routes.serialize({a: null, b: {c: null, d: undefined}})").to eq(
         {a: nil, b: {c: nil}}.to_query
