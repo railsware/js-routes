@@ -49,7 +49,7 @@ type RouteHelpers = Collection<RouteHelper>;
 type Configuration = {
   prefix: string;
   default_url_options: RouteParameters;
-  omit_undefined_query_parameters: boolean;
+  include_undefined_query_parameters: boolean;
   special_options_key: string;
   serializer: Serializer;
 };
@@ -81,7 +81,7 @@ declare const RubyVariables: {
   PREFIX: string;
   DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;
   DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR: boolean;
-  OMIT_UNDEFINED_QUERY_PARAMETERS: boolean;
+  INCLUDE_UNDEFINED_QUERY_PARAMETERS: boolean;
   SPECIAL_OPTIONS_KEY: string;
   DEFAULT_URL_OPTIONS: RouteParameters;
   SERIALIZER: Serializer;
@@ -245,8 +245,8 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
     configuration: Configuration = {
       prefix: RubyVariables.PREFIX,
       default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
-      omit_undefined_query_parameters:
-        RubyVariables.OMIT_UNDEFINED_QUERY_PARAMETERS,
+      include_undefined_query_parameters:
+        RubyVariables.INCLUDE_UNDEFINED_QUERY_PARAMETERS,
       special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
       serializer:
         RubyVariables.SERIALIZER || this.default_serializer.bind(this),
@@ -270,7 +270,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
           if (!hasProp(value, key)) continue;
           let prop = value[key];
           if (
-            this.configuration.omit_undefined_query_parameters &&
+            !this.configuration.include_undefined_query_parameters &&
             prop === undefined
           ) {
             continue;

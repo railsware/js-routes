@@ -23,7 +23,7 @@ JsRoutes.setup do |c|
   # c.url_links = true
 
   # Omit query parameters whose value is undefined.
-  c.omit_undefined_query_parameters = true
+  c.include_undefined_query_parameters = false
 
   # More options:
   # @see https://github.com/railsware/js-routes#available-options

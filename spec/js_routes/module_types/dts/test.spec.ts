@@ -44,7 +44,7 @@ configure({
   default_url_options: { port: 1, host: null },
   prefix: "",
   special_options_key: "_options",
-  omit_undefined_query_parameters: false,
+  include_undefined_query_parameters: false,
   serializer: (value) => JSON.stringify(value),
 });
 

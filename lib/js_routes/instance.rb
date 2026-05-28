@@ -103,7 +103,7 @@ module JsRoutes
         'ROUTES_OBJECT'       => routes_object,
         'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => rails_version < Gem::Version.new('7.0.0'),
         'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => rails_version < Gem::Version.new('8.1.0'),
-        'OMIT_UNDEFINED_QUERY_PARAMETERS' => json(@configuration.omit_undefined_query_parameters == true),
+        'INCLUDE_UNDEFINED_QUERY_PARAMETERS' => json(@configuration.include_undefined_query_parameters != false),
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(prefix),
         'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
@@ -115,13 +115,13 @@ module JsRoutes
 
     sig { void }
     def warn_on_implicit_undefined_query_parameter_behavior
-      return unless @configuration.omit_undefined_query_parameters.nil?
+      return unless @configuration.include_undefined_query_parameters.nil?
 
       JsRoutes::Utils.deprecator.warn(
-        "JsRoutes omit_undefined_query_parameters is not configured. " \
-        "Set config.omit_undefined_query_parameters = true to omit " \
-        "undefined query parameters, or false to keep legacy nil serialization. " \
-        "The default will change to true in a future release."
+        "JsRoutes include_undefined_query_parameters is not configured. " \
+        "Set config.include_undefined_query_parameters = false to omit " \
+        "undefined query parameters, or true to keep legacy nil serialization. " \
+        "The default will change to false in a future release."
       )
     end
 

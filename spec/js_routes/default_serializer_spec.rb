@@ -40,9 +40,9 @@ describe JsRoutes, "#serialize" do
     end
   end
 
-  context "with omit_undefined_query_parameters disabled" do
+  context "with include_undefined_query_parameters enabled" do
     let(:options) do
-      super().merge(omit_undefined_query_parameters: false)
+      super().merge(include_undefined_query_parameters: true)
     end
 
     it "serializes undefined object properties as Rails nil" do
@@ -50,9 +50,9 @@ describe JsRoutes, "#serialize" do
     end
   end
 
-  context "with omit_undefined_query_parameters enabled" do
+  context "with include_undefined_query_parameters disabled" do
     let(:options) do
-      super().merge(omit_undefined_query_parameters: true)
+      super().merge(include_undefined_query_parameters: false)
     end
 
     it "omits top-level undefined object properties" do

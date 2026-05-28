@@ -58,7 +58,7 @@ rescue MiniRacer::RuntimeError => e
 end
 
 def evallib(**options)
-  options = {omit_undefined_query_parameters: false}.merge(options)
+  options = {include_undefined_query_parameters: true}.merge(options)
   evaljs(JsRoutes.generate(**options), filename: 'lib/routes.js')
 end
 
@@ -128,7 +128,7 @@ RSpec.configure do |config|
   end
 
   config.before :each do
-    JsRoutes.configuration.omit_undefined_query_parameters = false
+    JsRoutes.configuration.include_undefined_query_parameters = true
 
     log = proc do |*values|
       puts values.map(&:inspect).join(", ")
