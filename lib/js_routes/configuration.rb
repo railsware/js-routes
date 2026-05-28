@@ -22,7 +22,7 @@ module JsRoutes
     attr_reader :package
 
     def package=(value)
-      @package = value == true ? "./router.js" : value
+      @package = value == true ? "./router.js" : (value == false ? nil : value)
     end
     sig { returns(Prefix) }
     attr_reader :prefix
