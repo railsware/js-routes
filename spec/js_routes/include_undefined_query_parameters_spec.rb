@@ -12,7 +12,10 @@ describe "include_undefined_query_parameters migration" do
   end
 
   it "warns and preserves legacy serialization when unset" do
-    evaluate_routes_without_default
+    evaljs(
+      JsRoutes.generate(module_type: nil, namespace: 'Routes', include_undefined_query_parameters: nil),
+      filename: 'lib/routes.js'
+    )
 
     expect(deprecator).to have_received(:warn).with(a_string_matching(/include_undefined_query_parameters/))
     expectjs("Routes.config().include_undefined_query_parameters").to eq(true)
@@ -45,14 +48,5 @@ describe "include_undefined_query_parameters migration" do
 
   def evaluate_routes(**options)
     evallib(module_type: nil, namespace: 'Routes', **options)
-  end
-
-  def evaluate_routes_without_default
-    JsRoutes.configuration.include_undefined_query_parameters = nil
-
-    evaljs(
-      JsRoutes.generate(module_type: nil, namespace: 'Routes'),
-      filename: 'lib/routes.js'
-    )
   end
 end
