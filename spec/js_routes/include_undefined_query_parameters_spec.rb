@@ -38,6 +38,14 @@ describe "include_undefined_query_parameters migration" do
     expectjs("Routes.serialize({a: undefined})").to eq("")
   end
 
+  it "omits nested undefined query properties in route helpers when disabled" do
+    evaluate_routes(include_undefined_query_parameters: false)
+
+    expectjs("Routes.inboxes_path({search: {q: undefined, page: 1}})").to eq(
+      test_routes.inboxes_path(search: {page: 1})
+    )
+  end
+
   it "treats undefined as a non-given optional path part when disabled" do
     evaluate_routes(include_undefined_query_parameters: false)
 

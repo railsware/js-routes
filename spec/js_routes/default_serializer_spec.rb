@@ -77,6 +77,18 @@ describe JsRoutes, "#serialize" do
       )
     end
 
+    it "keeps nested undefined array elements serialized as Rails nil" do
+      expectjs("Routes.serialize({a: [[undefined], {b: 1}]})").to eq(
+        {a: [[nil], {b: 1}]}.to_query
+      )
+    end
+
+    it "serializes nested objects that become empty inside arrays like Rails" do
+      expectjs("Routes.serialize({a: [{b: {c: undefined}}, {d: 1}]})").to eq(
+        {a: [{b: {}}, {d: 1}]}.to_query
+      )
+    end
+
     it "preserves explicit null as Rails nil" do
       expectjs("Routes.serialize({a: null, b: {c: null, d: undefined}})").to eq(
         {a: nil, b: {c: nil}}.to_query
