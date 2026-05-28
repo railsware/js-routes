@@ -3,6 +3,7 @@
 ## Pending
 
 * Support `config.javascript_path` Rails configuration. Fixes [#344](https://github.com/railsware/js-routes/issues/344).
+* Add `omit_undefined_query_parameters` migration option for omitting `undefined` query parameters.
 
 ## [2.3.7]
 

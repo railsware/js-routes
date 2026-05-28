@@ -6,6 +6,7 @@ describe JsRoutes, "options" do
     JsRoutes.generate(
       module_type: nil,
       namespace: 'Routes',
+      omit_undefined_query_parameters: false,
       **_options
     )
   end

@@ -26,7 +26,7 @@ module JsRoutes
     attr_accessor :camel_case
     sig { returns(Options) }
     attr_accessor :default_url_options
-    sig { returns(T::Boolean) }
+    sig { returns(T.nilable(T::Boolean)) }
     attr_accessor :omit_undefined_query_parameters
     sig { returns(T::Boolean) }
     attr_accessor :compact
@@ -55,7 +55,7 @@ module JsRoutes
       @url_links = T.let(false, T::Boolean)
       @camel_case = T.let(false, T::Boolean)
       @default_url_options = T.let(T.unsafe({}), Options)
-      @omit_undefined_query_parameters = T.let(false, T::Boolean)
+      @omit_undefined_query_parameters = T.let(nil, T.nilable(T::Boolean))
       @compact = T.let(false, T::Boolean)
       @serializer = T.let(nil, T.nilable(String))
       @special_options_key = T.let("_options", Literal)

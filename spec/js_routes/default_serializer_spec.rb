@@ -10,7 +10,9 @@ describe JsRoutes, "#serialize" do
   end
 
   before(:each) do
-    evallib(**options)
+    JsRoutes::Utils.deprecator.silence do
+      evallib(**options)
+    end
   end
 
   it "should provide this method" do
@@ -45,6 +47,16 @@ describe JsRoutes, "#serialize" do
       evaluate_routes_for(rails_version: "8.1.0")
 
       expectjs("Routes.serialize({a: null, b: undefined})").to eq("a&b")
+    end
+  end
+
+  context "with omit_undefined_query_parameters disabled" do
+    let(:options) do
+      super().merge(omit_undefined_query_parameters: false)
+    end
+
+    it "serializes undefined object properties as Rails nil" do
+      expectjs("Routes.serialize({a: undefined})").to eq(rails_nil_query_parameter("a"))
     end
   end
 
@@ -93,7 +105,9 @@ describe JsRoutes, "#serialize" do
 
   def evaluate_routes_for(rails_version:)
     allow(Rails).to receive(:version).and_return(rails_version)
-    evallib(**options)
+    JsRoutes::Utils.deprecator.silence do
+      evallib(**options)
+    end
   end
 
   def rails_nil_query_parameter(key)

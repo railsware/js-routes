@@ -22,6 +22,9 @@ JsRoutes.setup do |c|
   # for apps that work on multiple domains.
   # c.url_links = true
 
+  # Omit query parameters whose value is undefined.
+  c.omit_undefined_query_parameters = true
+
   # More options:
   # @see https://github.com/railsware/js-routes#available-options
 end
