@@ -1,38 +1,38 @@
-declare type Optional<T> = {
+type Optional<T> = {
     [P in keyof T]?: T[P] | null;
 };
-declare type Collection<T> = Record<string, T>;
-declare type BaseRouteParameter = string | boolean | Date | number | bigint;
-declare type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
-declare type ModelRouteParameter = {
+type Collection<T> = Record<string, T>;
+type BaseRouteParameter = string | boolean | Date | number | bigint;
+type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
+type ModelRouteParameter = {
     id: MethodRouteParameter;
 } | {
     to_param: MethodRouteParameter;
 } | {
     toParam: MethodRouteParameter;
 };
-declare type RequiredRouteParameter = BaseRouteParameter | ModelRouteParameter;
-declare type OptionalRouteParameter = undefined | null | RequiredRouteParameter;
-declare type QueryRouteParameter = OptionalRouteParameter | QueryRouteParameter[] | {
+type RequiredRouteParameter = BaseRouteParameter | ModelRouteParameter;
+type OptionalRouteParameter = undefined | null | RequiredRouteParameter;
+type QueryRouteParameter = OptionalRouteParameter | QueryRouteParameter[] | {
     [k: string]: QueryRouteParameter;
 };
-declare type RouteParameters = Collection<QueryRouteParameter>;
-declare type Serializable = Collection<unknown>;
-declare type Serializer = (value: Serializable) => string;
-declare type RouteHelperExtras = {
+type RouteParameters = Collection<QueryRouteParameter>;
+type Serializable = Collection<unknown>;
+type Serializer = (value: Serializable) => string;
+type RouteHelperExtras = {
     requiredParams(): string[];
     toString(): string;
 };
-declare type RequiredParameters<T extends number> = T extends 1 ? [RequiredRouteParameter] : T extends 2 ? [RequiredRouteParameter, RequiredRouteParameter] : T extends 3 ? [RequiredRouteParameter, RequiredRouteParameter, RequiredRouteParameter] : T extends 4 ? [
+type RequiredParameters<T extends number> = T extends 1 ? [RequiredRouteParameter] : T extends 2 ? [RequiredRouteParameter, RequiredRouteParameter] : T extends 3 ? [RequiredRouteParameter, RequiredRouteParameter, RequiredRouteParameter] : T extends 4 ? [
     RequiredRouteParameter,
     RequiredRouteParameter,
     RequiredRouteParameter,
     RequiredRouteParameter
 ] : RequiredRouteParameter[];
-declare type RouteHelperOptions = RouteOptions & Collection<OptionalRouteParameter>;
-declare type RouteHelper<T extends number = number> = ((...args: [...RequiredParameters<T>, RouteHelperOptions]) => string) & RouteHelperExtras;
-declare type RouteHelpers = Collection<RouteHelper>;
-declare type Configuration = {
+type RouteHelperOptions = RouteOptions & Collection<OptionalRouteParameter>;
+type RouteHelper<T extends number = number> = ((...args: [...RequiredParameters<T>, RouteHelperOptions]) => string) & RouteHelperExtras;
+type RouteHelpers = Collection<RouteHelper>;
+type Configuration = {
     prefix: string;
     default_url_options: RouteParameters;
     special_options_key: string;
@@ -43,7 +43,7 @@ interface RouterExposedMethods {
     configure(arg: Partial<Configuration>): Configuration;
     serialize: Serializer;
 }
-declare type KeywordUrlOptions = Optional<{
+type KeywordUrlOptions = Optional<{
     host: string;
     protocol: string;
     subdomain: string;
@@ -53,12 +53,12 @@ declare type KeywordUrlOptions = Optional<{
     script_name: string;
     params: RouteParameters;
 }>;
-declare type RouteOptions = KeywordUrlOptions & RouteParameters;
-declare type PartsTable = Collection<{
+type RouteOptions = KeywordUrlOptions & RouteParameters;
+type PartsTable = Collection<{
     r?: boolean;
     d?: OptionalRouteParameter;
 }>;
-declare type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
+type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
 declare const RubyVariables: {
     PREFIX: string;
     DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;

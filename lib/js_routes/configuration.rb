@@ -151,12 +151,24 @@ module JsRoutes
     def output_file_path(file_name)
       shakapacker = JsRoutes::Utils.shakapacker
       shakapacker_dir = shakapacker ?
-        shakapacker.config.source_path : pathname('app', 'javascript')
+        shakapacker.config.source_path : pathname(self.class.rails_javascript_path)
       sprockets_dir = pathname('app','assets','javascripts')
       sprockets_file = sprockets_dir.join(file_name)
       webpacker_file = shakapacker_dir.join(file_name)
       !Dir.exist?(shakapacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
     end
+
+    sig { returns(String) }
+    def self.rails_javascript_path
+      js_dir = if defined?(Rails) && Rails.application&.config&.respond_to?(:javascript_path)
+        Rails.application.config.javascript_path
+      else
+        "javascript"
+      end
+      "app/#{js_dir}"
+    end
+
+    protected
 
     sig { void }
     def normalize_and_verify

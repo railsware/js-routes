@@ -2,6 +2,10 @@
 
 ## Pending
 
+* Support `config.javascript_path` Rails configuration. Fixes [#344](https://github.com/railsware/js-routes/issues/344).
+
+## [2.3.7]
+
 * Obfuscate assignment to module.exports in order to prevent warnings in javascript bundlers, like Vite. Fixes [#337](https://github.com/railsware/js-routes/issues/337).
 
 ## [2.3.6]

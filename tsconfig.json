@@ -12,8 +12,6 @@
     "noImplicitThis": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
-    "alwaysStrict": false,
-
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,

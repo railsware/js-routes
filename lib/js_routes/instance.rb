@@ -41,8 +41,12 @@ module JsRoutes
       else
         content = jsr
       end
+      unless @configuration.module_type == "NIL"
+        banner + content + routes_export + prevent_types_export
+      else
+        content.sub('"use strict";', "")
+      end
 
-      banner + content + routes_export + prevent_types_export
     end
 
     sig {returns(String)}
