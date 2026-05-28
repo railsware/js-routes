@@ -19,7 +19,11 @@ module JsRoutes
     sig { returns(FileName) }
     attr_accessor :file
     sig { returns(T.nilable(String)) }
-    attr_accessor :package
+    attr_reader :package
+
+    def package=(value)
+      @package = value == true ? "./router.js" : value
+    end
     sig { returns(Prefix) }
     attr_reader :prefix
     sig { returns(T::Boolean) }
@@ -182,7 +186,7 @@ module JsRoutes
 
     sig { returns(String) }
     def default_file_name
-      dts? ? "routes.d.ts" : pkg? ? "routes_core.js" : "routes.js"
+      dts? ? "routes.d.ts" : pkg? ? "router.js" : "routes.js"
     end
 
     sig {void}

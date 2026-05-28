@@ -26,11 +26,11 @@ describe JsRoutes, "PKG module type" do
   end
 
   describe ".package!" do
-    let(:path) { Rails.root.join("app", "assets", "javascripts", "routes_core.js") }
+    let(:path) { Rails.root.join("app", "assets", "javascripts", "router.js") }
 
     after(:each) { JsRoutes.remove! }
 
-    it "writes to routes_core.js by default" do
+    it "writes to router.js by default" do
       JsRoutes.package!
       expect(File.exist?(path)).to be_truthy
     end
@@ -64,11 +64,21 @@ describe JsRoutes, "PKG module type" do
 
   describe "consumer routes (package: option)" do
     let(:generated_js) do
-      JsRoutes.generate(module_type: "ESM", package: "./routes_core.js", include: /\Ainbox/)
+      JsRoutes.generate(module_type: "ESM", package: "./router.js", include: /\Ainbox/)
     end
 
     it "imports __route__ from the package" do
-      expect(generated_js).to include("import { __route__ } from './routes_core.js';")
+      expect(generated_js).to include("import { __route__ } from './router.js';")
+    end
+
+    context "with package: true" do
+      let(:generated_js) do
+        JsRoutes.generate(module_type: "ESM", package: true, include: /\Ainbox/)
+      end
+
+      it "uses the default package file path" do
+        expect(generated_js).to include("import { __route__ } from './router.js';")
+      end
     end
 
     it "uses __route__ in every route definition" do
@@ -82,7 +92,7 @@ describe JsRoutes, "PKG module type" do
 
     it "raises when package: is used without ESM module type" do
       expect {
-        JsRoutes.generate(module_type: "UMD", package: "./routes_core.js")
+        JsRoutes.generate(module_type: "UMD", package: "./router.js")
       }.to raise_error(RuntimeError, /ESM/)
     end
   end

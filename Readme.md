@@ -254,12 +254,12 @@ class AdvancedJsRoutesMiddleware < JsRoutes::Middleware
     JsRoutes.generate!(
       "admin_routes.js",
       include: /^admin_/,
-      package: './routes_core.js'
+      package: './router.js'
     )
     JsRoutes.generate!(
       "api_routes.js",
       include: /^api_/,
-      package: './routes_core.js'
+      package: './router.js'
     )
   end
 end
@@ -353,7 +353,7 @@ Options to configure JavaScript file generator. These options are only available
   * Default: `-> { Rails.application }`
 * `file` - a file location where generated routes are stored
   * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
-* `package` - specify where the shared package will be imported from. e.g. `'./routes_core.js'`.
+* `package` - specify where the shared package will be imported from. e.g. `'./router.js'`.
   * Generate the shared package with `package!` or `generate!(module_type: 'PKG')`.
   * See [Using shared package](#package).
   * Default: `nil`
