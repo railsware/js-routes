@@ -10,9 +10,7 @@ describe JsRoutes, "#serialize" do
   end
 
   before(:each) do
-    JsRoutes::Utils.deprecator.silence do
-      evallib(**options)
-    end
+    evallib(**options)
   end
 
   it "should provide this method" do
