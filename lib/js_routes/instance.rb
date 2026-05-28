@@ -119,8 +119,8 @@ module JsRoutes
 
       JsRoutes::Utils.deprecator.warn(
         "JsRoutes include_undefined_query_parameters is not configured. " \
-        "Set config.include_undefined_query_parameters = false to omit " \
-        "undefined query parameters, or true to keep legacy nil serialization. " \
+        "Set JsRoutes.setup { |c| c.include_undefined_query_parameters = false } " \
+        "to omit undefined query parameters, or set it to true to keep legacy nil serialization. " \
         "The default will change to false in a future release."
       )
     end

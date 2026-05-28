@@ -17,7 +17,9 @@ describe "include_undefined_query_parameters migration" do
       filename: 'lib/routes.js'
     )
 
-    expect(deprecator).to have_received(:warn).with(a_string_matching(/include_undefined_query_parameters/))
+    expect(deprecator).to have_received(:warn).with(
+      a_string_matching(/JsRoutes\.setup \{ \|c\| c\.include_undefined_query_parameters = false \}/)
+    )
     expectjs("Routes.config().include_undefined_query_parameters").to eq(true)
     expectjs("Routes.serialize({a: undefined})").to eq({a: nil}.to_query)
   end
