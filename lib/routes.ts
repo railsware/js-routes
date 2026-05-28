@@ -57,6 +57,7 @@ interface RouterExposedMethods {
   config(): Configuration;
   configure(arg: Partial<Configuration>): Configuration;
   serialize: Serializer;
+  __route__: unknown;
 }
 
 type KeywordUrlOptions = Optional<{
@@ -741,12 +742,10 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
   const utils = new UtilsClass();
 
   // We want this helper name to be short
-  const __jsr = {
-    r: utils.route.bind(utils),
-  };
+  const __route__ = utils.route.bind(utils);
 
   return utils.define_module(RubyVariables.MODULE_TYPE, {
-    ...__jsr,
+    ...{ __route__ },
     configure: utils.configure.bind(utils),
     config: utils.config.bind(utils),
     serialize: utils.serialize.bind(utils),

@@ -37,7 +37,7 @@ module JsRoutes
       end
 
       if @configuration.package_mode?
-        content = "import { __jsr } from '#{@configuration.package}';\n\n"
+        content = "import { __route__ } from '#{@configuration.package}';\n\n"
       else
         content = jsr
       end
@@ -50,14 +50,14 @@ module JsRoutes
     end
 
     sig {returns(String)}
-    def generate_package
-      return '' unless @configuration.esm?
+    def package
+      raise "Package generation requires module_type: 'PKG'" unless @configuration.pkg?
 
       exports = static_exports.map do |comment, name, body|
         "export const #{name}#{export_separator}#{body};\n\n"
       end.join
 
-      exports << "\n\nexport { __jsr };"
+      exports << "export const __route__;\n"
 
       jsr + exports
     end
@@ -95,11 +95,11 @@ module JsRoutes
     end
 
     sig { void }
-    def generate_package!
-      return unless @configuration.esm?
+    def package!
+      raise "Package generation requires module_type: 'PKG'" unless @configuration.pkg?
 
-      file_path = Rails.root.join(@configuration.output_package_file)
-      source_code = generate_package
+      file_path = Rails.root.join(@configuration.output_file)
+      source_code = package
 
       # We don't need to rewrite file if it already exist and have same content.
       # It helps asset pipeline or webpack understand that file wasn't changed.
@@ -113,9 +113,7 @@ module JsRoutes
     sig { void }
     def remove!
       path = Rails.root.join(@configuration.output_file)
-      package_path = Rails.root.join(@configuration.output_package_file)
       FileUtils.rm_rf(path)
-      FileUtils.rm_rf(package_path)
       FileUtils.rm_rf(path.sub(%r{\.js\z}, '.d.ts'))
     end
 
@@ -154,7 +152,7 @@ module JsRoutes
     sig { returns(String) }
     def wrapper_variable
       case @configuration.module_type
-      when 'ESM'
+      when 'ESM', 'PKG'
         'const __jsr = '
       when 'NIL'
         namespace = @configuration.namespace
@@ -190,7 +188,7 @@ module JsRoutes
 
     sig { returns(String) }
     def routes_object
-      return json({}) if @configuration.modern?
+      return json({}) if @configuration.modern? || @configuration.pkg?
       properties = routes_list.map do |comment, name, body|
         "#{comment}#{name}: #{body}".indent(2)
       end
@@ -199,7 +197,7 @@ module JsRoutes
 
     sig { returns(T::Array[StringArray]) }
     def static_exports
-      [:configure, :config, :serialize].map do |name|
+      [:configure, :config, :serialize, :__route__].map do |name|
         [
           "", name.to_s,
           @configuration.dts? ?

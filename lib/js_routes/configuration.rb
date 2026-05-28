@@ -18,8 +18,6 @@ module JsRoutes
     attr_accessor :include
     sig { returns(FileName) }
     attr_accessor :file
-    sig { returns(FileName) }
-    attr_accessor :package_file
     sig { returns(T.nilable(String)) }
     attr_accessor :package
     sig { returns(Prefix) }
@@ -117,6 +115,11 @@ module JsRoutes
     end
 
     sig {returns(T::Boolean)}
+    def pkg?
+      module_type === 'PKG'
+    end
+
+    sig {returns(T::Boolean)}
     def modern?
       esm? || dts?
     end
@@ -132,17 +135,13 @@ module JsRoutes
 
     sig { returns(String) }
     def source_file
-      File.dirname(__FILE__) + "/../" + default_file_name
+      template = dts? ? "routes.d.ts" : "routes.js"
+      File.dirname(__FILE__) + "/../" + template
     end
 
     sig { returns(Pathname) }
     def output_file
       output_file_path(file || default_file_name)
-    end
-
-    sig { returns(Pathname) }
-    def output_package_file
-      output_file_path(package_file || 'routes_core.js')
     end
 
     protected
@@ -183,7 +182,7 @@ module JsRoutes
 
     sig { returns(String) }
     def default_file_name
-      dts? ? "routes.d.ts" : "routes.js"
+      dts? ? "routes.d.ts" : pkg? ? "routes_core.js" : "routes.js"
     end
 
     sig {void}
@@ -195,6 +194,9 @@ module JsRoutes
     def verify
       if module_type != 'NIL' && namespace
         raise "JsRoutes namespace option can only be used if module_type is nil"
+      end
+      if package && !esm?
+        raise "JsRoutes package option can only be used with ESM module type"
       end
     end
 

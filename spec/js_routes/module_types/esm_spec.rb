@@ -23,7 +23,7 @@ describe JsRoutes, "compatibility with ESM"  do
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const inboxes_path = /*#__PURE__*/ __jsr.r(
+export const inboxes_path = /*#__PURE__*/ __route__(
 DOC
   end
 
@@ -38,19 +38,19 @@ DOC
   describe "compiled javascript asset" do
     subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }
     it "should have js routes code" do
-      is_expected.to include("export const inbox_message_path = /*#__PURE__*/ __jsr.r(")
+      is_expected.to include("export const inbox_message_path = /*#__PURE__*/ __route__(")
     end
   end
 end
 
 describe JsRoutes, "compatibility with ESM using the package argument" do
-  describe '.generate_package' do
+  describe '.package' do
     let(:generated_package) {
-      JsRoutes.generate_package(module_type: 'ESM')
+      JsRoutes.package
     }
 
-    it 'generates package with __jsr export' do
-      expect(generated_package).to include("export { __jsr };")
+    it 'generates package with route export' do
+      expect(generated_package).to include("export const __route__;")
     end
   end
 
@@ -59,15 +59,19 @@ describe JsRoutes, "compatibility with ESM using the package argument" do
       JsRoutes.generate(module_type: 'ESM', package: './routes_core.js', include: /\Ainbox/)
     }
 
-    it "imports __jsr from package" do
-      expect(generated_js).to include("import { __jsr } from './routes_core.js';")
+    it "imports route from package" do
+      expect(generated_js).to include("import { __route__ } from './routes_core.js';")
+    end
+
+    it "uses __route__ in route definitions" do
+      expect(generated_js).to include("__route__(")
     end
   end
 
-  describe '.generate_package!' do
+  describe '.package!' do
     let(:path) { Rails.root.join('app', 'assets', 'javascripts', 'routes_core.js') }
     let(:generated_package) {
-      JsRoutes.generate_package!(module_type: 'ESM')
+      JsRoutes.package!
 
       File.read(path)
     }
@@ -77,7 +81,7 @@ describe JsRoutes, "compatibility with ESM using the package argument" do
     end
 
     it "should generate package file" do
-      expect(generated_package).to include("export { __jsr };")
+      expect(generated_package).to include("export const __route__;")
     end
   end
 end

@@ -42,6 +42,7 @@ interface RouterExposedMethods {
     config(): Configuration;
     configure(arg: Partial<Configuration>): Configuration;
     serialize: Serializer;
+    __route__: unknown;
 }
 type KeywordUrlOptions = Optional<{
     host: string;
@@ -81,6 +82,8 @@ export const configure: RouterExposedMethods['configure'];
 export const config: RouterExposedMethods['config'];
 
 export const serialize: RouterExposedMethods['serialize'];
+
+export const __route__: RouterExposedMethods['__route__'];
 
 /**
  * Generates rails route to

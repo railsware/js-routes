@@ -45,14 +45,13 @@ module JsRoutes
     end
 
     sig { params(opts: T.untyped).returns(String) }
-    def generate_package(**opts)
-      Instance.new(**opts).generate_package
+    def package(**opts)
+      Instance.new(module_type: 'PKG', **opts).package
     end
 
-    sig { params(file_name: FileName, typed: T::Boolean, opts: T.untyped).void }
-    def generate_package!(file_name = configuration.package_file, typed: false, **opts)
-      instance = Instance.new(file: file_name, **opts)
-      instance.generate_package!
+    sig { params(file_name: FileName, opts: T.untyped).void }
+    def package!(file_name = nil, **opts)
+      Instance.new(module_type: 'PKG', file: file_name, **opts).package!
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }

@@ -1,5 +1,5 @@
 "use strict";
-RubyVariables.WRAPPER(() => {
+const __jsr = (() => {
     const hasProp = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
     let NodeTypes;
     (function (NodeTypes) {
@@ -118,10 +118,10 @@ RubyVariables.WRAPPER(() => {
     class UtilsClass {
         constructor() {
             this.configuration = {
-                prefix: RubyVariables.PREFIX,
-                default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
-                special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
-                serializer: RubyVariables.SERIALIZER || this.default_serializer.bind(this),
+                prefix: "",
+                default_url_options: {},
+                special_options_key: "_options",
+                serializer: null || this.default_serializer.bind(this),
             };
         }
         default_serializer(value, prefix) {
@@ -152,7 +152,7 @@ RubyVariables.WRAPPER(() => {
             else {
                 const key = encodeURIComponent(prefix);
                 result.push(this.is_not_nullable(value) ||
-                    RubyVariables.DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR
+                    false
                     ? key + "=" + encodeURIComponent("" + (value !== null && value !== void 0 ? value : ""))
                     : key);
             }
@@ -185,7 +185,7 @@ RubyVariables.WRAPPER(() => {
         path_identifier(object) {
             const result = this.unwrap_path_identifier(object);
             return this.is_nullable(result) ||
-                (RubyVariables.DEPRECATED_FALSE_PARAMETER_BEHAVIOR && result === false)
+                (false && result === false)
                 ? ""
                 : "" + result;
         }
@@ -513,11 +513,20 @@ RubyVariables.WRAPPER(() => {
     const utils = new UtilsClass();
     // We want this helper name to be short
     const __route__ = utils.route.bind(utils);
-    return utils.define_module(RubyVariables.MODULE_TYPE, {
+    return utils.define_module("PKG", {
         ...{ __route__ },
         configure: utils.configure.bind(utils),
         config: utils.config.bind(utils),
         serialize: utils.serialize.bind(utils),
-        ...RubyVariables.ROUTES_OBJECT,
+        ...{},
     });
 })();
+export const configure = __jsr.configure;
+
+export const config = __jsr.config;
+
+export const serialize = __jsr.serialize;
+
+export const __route__ = __jsr.__route__;
+
+export const __route__;

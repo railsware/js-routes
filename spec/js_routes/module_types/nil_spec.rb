@@ -16,16 +16,16 @@ describe JsRoutes, "compatibility with NIL (legacy browser)" do
     end
 
     it "should call route function for each route" do
-      is_expected.to include("inboxes_path: __jsr.r(")
+      is_expected.to include("inboxes_path: __route__(")
     end
     it "should have correct function without arguments signature" do
-      is_expected.to include('inboxes_path: __jsr.r({"format":{}}')
+      is_expected.to include('inboxes_path: __route__({"format":{}}')
     end
     it "should have correct function with arguments signature" do
-      is_expected.to include('inbox_message_path: __jsr.r({"inbox_id":{"r":true},"id":{"r":true},"format":{}}')
+      is_expected.to include('inbox_message_path: __route__({"inbox_id":{"r":true},"id":{"r":true},"format":{}}')
     end
     it "should have correct function signature with unordered hash" do
-      is_expected.to include('inbox_message_attachment_path: __jsr.r({"inbox_id":{"r":true},"message_id":{"r":true},"id":{"r":true}}')
+      is_expected.to include('inbox_message_attachment_path: __route__({"inbox_id":{"r":true},"message_id":{"r":true},"id":{"r":true}}')
     end
   end
 

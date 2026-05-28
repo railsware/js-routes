@@ -19,16 +19,16 @@ describe JsRoutes, "compatibility with UMD" do
     end
 
     it "should call route function for each route" do
-      is_expected.to include("inboxes_path: __jsr.r(")
+      is_expected.to include("inboxes_path: __route__(")
     end
     it "should have correct function without arguments signature" do
-      is_expected.to include('inboxes_path: __jsr.r({"format":{}}')
+      is_expected.to include('inboxes_path: __route__({"format":{}}')
     end
     it "should have correct function with arguments signature" do
-      is_expected.to include('inbox_message_path: __jsr.r({"inbox_id":{"r":true},"id":{"r":true},"format":{}}')
+      is_expected.to include('inbox_message_path: __route__({"inbox_id":{"r":true},"id":{"r":true},"format":{}}')
     end
     it "should have correct function signature with unordered hash" do
-      is_expected.to include('inbox_message_attachment_path: __jsr.r({"inbox_id":{"r":true},"message_id":{"r":true},"id":{"r":true}}')
+      is_expected.to include('inbox_message_attachment_path: __route__({"inbox_id":{"r":true},"message_id":{"r":true},"id":{"r":true}}')
     end
 
     it "should have correct function comment with options argument" do
@@ -39,7 +39,7 @@ describe JsRoutes, "compatibility with UMD" do
    * @param {object | undefined} options
    * @returns {string} route path
    */
-  inboxes_path: __jsr.r
+  inboxes_path: __route__
 DOC
     end
     it "should have correct function comment with arguments" do
@@ -52,7 +52,7 @@ DOC
    * @param {object | undefined} options
    * @returns {string} route path
    */
-  new_inbox_message_attachment_path: __jsr.r
+  new_inbox_message_attachment_path: __route__
   DOC
     end
 
@@ -83,28 +83,15 @@ DOC
     end
   end
 
-  describe '.generate_package' do
-    let(:generated_package) {
-      JsRoutes.generate_package(module_type: 'UMD')
-    }
-
-    it 'returns empty string' do
-      expect(generated_package).to eq ''
+  describe '.package' do
+    it 'raises an error' do
+      expect { JsRoutes.package(module_type: 'UMD') }.to raise_error(RuntimeError, /PKG/)
     end
   end
 
-  describe '.generate_package!' do
-    let(:path) { Rails.root.join('app', 'assets', 'javascripts', 'routes_core.js') }
-    let(:generated_package) {
-      JsRoutes.generate_package!(module_type: 'UMD')
-    }
-
-    after(:each) do
-      JsRoutes.remove!
-    end
-
-    it "should not generate package file" do
-      expect(File.exist?(path)).to be_falsey
+  describe '.package!' do
+    it 'raises an error' do
+      expect { JsRoutes.package!(module_type: 'UMD') }.to raise_error(RuntimeError, /PKG/)
     end
   end
 end

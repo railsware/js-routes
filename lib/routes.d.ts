@@ -42,6 +42,7 @@ interface RouterExposedMethods {
     config(): Configuration;
     configure(arg: Partial<Configuration>): Configuration;
     serialize: Serializer;
+    __route__: unknown;
 }
 type KeywordUrlOptions = Optional<{
     host: string;
