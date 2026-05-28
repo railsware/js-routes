@@ -56,15 +56,25 @@ describe JsRoutes, "#serialize" do
     end
 
     it "omits top-level undefined object properties" do
-      expectjs("Routes.serialize({a: 1, b: undefined})").to eq("a=1")
+      expectjs("Routes.serialize({a: 1, b: undefined})").to eq({a: 1}.to_query)
     end
 
     it "omits nested undefined object properties" do
-      expectjs("Routes.serialize({a: {b: 1, c: undefined}, d: undefined})").to eq("a%5Bb%5D=1")
+      expectjs("Routes.serialize({a: {b: 1, c: undefined}, d: undefined})").to eq(
+        {a: {b: 1}}.to_query
+      )
     end
 
-    it "omits empty serialized array elements" do
-      expectjs("Routes.serialize({a: [{b: undefined}, {c: 1}]})").to eq("a%5B%5D%5Bc%5D=1")
+    it "serializes array objects with omitted undefined properties like Rails" do
+      expectjs("Routes.serialize({a: [{b: undefined}, {c: 1}]})").to eq(
+        {a: [{}, {c: 1}]}.to_query
+      )
+    end
+
+    it "serializes mixed arrays with omitted undefined properties like Rails" do
+      expectjs("Routes.serialize({a: [1, {b: undefined}, 2]})").to eq(
+        {a: [1, {}, 2]}.to_query
+      )
     end
 
     it "preserves explicit null as Rails nil" do
