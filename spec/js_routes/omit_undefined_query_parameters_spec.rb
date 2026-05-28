@@ -12,11 +12,11 @@ describe "omit_undefined_query_parameters migration" do
   end
 
   it "warns and preserves legacy serialization when unset" do
-    evaluate_routes
+    evaluate_routes_without_default
 
     expect(deprecator).to have_received(:warn).with(a_string_matching(/omit_undefined_query_parameters/))
-    expectjs("Routes.config().omit_undefined_query_parameters").to be_nil
-    expectjs("Routes.serialize({a: undefined})").to eq(rails_nil_query_parameter("a"))
+    expectjs("Routes.config().omit_undefined_query_parameters").to eq(false)
+    expectjs("Routes.serialize({a: undefined})").to eq({a: nil}.to_query)
   end
 
   it "does not warn and preserves legacy serialization when explicitly disabled" do
@@ -24,7 +24,7 @@ describe "omit_undefined_query_parameters migration" do
 
     expect(deprecator).not_to have_received(:warn)
     expectjs("Routes.config().omit_undefined_query_parameters").to eq(false)
-    expectjs("Routes.serialize({a: undefined})").to eq(rails_nil_query_parameter("a"))
+    expectjs("Routes.serialize({a: undefined})").to eq({a: nil}.to_query)
   end
 
   it "does not warn and omits undefined object properties when enabled" do
@@ -35,11 +35,24 @@ describe "omit_undefined_query_parameters migration" do
     expectjs("Routes.serialize({a: undefined})").to eq("")
   end
 
+  it "treats undefined as a non-given optional path part when enabled" do
+    evaluate_routes(omit_undefined_query_parameters: true)
+
+    expectjs("Routes.thing_path(5, {optional_id: undefined})").to eq(
+      test_routes.thing_path(5, :optional_id => nil)
+    )
+  end
+
   def evaluate_routes(**options)
     evallib(module_type: nil, namespace: 'Routes', **options)
   end
 
-  def rails_nil_query_parameter(key)
-    Gem::Version.new(Rails.version) < Gem::Version.new("8.1.0") ? "#{key}=" : key
+  def evaluate_routes_without_default
+    JsRoutes.configuration.omit_undefined_query_parameters = nil
+
+    evaljs(
+      JsRoutes.generate(module_type: nil, namespace: 'Routes'),
+      filename: 'lib/routes.js'
+    )
   end
 end
