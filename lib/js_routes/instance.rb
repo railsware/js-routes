@@ -28,7 +28,7 @@ module JsRoutes
       application = T.unsafe(self.application)
       if routes_from(application).empty?
         if application.is_a?(Rails::Application)
-          if Rails.version >= "8.0.0"
+          if JsRoutes::Utils.rails_version >= Gem::Version.new("8.0.0")
             T.unsafe(application).reload_routes_unless_loaded
           else
             T.unsafe(application).reload_routes!
@@ -98,10 +98,11 @@ module JsRoutes
 
       prefix = @configuration.prefix
       prefix = prefix.call if prefix.is_a?(Proc)
+      rails_version = JsRoutes::Utils.rails_version
       {
         'ROUTES_OBJECT'       => routes_object,
-        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => Rails.version < '7.0.0',
-        'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => Rails.version < '8.1.0',
+        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => rails_version < Gem::Version.new('7.0.0'),
+        'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => rails_version < Gem::Version.new('8.1.0'),
         'OMIT_UNDEFINED_QUERY_PARAMETERS' => json(@configuration.omit_undefined_query_parameters),
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(prefix),

@@ -13,7 +13,7 @@ require 'rspec/core'
 require 'rspec/core/rake_task'
 require 'appraisal'
 require 'rails/version'
-if Rails.version < "6.1"
+if Gem::Version.new(Rails.version) < Gem::Version.new("6.1")
   load "rails/tasks/routes.rake"
 end
 

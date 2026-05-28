@@ -22,6 +22,11 @@ module JsRoutes
         ActiveSupport::Deprecation
       end
     end
+
+    sig { returns(Gem::Version) }
+    def self.rails_version
+      Gem::Version.new(Rails.version)
+    end
   end
 
 end
