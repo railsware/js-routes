@@ -8,6 +8,7 @@ require 'logger'
 require 'rails/all'
 require 'js-routes'
 require 'active_support/core_ext/hash/slice'
+require 'active_support/core_ext/object/to_query'
 
 unless ENV['CI']
   code = system("yarn build")

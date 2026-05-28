@@ -31,20 +31,12 @@ describe JsRoutes, "#serialize" do
   end
 
   it "serializes undefined object properties as Rails nil by default" do
-    expectjs("Routes.serialize({a: undefined})").to eq(rails_nil_query_parameter("a"))
+    expectjs("Routes.serialize({a: undefined})").to eq({a: nil}.to_query)
   end
 
   context "with Rails nil query serialization compatibility" do
-    it "serializes undefined and null as Rails nil by default with deprecated nil behavior" do
-      evaluate_routes_for(rails_version: "8.0.0")
-
-      expectjs("Routes.serialize({a: null, b: undefined})").to eq("a=&b=")
-    end
-
-    it "serializes undefined and null as Rails nil by default with bare-key nil behavior" do
-      evaluate_routes_for(rails_version: "8.1.0")
-
-      expectjs("Routes.serialize({a: null, b: undefined})").to eq("a&b")
+    it "serializes undefined and null as Rails nil by default" do
+      expectjs("Routes.serialize({a: null, b: undefined})").to eq({a: nil, b: nil}.to_query)
     end
   end
 
@@ -54,7 +46,7 @@ describe JsRoutes, "#serialize" do
     end
 
     it "serializes undefined object properties as Rails nil" do
-      expectjs("Routes.serialize({a: undefined})").to eq(rails_nil_query_parameter("a"))
+      expectjs("Routes.serialize({a: undefined})").to eq({a: nil}.to_query)
     end
   end
 
@@ -73,42 +65,20 @@ describe JsRoutes, "#serialize" do
 
     it "preserves explicit null as Rails nil" do
       expectjs("Routes.serialize({a: null, b: {c: null, d: undefined}})").to eq(
-        [
-          rails_nil_query_parameter("a"),
-          rails_nil_query_parameter("b%5Bc%5D"),
-        ].join("&")
+        {a: nil, b: {c: nil}}.to_query
       )
     end
 
     it "keeps undefined array elements serialized as Rails nil" do
       expectjs("Routes.serialize({a: [undefined]})").to eq(
-        rails_nil_query_parameter("a%5B%5D")
+        {a: [nil]}.to_query
       )
     end
 
     context "with Rails nil query serialization compatibility" do
-      it "omits undefined and serializes null with deprecated nil behavior" do
-        evaluate_routes_for(rails_version: "8.0.0")
-
-        expectjs("Routes.serialize({a: null, b: undefined})").to eq("a=")
-      end
-
-      it "omits undefined and serializes null with bare-key nil behavior" do
-        evaluate_routes_for(rails_version: "8.1.0")
-
-        expectjs("Routes.serialize({a: null, b: undefined})").to eq("a")
+      it "omits undefined and serializes null as Rails nil" do
+        expectjs("Routes.serialize({a: null, b: undefined})").to eq({a: nil}.to_query)
       end
     end
-  end
-
-  def evaluate_routes_for(rails_version:)
-    allow(Rails).to receive(:version).and_return(rails_version)
-    JsRoutes::Utils.deprecator.silence do
-      evallib(**options)
-    end
-  end
-
-  def rails_nil_query_parameter(key)
-    Gem::Version.new(Rails.version) < Gem::Version.new("8.1.0") ? "#{key}=" : key
   end
 end
