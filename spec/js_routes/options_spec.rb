@@ -27,6 +27,30 @@ describe JsRoutes, "options" do
   let(:_warnings) { true }
 
   describe "serializer" do
+    it "allows to extend serializer" do
+      evaljs(generated_js)
+      evaljs(<<~JS)
+        const s = Routes.config().serializer;
+        function filter(object) {
+          if (object instanceof Array) {
+            return object.map((v) => filter(v))
+          } else if (object !== null && typeof object === "object") {
+            const result = {}
+            for (const [key, value] of Object.entries(object)) {
+              if (value) {
+                result[key] = filter(value)
+              }
+            }
+            return result;
+          } else {
+            return object;
+          }
+        }
+        Routes.configure({serializer: function(object, prefix) { return s(filter(object), prefix)}});
+      JS
+      expectjs(%q(Routes.inboxes_path({a: [{b: 1}, {c: undefined}, {d: null}]}))).to eql("/inboxes?a%5B%5D%5Bb%5D=1&&")
+    end
+
     context "when specified" do
       # define custom serializer
       # this is a nonsense serializer, which always returns foo=bar
