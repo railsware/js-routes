@@ -208,7 +208,8 @@ module JsRoutes
     sig { returns(String) }
     def routes_export
       return "" unless @configuration.modern?
-      [*static_exports, *routes_list].map do |comment, name, body|
+      exports = @configuration.package_mode? ? routes_list : [*static_exports, *routes_list]
+      exports.map do |comment, name, body|
         "#{comment}export const #{name}#{export_separator}#{body};\n\n"
       end.join
     end

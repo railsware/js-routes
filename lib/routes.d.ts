@@ -59,7 +59,7 @@ type PartsTable = Collection<{
     r?: boolean;
     d?: OptionalRouteParameter;
 }>;
-type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
+type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL" | "PKG";
 declare const RubyVariables: {
     PREFIX: string;
     DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;

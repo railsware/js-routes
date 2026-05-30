@@ -75,7 +75,7 @@ type RouteOptions = KeywordUrlOptions & RouteParameters;
 
 type PartsTable = Collection<{ r?: boolean; d?: OptionalRouteParameter }>;
 
-type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
+type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL" | "PKG";
 
 declare const RubyVariables: {
   PREFIX: string;
@@ -208,6 +208,15 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       },
     },
     DTS: {
+      // Acts the same as ESM
+      define(routes) {
+        ModuleReferences.ESM.define(routes);
+      },
+      isSupported() {
+        return ModuleReferences.ESM.isSupported();
+      },
+    },
+    PKG: {
       // Acts the same as ESM
       define(routes) {
         ModuleReferences.ESM.define(routes);

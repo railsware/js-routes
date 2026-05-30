@@ -65,10 +65,7 @@ gemfiles/*.lock
 
 .DS_Store
 
-/spec/dummy/app/assets/javascripts/routes.js
-/spec/dummy/app/assets/javascripts/router.js
-/spec/dummy/logs
-/spec/dummy/tmp
+/spec/dummy/
 node_modules
 sorbet/rbi
 
