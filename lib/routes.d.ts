@@ -37,12 +37,14 @@ type Configuration = {
     default_url_options: RouteParameters;
     special_options_key: string;
     serializer: Serializer;
+    deprecated_false_parameter_behavior: boolean;
+    deprecated_nil_query_parameter_behavior: boolean;
 };
 interface RouterExposedMethods {
     config(): Configuration;
     configure(arg: Partial<Configuration>): Configuration;
     serialize: Serializer;
-    __route__: unknown;
+    __route__(...args: unknown[]): RouteHelper;
 }
 type KeywordUrlOptions = Optional<{
     host: string;
@@ -66,7 +68,7 @@ declare const RubyVariables: {
     DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR: boolean;
     SPECIAL_OPTIONS_KEY: string;
     DEFAULT_URL_OPTIONS: RouteParameters;
-    SERIALIZER: Serializer;
+    SERIALIZER: Serializer | null;
     ROUTES_OBJECT: RouteHelpers;
     MODULE_TYPE: ModuleType;
     WRAPPER: <T>(callback: T) => T;

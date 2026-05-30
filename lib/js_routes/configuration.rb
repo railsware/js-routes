@@ -48,6 +48,10 @@ module JsRoutes
     attr_accessor :optional_definition_params
     sig { returns(BannerCaller) }
     attr_accessor :banner
+    sig { returns(T::Boolean) }
+    attr_accessor :deprecated_false_parameter_behavior
+    sig { returns(T::Boolean) }
+    attr_accessor :deprecated_nil_query_parameter_behavior
 
     sig {params(attributes: T.nilable(Options)).void }
     def initialize(attributes = nil)
@@ -68,6 +72,8 @@ module JsRoutes
       @optional_definition_params = T.let(false, T::Boolean)
       @banner = T.let(default_banner, BannerCaller)
       @package = T.let(nil, T.nilable(String))
+      @deprecated_false_parameter_behavior = T.let(defined?(Rails) ? Rails.version < '7.0.0' : false, T::Boolean)
+      @deprecated_nil_query_parameter_behavior = T.let(defined?(Rails) ? Rails.version < '8.1.0' : false, T::Boolean)
 
       return unless attributes
       assign(attributes)

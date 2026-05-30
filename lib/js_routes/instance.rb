@@ -136,8 +136,8 @@ module JsRoutes
       prefix = prefix.call if prefix.is_a?(Proc)
       {
         'ROUTES_OBJECT'       => routes_object,
-        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => Rails.version < '7.0.0',
-        'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => Rails.version < '8.1.0',
+        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => @configuration.deprecated_false_parameter_behavior,
+        'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => @configuration.deprecated_nil_query_parameter_behavior,
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(prefix),
         'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),

@@ -51,13 +51,15 @@ type Configuration = {
   default_url_options: RouteParameters;
   special_options_key: string;
   serializer: Serializer;
+  deprecated_false_parameter_behavior: boolean;
+  deprecated_nil_query_parameter_behavior: boolean;
 };
 
 interface RouterExposedMethods {
   config(): Configuration;
   configure(arg: Partial<Configuration>): Configuration;
   serialize: Serializer;
-  __route__: unknown;
+  __route__(...args: unknown[]): RouteHelper;
 }
 
 type KeywordUrlOptions = Optional<{
@@ -83,7 +85,7 @@ declare const RubyVariables: {
   DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR: boolean;
   SPECIAL_OPTIONS_KEY: string;
   DEFAULT_URL_OPTIONS: RouteParameters;
-  SERIALIZER: Serializer;
+  SERIALIZER: Serializer | null;
   ROUTES_OBJECT: RouteHelpers;
   MODULE_TYPE: ModuleType;
   WRAPPER: <T>(callback: T) => T;
@@ -141,89 +143,110 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
     ["0", "9"],
   ].map((range) => range.map((s) => s.charCodeAt(0)));
 
-  const ModuleReferences: Record<ModuleType, ModuleDefinition> = {
-    CJS: {
-      define(routes) {
-        if (module) {
-          // Some javascript processors (like vite/rolldown)
-          // warn on using module dot exports in an ESM module.
-          // This just obfuscates that assignment a little so
-          // users don't get a warning they can't fix.
-          const _mod = module;
-          _mod.exports = routes;
-        }
+  const Modules = {
+    references: {
+      CJS: {
+        define(routes) {
+          if (module) {
+            // Some javascript processors (like vite/rolldown)
+            // warn on using module dot exports in an ESM module.
+            // This just obfuscates that assignment a little so
+            // users don't get a warning they can't fix.
+            const _mod = module;
+            _mod.exports = routes;
+          }
+        },
+        isSupported() {
+          return typeof module === "object";
+        },
       },
-      isSupported() {
-        return typeof module === "object";
+      AMD: {
+        define(routes) {
+          if (define) {
+            define([], function () {
+              return routes;
+            });
+          }
+        },
+        isSupported() {
+          return typeof define === "function" && !!define.amd;
+        },
       },
-    },
-    AMD: {
-      define(routes) {
-        if (define) {
-          define([], function () {
-            return routes;
-          });
-        }
-      },
-      isSupported() {
-        return typeof define === "function" && !!define.amd;
-      },
-    },
-    UMD: {
-      define(routes) {
-        if (ModuleReferences.AMD.isSupported()) {
-          ModuleReferences.AMD.define(routes);
-        } else {
-          if (ModuleReferences.CJS.isSupported()) {
-            try {
-              ModuleReferences.CJS.define(routes);
-            } catch (error) {
-              if ((error as Error).name !== "TypeError") throw error;
+      UMD: {
+        define(routes) {
+          if (Modules.references.AMD.isSupported()) {
+            Modules.references.AMD.define(routes);
+          } else {
+            if (Modules.references.CJS.isSupported()) {
+              try {
+                Modules.references.CJS.define(routes);
+              } catch (error) {
+                if ((error as Error).name !== "TypeError") throw error;
+              }
             }
           }
-        }
+        },
+        isSupported() {
+          return (
+            Modules.references.AMD.isSupported() ||
+            Modules.references.CJS.isSupported()
+          );
+        },
       },
-      isSupported() {
-        return (
-          ModuleReferences.AMD.isSupported() ||
-          ModuleReferences.CJS.isSupported()
-        );
+      ESM: {
+        define() {
+          // Module can only be defined using ruby code generation
+        },
+        isSupported() {
+          // Its impossible to check if "export" keyword is supported
+          return true;
+        },
       },
+      NIL: {
+        define() {
+          // Defined using RubyVariables . WRAPPER
+        },
+        isSupported() {
+          return true;
+        },
+      },
+      DTS: {
+        // Acts the same as ESM
+        define(routes) {
+          Modules.references.ESM.define(routes);
+        },
+        isSupported() {
+          return Modules.references.ESM.isSupported();
+        },
+      },
+      PKG: {
+        // Acts the same as ESM
+        define() {
+          Modules.references.ESM.define(new Router());
+        },
+        isSupported() {
+          return Modules.references.ESM.isSupported();
+        },
+      },
+    } as Record<ModuleType, ModuleDefinition>,
+
+    is_module_supported(name: ModuleType): boolean {
+      return this.references[name].isSupported();
     },
-    ESM: {
-      define() {
-        // Module can only be defined using ruby code generation
-      },
-      isSupported() {
-        // Its impossible to check if "export" keyword is supported
-        return true;
-      },
+
+    ensure_module_supported(name: ModuleType): void {
+      if (!this.is_module_supported(name)) {
+        throw new Error(`${name} is not supported by runtime`);
+      }
     },
-    NIL: {
-      define() {
-        // Defined using RubyVariables . WRAPPER
-      },
-      isSupported() {
-        return true;
-      },
-    },
-    DTS: {
-      // Acts the same as ESM
-      define(routes) {
-        ModuleReferences.ESM.define(routes);
-      },
-      isSupported() {
-        return ModuleReferences.ESM.isSupported();
-      },
-    },
-    PKG: {
-      // Acts the same as ESM
-      define(routes) {
-        ModuleReferences.ESM.define(routes);
-      },
-      isSupported() {
-        return ModuleReferences.ESM.isSupported();
-      },
+
+    define_module(
+      name: ModuleType,
+      module: RouterExposedMethods,
+    ): RouterExposedMethods {
+      this.ensure_module_supported(name);
+      this.references[name].define(module);
+      return module;
     },
   };
 
@@ -249,18 +272,78 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
 
   type ReservedOption = (typeof ReservedOptions)[any];
 
-  class UtilsClass {
-    configuration: Configuration = {
-      prefix: RubyVariables.PREFIX,
-      default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
-      special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
-      serializer:
-        RubyVariables.SERIALIZER || this.default_serializer.bind(this),
+  class Router implements RouterExposedMethods {
+    private configuration: Configuration = {
+      prefix: "",
+      default_url_options: {},
+      special_options_key: "__options__",
+      serializer: this.default_serializer.bind(this),
+      deprecated_false_parameter_behavior: false,
+      deprecated_nil_query_parameter_behavior: false,
     };
 
-    default_serializer(value: unknown, prefix?: string | null): string {
+    constructor(config: Partial<Configuration> = {}) {
+      this.configure(config);
+    }
+
+    configure(new_config: Partial<Configuration>): Configuration {
+      if (new_config.prefix) {
+        console.warn(
+          "JsRoutes configuration prefix option is deprecated in favor of default_url_options.script_name.",
+        );
+      }
+      this.configuration = { ...this.configuration, ...new_config };
+      this.configuration.serializer ??= this.default_serializer.bind(this);
+      return this.configuration;
+    }
+
+    config(): Configuration {
+      return { ...this.configuration };
+    }
+
+    serialize(object: Serializable): string {
+      return this.configuration.serializer(object);
+    }
+
+    __route__(
+      parts_table: PartsTable,
+      route_spec: RouteTree,
+      absolute = false,
+    ): RouteHelper {
+      const required_params: string[] = [];
+      const parts: string[] = [];
+      const default_options: RouteParameters = {};
+      for (const [part, { r: required, d: value }] of Object.entries(
+        parts_table,
+      )) {
+        parts.push(part);
+        if (required) {
+          required_params.push(part);
+        }
+        if (this.is_not_nullable(value)) {
+          default_options[part] = value;
+        }
+      }
+      const result = (...args: OptionalRouteParameter[]): string => {
+        return this.build_route(
+          parts,
+          required_params,
+          default_options,
+          route_spec,
+          absolute,
+          args,
+        );
+      };
+      result.requiredParams = () => required_params;
+      result.toString = () => {
+        return this.build_path_spec(route_spec);
+      };
+      return result as any;
+    }
+
+    private default_serializer(value: unknown, prefix?: string | null): string {
       if (!prefix && !this.is_object(value)) {
-        throw new Error("Url parameters should be a javascript hash");
+        throw new Error("URL parameters should be a javascript hash");
       }
       prefix = prefix || "";
       const result: string[] = [];
@@ -284,7 +367,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
         const key = encodeURIComponent(prefix);
         result.push(
           this.is_not_nullable(value) ||
-            RubyVariables.DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR
+            this.configuration.deprecated_nil_query_parameter_behavior
             ? key + "=" + encodeURIComponent("" + (value ?? ""))
             : key,
         );
@@ -292,11 +375,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       return result.join("&");
     }
 
-    serialize(object: Serializable): string {
-      return this.configuration.serializer(object);
-    }
-
-    extract_options(
+    private extract_options(
       number_of_params: number,
       args: OptionalRouteParameter[],
     ): {
@@ -320,7 +399,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       }
     }
 
-    looks_like_serialized_model(
+    private looks_like_serialized_model(
       object: unknown,
     ): object is ModelRouteParameter {
       return (
@@ -330,15 +409,16 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       );
     }
 
-    path_identifier(object: QueryRouteParameter): string {
+    private path_identifier(object: QueryRouteParameter): string {
       const result = this.unwrap_path_identifier(object);
       return this.is_nullable(result) ||
-        (RubyVariables.DEPRECATED_FALSE_PARAMETER_BEHAVIOR && result === false)
+        (this.configuration.deprecated_false_parameter_behavior &&
+          result === false)
         ? ""
         : "" + result;
     }
 
-    unwrap_path_identifier(object: QueryRouteParameter): unknown {
+    private unwrap_path_identifier(object: QueryRouteParameter): unknown {
       let result: unknown = object;
       if (!this.is_object(object)) {
         return object;
@@ -355,7 +435,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       return this.is_callable(result) ? result.call(object) : result;
     }
 
-    partition_parameters(
+    private partition_parameters(
       parts: string[],
       required_params: string[],
       default_options: RouteParameters,
@@ -428,7 +508,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       return { keyword_parameters, query_parameters };
     }
 
-    build_route(
+    private build_route(
       parts: string[],
       required_params: string[],
       default_options: RouteParameters,
@@ -477,7 +557,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       return result;
     }
 
-    visit(
+    private visit(
       route: RouteTree,
       parameters: RouteParameters,
       optional = false,
@@ -500,15 +580,15 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       }
     }
 
-    is_not_nullable<T>(object: T): object is NonNullable<T> {
+    private is_not_nullable<T>(object: T): object is NonNullable<T> {
       return !this.is_nullable(object);
     }
 
-    is_nullable(object: unknown): object is null | undefined {
+    private is_nullable(object: unknown): object is null | undefined {
       return object === undefined || object === null;
     }
 
-    visit_cat(
+    private visit_cat(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       [_type, left, right]: RouteNode<NodeTypes.CAT>,
       parameters: RouteParameters,
@@ -532,7 +612,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       return left_part + right_part;
     }
 
-    visit_symbol(
+    private visit_symbol(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       [_type, key]: RouteNode<NodeTypes.SYMBOL>,
       parameters: RouteParameters,
@@ -550,7 +630,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       }
     }
 
-    encode_segment(segment: string): string {
+    private encode_segment(segment: string): string {
       if (segment.match(/^[a-zA-Z0-9-]$/)) {
         // Performance optimization for 99% of cases
         return segment;
@@ -572,11 +652,11 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
         .join("");
     }
 
-    is_optional_node(node: NodeTypes): boolean {
+    private is_optional_node(node: NodeTypes): boolean {
       return [NodeTypes.STAR, NodeTypes.SYMBOL, NodeTypes.CAT].includes(node);
     }
 
-    build_path_spec(route: RouteTree, wildcard = false): string {
+    private build_path_spec(route: RouteTree, wildcard = false): string {
       let key: string;
       switch (route[0]) {
         case NodeTypes.GROUP:
@@ -604,7 +684,7 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       }
     }
 
-    visit_globbing(
+    private visit_globbing(
       route: RouteTree,
       parameters: RouteParameters,
       optional: boolean,
@@ -622,50 +702,14 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       return encodeURI(result);
     }
 
-    get_prefix(): string {
+    private get_prefix(): string {
       const prefix = this.configuration.prefix;
       return prefix.match("/$")
         ? prefix.substring(0, prefix.length - 1)
         : prefix;
     }
 
-    route(
-      parts_table: PartsTable,
-      route_spec: RouteTree,
-      absolute = false,
-    ): RouteHelper {
-      const required_params: string[] = [];
-      const parts: string[] = [];
-      const default_options: RouteParameters = {};
-      for (const [part, { r: required, d: value }] of Object.entries(
-        parts_table,
-      )) {
-        parts.push(part);
-        if (required) {
-          required_params.push(part);
-        }
-        if (this.is_not_nullable(value)) {
-          default_options[part] = value;
-        }
-      }
-      const result = (...args: OptionalRouteParameter[]): string => {
-        return this.build_route(
-          parts,
-          required_params,
-          default_options,
-          route_spec,
-          absolute,
-          args,
-        );
-      };
-      result.requiredParams = () => required_params;
-      result.toString = () => {
-        return this.build_path_spec(route_spec);
-      };
-      return result as any;
-    }
-
-    route_url(route_defaults: KeywordUrlOptions): string {
+    private route_url(route_defaults: KeywordUrlOptions): string {
       const hostname = route_defaults.host || this.current_host();
       if (!hostname) {
         return "";
@@ -681,83 +725,58 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       return protocol + "://" + subdomain + hostname + port;
     }
 
-    current_host(): string {
+    private current_host(): string {
       return (isBrowser && window?.location?.hostname) || "";
     }
 
-    current_protocol(): string {
+    private current_protocol(): string {
       return (
         (isBrowser && window?.location?.protocol?.replace(/:$/, "")) || "http"
       );
     }
 
-    current_port(): string {
+    private current_port(): string {
       return (isBrowser && window?.location?.port) || "";
     }
 
-    is_object(value: unknown): value is Collection<unknown> {
+    private is_object(value: unknown): value is Collection<unknown> {
       return (
         typeof value === "object" &&
         Object.prototype.toString.call(value) === "[object Object]"
       );
     }
 
-    is_array<T>(object: unknown | T[]): object is T[] {
+    private is_array<T>(object: unknown | T[]): object is T[] {
       return object instanceof Array;
     }
 
-    is_callable(object: unknown): object is Function {
+    private is_callable(object: unknown): object is Function {
       return typeof object === "function" && !!object.call;
     }
 
-    is_reserved_option(key: unknown): key is ReservedOption {
+    private is_reserved_option(key: unknown): key is ReservedOption {
       return ReservedOptions.includes(key as any);
-    }
-
-    configure(new_config: Partial<Configuration>): Configuration {
-      if (new_config.prefix) {
-        console.warn(
-          "JsRoutes configuration prefix option is deprecated in favor of default_url_options.script_name.",
-        );
-      }
-      this.configuration = { ...this.configuration, ...new_config };
-      return this.configuration;
-    }
-
-    config(): Configuration {
-      return { ...this.configuration };
-    }
-
-    is_module_supported(name: ModuleType): boolean {
-      return ModuleReferences[name].isSupported();
-    }
-
-    ensure_module_supported(name: ModuleType): void {
-      if (!this.is_module_supported(name)) {
-        throw new Error(`${name} is not supported by runtime`);
-      }
-    }
-
-    define_module(
-      name: ModuleType,
-      module: RouterExposedMethods,
-    ): RouterExposedMethods {
-      this.ensure_module_supported(name);
-      ModuleReferences[name].define(module);
-      return module;
     }
   }
 
-  const utils = new UtilsClass();
+  const router = new Router({
+    prefix: RubyVariables.PREFIX,
+    default_url_options: RubyVariables.DEFAULT_URL_OPTIONS,
+    special_options_key: RubyVariables.SPECIAL_OPTIONS_KEY,
+    serializer: RubyVariables.SERIALIZER ?? undefined,
+    deprecated_false_parameter_behavior:
+      RubyVariables.DEPRECATED_FALSE_PARAMETER_BEHAVIOR,
+    deprecated_nil_query_parameter_behavior:
+      RubyVariables.DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR,
+  });
 
-  // We want this helper name to be short
-  const __route__ = utils.route.bind(utils);
+  const __route__ = router.__route__.bind(router);
 
-  return utils.define_module(RubyVariables.MODULE_TYPE, {
+  return Modules.define_module(RubyVariables.MODULE_TYPE, {
     ...{ __route__ },
-    configure: utils.configure.bind(utils),
-    config: utils.config.bind(utils),
-    serialize: utils.serialize.bind(utils),
+    configure: router.configure.bind(router),
+    config: router.config.bind(router),
+    serialize: router.serialize.bind(router),
     ...RubyVariables.ROUTES_OBJECT,
   });
 })();
