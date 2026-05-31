@@ -3,6 +3,25 @@
 ## Pending
 
 * Support `config.javascript_path` Rails configuration. Fixes [#344](https://github.com/railsware/js-routes/issues/344).
+* Escape JavaScript reserved words in TypeScript parameter names by appending `_` suffix. Fixes broken `.d.ts` output when a route segment name collides with a JS keyword.
+
+  Given a route like:
+
+  ``` ruby
+  scope "/returns/:return" do
+    resources :objects, only: [:show]
+  end
+  ```
+
+  The generated `.d.ts` now uses `return_` instead of the invalid `return`:
+
+  ``` typescript
+  export const object_path: ((
+    return_: RequiredRouteParameter,
+    id: RequiredRouteParameter,
+    options?: RouteOptions
+  ) => string) & RouteHelperExtras;
+  ```
 * Add `package` option and `JsRoutes.package` / `JsRoutes.package!` API for sharing a single Router runtime across multiple route files.
 
   **Why:** When an app generates several ESM route files (e.g. one per domain or engine), each file previously embedded the full js-routes runtime (~10 KB minified). With `package`, the runtime is extracted into one `router.js` and every route file imports it — the runtime is downloaded and parsed only once.
