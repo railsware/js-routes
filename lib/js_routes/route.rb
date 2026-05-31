@@ -59,7 +59,7 @@ module JsRoutes
         # no side-effects (e.g. modifying global variables) and is safe to remove when unused.
         # https://webpack.js.org/guides/tree-shaking/#clarifying-tree-shaking-and-sidyeeffects
         pure_comment = @configuration.esm? ? '/*#__PURE__*/ ' : ''
-        call = '__route__'
+        call = '__route'
         "#{pure_comment}#{call}(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
       end
     end

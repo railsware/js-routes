@@ -43,7 +43,7 @@ export interface RouterExposedMethods {
     config(): Configuration;
     configure(arg: Partial<Configuration>): Configuration;
     serialize: Serializer;
-    __route__(...args: unknown[]): RouteHelper;
+    __route(...args: unknown[]): RouteHelper;
 }
 export interface RouterConstructor {
     new (config?: Partial<Configuration>): RouterExposedMethods;
@@ -66,7 +66,7 @@ export const config: RouterExposedMethods['config'];
 
 export const serialize: RouterExposedMethods['serialize'];
 
-export const __route__: RouterExposedMethods['__route__'];
+export const __route: RouterExposedMethods['__route'];
 
 /**
  * Generates rails route to

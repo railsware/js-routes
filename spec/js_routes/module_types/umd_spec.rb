@@ -19,16 +19,16 @@ describe JsRoutes, "compatibility with UMD" do
     end
 
     it "should call route function for each route" do
-      is_expected.to include("inboxes_path: __route__(")
+      is_expected.to include("inboxes_path: __route(")
     end
     it "should have correct function without arguments signature" do
-      is_expected.to include('inboxes_path: __route__({"format":{}}')
+      is_expected.to include('inboxes_path: __route({"format":{}}')
     end
     it "should have correct function with arguments signature" do
-      is_expected.to include('inbox_message_path: __route__({"inbox_id":{"r":true},"id":{"r":true},"format":{}}')
+      is_expected.to include('inbox_message_path: __route({"inbox_id":{"r":true},"id":{"r":true},"format":{}}')
     end
     it "should have correct function signature with unordered hash" do
-      is_expected.to include('inbox_message_attachment_path: __route__({"inbox_id":{"r":true},"message_id":{"r":true},"id":{"r":true}}')
+      is_expected.to include('inbox_message_attachment_path: __route({"inbox_id":{"r":true},"message_id":{"r":true},"id":{"r":true}}')
     end
 
     it "should have correct function comment with options argument" do
@@ -39,7 +39,7 @@ describe JsRoutes, "compatibility with UMD" do
    * @param {object | undefined} options
    * @returns {string} route path
    */
-  inboxes_path: __route__
+  inboxes_path: __route
 DOC
     end
     it "should have correct function comment with arguments" do
@@ -52,7 +52,7 @@ DOC
    * @param {object | undefined} options
    * @returns {string} route path
    */
-  new_inbox_message_attachment_path: __route__
+  new_inbox_message_attachment_path: __route
   DOC
     end
 

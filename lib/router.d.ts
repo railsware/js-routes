@@ -43,7 +43,7 @@ export interface RouterExposedMethods {
     config(): Configuration;
     configure(arg: Partial<Configuration>): Configuration;
     serialize: Serializer;
-    __route__(...args: unknown[]): RouteHelper;
+    __route(...args: unknown[]): RouteHelper;
 }
 export interface RouterConstructor {
     new (config?: Partial<Configuration>): RouterExposedMethods;

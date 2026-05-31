@@ -15,7 +15,7 @@ describe JsRoutes, "PKG module type" do
 
     it "does not export utility methods individually" do
       expect(generated_package).not_to include("export const configure =")
-      expect(generated_package).not_to include("export const __route__ =")
+      expect(generated_package).not_to include("export const __route =")
       expect(generated_package).not_to include("export const config =")
       expect(generated_package).not_to include("export const serialize =")
     end
@@ -107,9 +107,9 @@ describe JsRoutes, "PKG module type" do
       end
     end
 
-    it "uses __route__ in every route definition" do
+    it "uses __route in every route definition" do
       route_lines = generated_js.lines.select { |l| l.include?("export const") && l.include?("_path") }
-      expect(route_lines).to all(include("__route__("))
+      expect(route_lines).to all(include("__route("))
     end
 
     it "does not embed the full js-routes runtime" do

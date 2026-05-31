@@ -222,7 +222,7 @@ module JsRoutes
 
     sig { returns(T::Array[StringArray]) }
     def static_exports
-      [:configure, :config, :serialize, :__route__].map do |name|
+      [:configure, :config, :serialize, :__route].map do |name|
         [
           "", name.to_s,
           @configuration.dts? ?
