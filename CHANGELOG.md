@@ -3,6 +3,52 @@
 ## Pending
 
 * Support `config.javascript_path` Rails configuration. Fixes [#344](https://github.com/railsware/js-routes/issues/344).
+* Add `package` option and `JsRoutes.package` / `JsRoutes.package!` API for sharing a single Router runtime across multiple route files.
+
+  **Why:** When an app generates several ESM route files (e.g. one per domain or engine), each file previously embedded the full js-routes runtime (~10 KB minified). With `package`, the runtime is extracted into one `router.js` and every route file imports it — the runtime is downloaded and parsed only once.
+
+  **Usage:**
+
+  Generate the shared router package (no route definitions, just the runtime):
+
+  ``` ruby
+  # config/initializers/js_routes.rb
+  JsRoutes.package!                   # writes app/javascript/router.js
+  # or with a custom path:
+  JsRoutes.package!("shared/router.js")
+  ```
+
+  Generate consumer route files that import from it:
+
+  ``` ruby
+  JsRoutes.generate!(
+    module_type: "ESM",
+    package: "./router.js",   # or package: true for the default path
+    include: /\Aadmin_/,
+    file: "app/javascript/admin_routes.js"
+  )
+
+  JsRoutes.generate!(
+    module_type: "ESM",
+    package: "./router.js",
+    include: /\Aapi_/,
+    file: "app/javascript/api_routes.js"
+  )
+  ```
+
+  Or share one configuration block:
+
+  ``` ruby
+  JsRoutes.setup do |c|
+    c.module_type = "ESM"
+    c.package     = "./router.js"   # all generated files import the same runtime
+  end
+
+  JsRoutes.package!                 # router.js  — runtime only
+  JsRoutes.generate!                # routes.js  — route helpers only
+  ```
+
+  `package: true` is a shorthand for `package: "./router.js"`.
 
 ## [2.3.7]
 
