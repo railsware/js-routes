@@ -7,7 +7,7 @@ module.exports = [
     ignores: ["**/*.js"],
   },
   {
-    files: ["lib/routes.ts"],
+    files: ["lib/routes.ts", "lib/router.ts"],
     languageOptions: {
       parser: tsParser,
     },

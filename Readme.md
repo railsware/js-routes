@@ -354,7 +354,7 @@ Options to configure JavaScript file generator. These options are only available
 * `file` - a file location where generated routes are stored
   * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
 * `package` - specify where the shared package will be imported from. e.g. `'./router.js'`.
-  * Generate the shared package with `package!` or `generate!(module_type: 'PKG')`.
+  * Generate the shared package with `package!`.
   * See [Using shared package](#package).
   * Default: `nil`
 * `optional_definition_params` - make all route paramters in definition optional

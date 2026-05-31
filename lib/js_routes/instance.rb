@@ -36,15 +36,12 @@ module JsRoutes
         end
       end
 
-      if @configuration.package_mode?
-        content = "import { __route__ } from '#{@configuration.package}';\n\n"
-      else
-        content = jsr
-      end
+      content = jsr
       unless @configuration.module_type == "NIL"
         banner + content + routes_export + prevent_types_export
       else
-        content.sub('"use strict";', "")
+        # Strip the empty IMPORT_ROUTER statement (comment + semicolon) left after substitution
+        content.sub(/\A(\/\/[^\n]+\n)*;\n/, "")
       end
 
     end
@@ -53,11 +50,7 @@ module JsRoutes
     def package
       raise "Package generation requires module_type: 'PKG'" unless @configuration.pkg?
 
-      exports = static_exports.map do |comment, name, body|
-        "export const #{name}#{export_separator}#{body};\n\n"
-      end.join
-
-      jsr + exports
+      jsr
     end
 
     sig { returns(String) }
@@ -117,17 +110,29 @@ module JsRoutes
 
     protected
 
-    def jsr
-      content = File.read(@configuration.source_file)
+    CJS_HEADER = /\A"use strict";\nObject\.defineProperty\(exports, "__esModule", \{ value: true \}\);\n/
 
-      unless @configuration.dts?
-        content = js_variables.inject(content) do |js, (key, value)|
-          js.gsub!("RubyVariables.#{key}", value.to_s) ||
-          raise("Missing key #{key} in JS template")
-        end
+    def jsr
+      return pkg_jsr if @configuration.pkg?
+
+      if @configuration.dts?
+        return File.read(@configuration.router_source_file)
       end
 
-      content
+      content = strip_cjs_header(File.read(@configuration.source_file))
+
+      js_variables.inject(content) do |js, (key, value)|
+        js.gsub!("RubyVariables.#{key}", value.to_s) ||
+        raise("Missing key #{key} in JS template")
+      end
+    end
+
+    def strip_cjs_header(content)
+      content.sub(CJS_HEADER, "")
+    end
+
+    def pkg_jsr
+      strip_cjs_header(File.read(@configuration.router_source_file)) + "export default Router;\n"
     end
 
     sig { returns(T::Hash[String, String]) }
@@ -144,7 +149,29 @@ module JsRoutes
         'SERIALIZER'          => @configuration.serializer || json(nil),
         'MODULE_TYPE'         => json(@configuration.module_type),
         'WRAPPER'             => wrapper_variable,
+        "IMPORT_ROUTER"       => import_router_variable,
+        "EMBED_ROUTER"        => embed_router_variable,
       }
+    end
+
+    sig { returns(String) }
+    def embed_router_variable
+      unless @configuration.use_package? || @configuration.modern?
+        strip_cjs_header(File.read(@configuration.router_source_file))
+      else
+        ""
+      end
+    end
+
+    sig { returns(String) }
+    def import_router_variable
+      if @configuration.use_package?
+        "import Router from '#{@configuration.package}'"
+      elsif @configuration.modern?
+        strip_cjs_header(File.read(@configuration.router_source_file))
+      else
+        ""
+      end
     end
 
     sig { returns(String) }
@@ -208,8 +235,7 @@ module JsRoutes
     sig { returns(String) }
     def routes_export
       return "" unless @configuration.modern?
-      exports = @configuration.package_mode? ? routes_list : [*static_exports, *routes_list]
-      exports.map do |comment, name, body|
+      [*static_exports, *routes_list].map do |comment, name, body|
         "#{comment}export const #{name}#{export_separator}#{body};\n\n"
       end.join
     end

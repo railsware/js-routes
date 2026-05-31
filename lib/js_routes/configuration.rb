@@ -134,7 +134,7 @@ module JsRoutes
       esm? || dts?
     end
 
-    def package_mode?
+    def use_package?
       esm? && package
     end
 
@@ -146,6 +146,12 @@ module JsRoutes
     sig { returns(String) }
     def source_file
       template = dts? ? "routes.d.ts" : "routes.js"
+      File.dirname(__FILE__) + "/../" + template
+    end
+
+    sig { returns(String) }
+    def router_source_file
+      template = dts? ? "router.d.ts" : "router.js"
       File.dirname(__FILE__) + "/../" + template
     end
 

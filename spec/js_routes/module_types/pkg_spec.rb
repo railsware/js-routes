@@ -5,19 +5,19 @@ describe JsRoutes, "PKG module type" do
   describe ".package" do
     subject(:generated_package) { JsRoutes.package }
 
-    it "exports __route__ exactly once with an initializer" do
-      expect(generated_package.scan(/^export const __route__/).length).to eq(1)
-      expect(generated_package).to include("export const __route__ =")
+    it "exports Router as the default export" do
+      expect(generated_package).to include("export default Router;")
     end
 
     it "does not contain route definitions" do
       expect(generated_package).not_to include("inboxes_path")
     end
 
-    it "exports utility methods" do
-      expect(generated_package).to include("export const configure =")
-      expect(generated_package).to include("export const config =")
-      expect(generated_package).to include("export const serialize =")
+    it "does not export utility methods individually" do
+      expect(generated_package).not_to include("export const configure =")
+      expect(generated_package).not_to include("export const __route__ =")
+      expect(generated_package).not_to include("export const config =")
+      expect(generated_package).not_to include("export const serialize =")
     end
 
     it "raises an error for non-PKG module type" do
@@ -36,11 +36,10 @@ describe JsRoutes, "PKG module type" do
       expect(File.exist?(path)).to be_truthy
     end
 
-    it "writes valid content with __route__ export" do
+    it "writes valid content with Router default export" do
       JsRoutes.package!
       content = File.read(path)
-      expect(content).to include("export const __route__ =")
-      expect(content.scan(/^export const __route__/).length).to eq(1)
+      expect(content).to include("export default Router;")
     end
 
     it "accepts a custom file name" do
@@ -71,9 +70,11 @@ describe JsRoutes, "PKG module type" do
 
     before do
       # Simulate ESM by stripping export/import keywords so MiniRacer can eval both together
-      combined = package_js.gsub("export const ", "const ") +
+      combined = package_js
+        .gsub(/^export default \w+;\n?/, "")
+        .gsub("export const ", "const ") +
         consumer_js
-          .gsub(/^import \{[^}]+\} from '[^']+';(\n)?/, "")
+          .gsub(/^import \S+ from '[^']+';(\n)?/, "")
           .gsub("export const ", "const ")
       evaljs(combined, force: true)
     end
@@ -92,8 +93,8 @@ describe JsRoutes, "PKG module type" do
       JsRoutes.generate(module_type: "ESM", package: "./router.js", include: /\Ainbox/)
     end
 
-    it "imports __route__ from the package" do
-      expect(generated_js).to include("import { __route__ } from './router.js';")
+    it "imports Router from the package" do
+      expect(generated_js).to include("import Router from './router.js';")
     end
 
     context "with package: true" do
@@ -102,7 +103,7 @@ describe JsRoutes, "PKG module type" do
       end
 
       it "uses the default package file path" do
-        expect(generated_js).to include("import { __route__ } from './router.js';")
+        expect(generated_js).to include("import Router from './router.js';")
       end
     end
 
@@ -116,9 +117,9 @@ describe JsRoutes, "PKG module type" do
     end
 
     it "does not re-export utility methods" do
-      expect(generated_js).not_to include("export const configure")
-      expect(generated_js).not_to include("export const config")
-      expect(generated_js).not_to include("export const serialize")
+      expect(generated_js).to include("export const configure")
+      expect(generated_js).to include("export const config")
+      expect(generated_js).to include("export const serialize")
     end
 
     it "raises when package: is used without ESM module type" do
