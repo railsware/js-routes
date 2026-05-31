@@ -110,7 +110,11 @@ module JsRoutes
 
     protected
 
-    CJS_HEADER = /\A"use strict";\nObject\.defineProperty\(exports, "__esModule", \{ value: true \}\);\n/
+    ESM_MODULE_MARKER = /export \{\};\n?\z/
+
+    def read_js(path)
+      File.read(path).sub(ESM_MODULE_MARKER, "")
+    end
 
     def jsr
       return pkg_jsr if @configuration.pkg?
@@ -119,7 +123,7 @@ module JsRoutes
         return File.read(@configuration.router_source_file)
       end
 
-      content = strip_cjs_header(File.read(@configuration.source_file))
+      content = read_js(@configuration.source_file)
 
       js_variables.inject(content) do |js, (key, value)|
         js.gsub!("RubyVariables.#{key}", value.to_s) ||
@@ -127,12 +131,8 @@ module JsRoutes
       end
     end
 
-    def strip_cjs_header(content)
-      content.sub(CJS_HEADER, "")
-    end
-
     def pkg_jsr
-      strip_cjs_header(File.read(@configuration.router_source_file)) + "export default Router;\n"
+      read_js(@configuration.router_source_file) + "export default Router;\n"
     end
 
     sig { returns(T::Hash[String, String]) }
@@ -157,7 +157,7 @@ module JsRoutes
     sig { returns(String) }
     def embed_router_variable
       unless @configuration.use_package? || @configuration.modern?
-        strip_cjs_header(File.read(@configuration.router_source_file))
+        read_js(@configuration.router_source_file)
       else
         ""
       end
@@ -168,7 +168,7 @@ module JsRoutes
       if @configuration.use_package?
         "import Router from '#{@configuration.package}'"
       elsif @configuration.modern?
-        strip_cjs_header(File.read(@configuration.router_source_file))
+        read_js(@configuration.router_source_file)
       else
         ""
       end
