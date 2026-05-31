@@ -38,7 +38,7 @@ module JsRoutes
 
       content = jsr
       unless @configuration.module_type == "NIL"
-        banner + content + routes_export + prevent_types_export
+        banner + content + routes_export
       else
         # Strip the empty IMPORT_ROUTER statement (comment + semicolon) left after substitution
         content.sub(/\A(\/\/[^\n]+\n)*;\n/, "")
@@ -238,16 +238,6 @@ module JsRoutes
       [*static_exports, *routes_list].map do |comment, name, body|
         "#{comment}export const #{name}#{export_separator}#{body};\n\n"
       end.join
-    end
-
-    sig { returns(String) }
-    def prevent_types_export
-      return "" unless @configuration.dts?
-      <<-JS
-// By some reason this line prevents all types in a file
-// from being automatically exported
-export {};
-      JS
     end
 
     sig { returns(String) }

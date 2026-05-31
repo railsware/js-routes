@@ -94,6 +94,3 @@ export const inboxes_path: ((
   options?: {format?: OptionalRouteParameter} & RouteOptions
 ) => string) & RouteHelperExtras;
 
-// By some reason this line prevents all types in a file
-// from being automatically exported
-export {};
