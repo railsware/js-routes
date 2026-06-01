@@ -78,6 +78,28 @@ DOC
     end
   end
 
+  context "when compact is enabled" do
+    let(:extra_options) { { compact: true } }
+
+    it "omits _path suffix from route names" do
+      expect(generated_js).to include("export const inboxes:")
+      expect(generated_js).to include("export const inbox_message_attachment:")
+      expect(generated_js).not_to include("export const inboxes_path:")
+      expect(generated_js).not_to include("export const inbox_message_attachment_path:")
+    end
+  end
+
+  context "when url_links is enabled" do
+    let(:extra_options) { { url_links: true } }
+
+    it "generates both _path and _url variants" do
+      expect(generated_js).to include("export const inboxes_path:")
+      expect(generated_js).to include("export const inboxes_url:")
+      expect(generated_js).to include("export const inbox_message_attachment_path:")
+      expect(generated_js).to include("export const inbox_message_attachment_url:")
+    end
+  end
+
   context "when optional_definition_params specified" do
     let(:extra_options) { { optional_definition_params: true } }
 
