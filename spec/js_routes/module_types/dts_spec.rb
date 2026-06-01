@@ -146,11 +146,13 @@ export const inbox_message_attachment_path: ((
 DOC
   end
 
-  it "escapes JS reserved words in parameter names with a trailing underscore" do
-    # object_path has a :return segment from `scope "/returns/:return"`
-    js = JsRoutes.generate(module_type: 'DTS', include: /\Aobject\z/)
-    expect(js).to include("return_: RequiredRouteParameter")
-    expect(js).not_to match(/\breturn: RequiredRouteParameter/)
+  context "when route parameter matches JavaScript keyword" do
+    let(:extra_options) { {include: /\Aobject\z/} }
+
+    it "has _ suffix" do
+      expect(generated_js).to include("return_: RequiredRouteParameter")
+      expect(generated_js).not_to match(/\breturn: RequiredRouteParameter/)
+    end
   end
 
   it "exports utility methods" do
