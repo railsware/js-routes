@@ -87,6 +87,12 @@ DOC
       expect(generated_js).not_to include("export const inboxes_path:")
       expect(generated_js).not_to include("export const inbox_message_attachment_path:")
     end
+
+    it "falls back to _path suffix when compact name is a JS reserved word" do
+      js = JsRoutes.generate(module_type: 'DTS', compact: true, include: /\Areturn\z/)
+      expect(js).to include("export const return_path:")
+      expect(js).not_to include("export const return:")
+    end
   end
 
   context "when url_links is enabled" do

@@ -133,8 +133,14 @@ module JsRoutes
 
     sig { params(absolute: T::Boolean).returns(String) }
     def helper_name(absolute)
-      suffix = absolute ? :url : @configuration.compact ? nil : :path
-      apply_case(base_name, suffix)
+      apply_case(base_name, helper_suffix(absolute))
+    end
+
+    sig { params(absolute: T::Boolean).returns(T.nilable(Symbol)) }
+    def helper_suffix(absolute)
+      return :url if absolute
+      return :path unless @configuration.compact
+      JS_RESERVED_WORDS.include?(apply_case(base_name)) ? :path : nil
     end
 
     sig { returns(String) }

@@ -3,7 +3,7 @@
 ## Pending
 
 * Support `config.javascript_path` Rails configuration. Fixes [#344](https://github.com/railsware/js-routes/issues/344).
-* Escape JavaScript reserved words in TypeScript parameter names by appending `_` suffix. Fixes broken `.d.ts` output when a route segment name collides with a JS keyword.
+* Escape JavaScript reserved words in route helper names and TypeScript parameter names. Fixes broken `.d.ts` output when a route segment name collides with a JS keyword.
 
   Given a route like:
 
@@ -21,6 +21,13 @@
     id: RequiredRouteParameter,
     options?: RouteOptions
   ) => string) & RouteHelperExtras;
+  ```
+
+  In `compact` mode, if the short helper name would itself be a reserved word, the `_path` suffix is kept as a fallback:
+
+  ``` ruby
+  # route named :return with compact: true
+  return_path(…)  # kept — `return` alone would be invalid
   ```
 * Add `package` option and `JsRoutes.package` / `JsRoutes.package!` API for sharing a single Router runtime across multiple route files.
 

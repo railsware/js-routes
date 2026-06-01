@@ -499,6 +499,15 @@ describe JsRoutes, "options" do
       expectjs("Routes.inbox(2)").to eq(test_routes.inbox_path(2))
     end
 
+    context "when compact name is a JS reserved word" do
+      let(:_options) { { compact: true, include: /\Areturn\z/ } }
+
+      it "falls back to _path suffix" do
+        expectjs("Routes.return_path").not_to be_nil
+        expectjs("Routes.return_path('test')").to eq("/returns/test")
+      end
+    end
+
     context "with url_links option" do
       let(:_options) { { :compact => true, :url_links => true, default_url_options: {host: 'localhost'} } }
       it "should not strip urls" do
