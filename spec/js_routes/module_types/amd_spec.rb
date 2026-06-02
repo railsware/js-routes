@@ -1,13 +1,12 @@
 require "spec_helper"
 
-describe JsRoutes, "compatibility with AMD/require.js"  do
-
-  before(:each) do
+describe JsRoutes, "compatibility with AMD/require.js" do
+  before do
     evaljs("var global = this;", force: true)
     evaljs("global.GlobalCheck = {};")
     evaljs("global.define = function (requirs, callback) { global.GlobalCheck['js-routes'] = callback.call(this); return global.GlobalCheck['js-routes']; };")
     evaljs("global.define.amd = { jQuery: true };")
-    strRequire =<<EOF
+    str_require = <<EOF
     global.require = function (r, callback) {
       var allArgs, i;
 
@@ -24,12 +23,11 @@ describe JsRoutes, "compatibility with AMD/require.js"  do
       return callback.apply(null, allArgs);
     };
 EOF
-    evaljs(strRequire)
-    evaljs(JsRoutes.generate(module_type: 'AMD'))
+    evaljs(str_require)
+    evaljs(described_class.generate(module_type: "AMD"))
   end
 
-  it "should working from require" do
-    expectjs("require(['js-routes'], function(r){ return r.inboxes_path(); })").to eq(test_routes.inboxes_path())
+  it "workings from require" do
+    expectjs("require(['js-routes'], function(r){ return r.inboxes_path(); })").to eq(test_routes.inboxes_path)
   end
-
 end

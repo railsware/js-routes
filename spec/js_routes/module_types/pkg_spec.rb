@@ -3,7 +3,7 @@ require "spec_helper"
 
 describe JsRoutes, "PKG module type" do
   describe ".package" do
-    subject(:generated_package) { JsRoutes.package }
+    subject(:generated_package) { described_class.package }
 
     it "exports Router as the default export" do
       expect(generated_package).to include("export default Router;")
@@ -21,51 +21,51 @@ describe JsRoutes, "PKG module type" do
     end
 
     it "raises an error for non-PKG module type" do
-      expect { JsRoutes.package(module_type: "ESM") }.to raise_error(RuntimeError, /PKG/)
+      expect { described_class.package(module_type: "ESM") }.to raise_error(RuntimeError, /PKG/)
     end
   end
 
   describe ".package!" do
     let(:path) { Rails.root.join(JsRoutes::Configuration.new(module_type: "PKG").output_file) }
 
-    before(:each) { FileUtils.mkdir_p(path.dirname) }
-    after(:each) { JsRoutes.remove! }
+    before { FileUtils.mkdir_p(path.dirname) }
+    after { described_class.remove! }
 
     it "writes to router.js by default" do
-      JsRoutes.package!
-      expect(File.exist?(path)).to be_truthy
+      described_class.package!
+      expect(File).to exist(path)
     end
 
     it "writes valid content with Router default export" do
-      JsRoutes.package!
+      described_class.package!
       content = File.read(path)
       expect(content).to include("export default Router;")
     end
 
     it "accepts a custom file name" do
       custom_path = path.dirname.join("custom_pkg.js")
-      JsRoutes.package!("custom_pkg.js")
-      expect(File.exist?(custom_path)).to be_truthy
+      described_class.package!("custom_pkg.js")
+      expect(File).to exist(custom_path)
       FileUtils.rm_f(custom_path)
     end
 
     it "does not overwrite unchanged file" do
-      JsRoutes.package!
+      described_class.package!
       mtime = File.mtime(path)
       sleep(0.01)
-      JsRoutes.package!
+      described_class.package!
       expect(File.mtime(path)).to eq(mtime)
     end
 
     it "raises an error for non-PKG module type" do
-      expect { JsRoutes.package!(module_type: "ESM") }.to raise_error(RuntimeError, /PKG/)
+      expect { described_class.package!(module_type: "ESM") }.to raise_error(RuntimeError, /PKG/)
     end
   end
 
   describe "combined package + consumer routes (functional)" do
-    let(:package_js) { JsRoutes.package }
+    let(:package_js) { described_class.package }
     let(:consumer_js) do
-      JsRoutes.generate(module_type: "ESM", package: "./router.js", include: /\Ainbox/)
+      described_class.generate(module_type: "ESM", package: "./router.js", include: /\Ainbox/)
     end
 
     before do
@@ -80,7 +80,7 @@ describe JsRoutes, "PKG module type" do
     end
 
     it "route helpers produce correct paths" do
-      expectjs("inboxes_path()").to eq(test_routes.inboxes_path())
+      expectjs("inboxes_path()").to eq(test_routes.inboxes_path)
     end
 
     it "route helpers with arguments produce correct paths" do
@@ -90,7 +90,7 @@ describe JsRoutes, "PKG module type" do
 
   describe "consumer routes (package: option)" do
     let(:generated_js) do
-      JsRoutes.generate(module_type: "ESM", package: "./router.js", include: /\Ainbox/)
+      described_class.generate(module_type: "ESM", package: "./router.js", include: /\Ainbox/)
     end
 
     it "imports Router from the package" do
@@ -99,7 +99,7 @@ describe JsRoutes, "PKG module type" do
 
     context "with package: true" do
       let(:generated_js) do
-        JsRoutes.generate(module_type: "ESM", package: true, include: /\Ainbox/)
+        described_class.generate(module_type: "ESM", package: true, include: /\Ainbox/)
       end
 
       it "uses the default package file path" do
@@ -124,7 +124,7 @@ describe JsRoutes, "PKG module type" do
 
     it "raises when package: is used without ESM module type" do
       expect {
-        JsRoutes.generate(module_type: "UMD", package: true)
+        described_class.generate(module_type: "UMD", package: true)
       }.to raise_error(RuntimeError, /ESM/)
     end
   end

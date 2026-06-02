@@ -1,8 +1,9 @@
 # typed: strict
+
 require "js_routes/configuration"
 require "js_routes/route"
 require "js_routes/types"
-require 'fileutils'
+require "fileutils"
 
 module JsRoutes
   class Instance # :nodoc:
@@ -21,7 +22,7 @@ module JsRoutes
       @configuration = T.let(JsRoutes.configuration.merge(options), JsRoutes::Configuration)
     end
 
-    sig {returns(String)}
+    sig { returns(String) }
     def generate
       # Ensure routes are loaded. If they're not, load them.
 
@@ -37,16 +38,15 @@ module JsRoutes
       end
 
       content = jsr
-      unless @configuration.module_type == "NIL"
-        banner + content + routes_export
-      else
+      if @configuration.module_type == "NIL"
         # Strip the empty IMPORT_ROUTER statement (comment + semicolon) left after substitution
         content.sub(/\A(\/\/[^\n]+\n)*;\n/, "")
+      else
+        banner + content + routes_export
       end
-
     end
 
-    sig {returns(String)}
+    sig { returns(String) }
     def package
       raise "Package generation requires module_type: 'PKG'" unless @configuration.pkg?
 
@@ -62,7 +62,7 @@ module JsRoutes
         "/**",
         *banner.split("\n").map { |line| " * #{line}" },
         " */",
-        "",
+        ""
       ].join("\n")
     end
 
@@ -79,9 +79,7 @@ module JsRoutes
         # It helps asset pipeline or webpack understand that file wasn't changed.
         next if File.exist?(file_path) && File.read(file_path) == source_code
 
-        File.open(file_path, 'w') do |f|
-          f.write source_code
-        end
+        File.write(file_path, source_code)
       end
     end
 
@@ -96,16 +94,14 @@ module JsRoutes
       # It helps asset pipeline or webpack understand that file wasn't changed.
       return if File.exist?(file_path) && File.read(file_path) == source_code
 
-      File.open(file_path, 'w') do |f|
-        f.write source_code
-      end
+      File.write(file_path, source_code)
     end
 
     sig { void }
     def remove!
       path = Rails.root.join(@configuration.output_file)
       FileUtils.rm_rf(path)
-      FileUtils.rm_rf(path.sub(%r{\.js\z}, '.d.ts'))
+      FileUtils.rm_rf(path.sub(%r{\.js\z}, ".d.ts"))
     end
 
     protected
@@ -127,7 +123,7 @@ module JsRoutes
 
       js_variables.inject(content) do |js, (key, value)|
         js.gsub!("RubyVariables.#{key}", value.to_s) ||
-        raise("Missing key #{key} in JS template")
+          raise("Missing key #{key} in JS template")
       end
     end
 
@@ -140,26 +136,26 @@ module JsRoutes
       prefix = @configuration.prefix
       prefix = prefix.call if prefix.is_a?(Proc)
       {
-        'ROUTES_OBJECT'       => routes_object,
-        'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => @configuration.deprecated_false_parameter_behavior,
-        'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => @configuration.deprecated_nil_query_parameter_behavior,
-        'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
-        'PREFIX'              => json(prefix),
-        'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
-        'SERIALIZER'          => @configuration.serializer || json(nil),
-        'MODULE_TYPE'         => json(@configuration.module_type),
-        'WRAPPER'             => wrapper_variable,
-        "IMPORT_ROUTER"       => import_router_variable,
-        "EMBED_ROUTER"        => embed_router_variable,
+        "ROUTES_OBJECT" => routes_object,
+        "DEPRECATED_FALSE_PARAMETER_BEHAVIOR" => @configuration.deprecated_false_parameter_behavior,
+        "DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR" => @configuration.deprecated_nil_query_parameter_behavior,
+        "DEFAULT_URL_OPTIONS" => json(@configuration.default_url_options),
+        "PREFIX" => json(prefix),
+        "SPECIAL_OPTIONS_KEY" => json(@configuration.special_options_key),
+        "SERIALIZER" => @configuration.serializer || json(nil),
+        "MODULE_TYPE" => json(@configuration.module_type),
+        "WRAPPER" => wrapper_variable,
+        "IMPORT_ROUTER" => import_router_variable,
+        "EMBED_ROUTER" => embed_router_variable
       }
     end
 
     sig { returns(String) }
     def embed_router_variable
-      unless @configuration.use_package? || @configuration.modern?
-        read_js(@configuration.router_source_file)
-      else
+      if @configuration.use_package? || @configuration.modern?
         ""
+      else
+        read_js(@configuration.router_source_file)
       end
     end
 
@@ -177,21 +173,21 @@ module JsRoutes
     sig { returns(String) }
     def wrapper_variable
       case @configuration.module_type
-      when 'ESM', 'PKG'
-        'const __jsr = '
-      when 'NIL'
+      when "ESM", "PKG"
+        "const __jsr = "
+      when "NIL"
         namespace = @configuration.namespace
         if namespace
-          if namespace.include?('.')
+          if namespace.include?(".")
             "#{namespace} = "
           else
             "(typeof window !== 'undefined' ? window : this).#{namespace} = "
           end
         else
-          ''
+          ""
         end
       else
-        ''
+        ""
       end
     end
 
@@ -206,7 +202,7 @@ module JsRoutes
       JsRoutes.json(value)
     end
 
-    sig {params(application: Application).returns(T::Array[JourneyRoute])}
+    sig { params(application: Application).returns(T::Array[JourneyRoute]) }
     def routes_from(application)
       T.unsafe(application).routes.named_routes.to_h.values.sort_by(&:name)
     end
@@ -242,7 +238,7 @@ module JsRoutes
 
     sig { returns(String) }
     def export_separator
-      @configuration.dts? ? ': ' : ' = '
+      @configuration.dts? ? ": " : " = "
     end
 
     sig { returns(T::Array[StringArray]) }

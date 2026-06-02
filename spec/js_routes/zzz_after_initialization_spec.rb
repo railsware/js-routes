@@ -4,13 +4,13 @@
 
 require "sprockets"
 require "sprockets/railtie"
-require 'spec_helper'
+require "spec_helper"
 require "fileutils"
 
-describe "after Rails initialization", :slow do
-  NAME = Rails.root.join('app', 'assets', 'javascripts', 'routes.js').to_s
-  CONFIG_ROUTES = Rails.root.join('config','routes.rb').to_s
+ROUTES_JS_NAME = Rails.root.join("app", "assets", "javascripts", "routes.js").to_s
+CONFIG_ROUTES_PATH = Rails.root.join("config", "routes.rb").to_s
 
+describe "after Rails initialization", :slow do
   def sprockets_v3?
     Sprockets::VERSION.to_i >= 3
   end
@@ -35,11 +35,11 @@ describe "after Rails initialization", :slow do
     end
   end
 
-  before(:each) do
-    FileUtils.mkdir_p(Rails.root.join('tmp'))
-    FileUtils.rm_rf Rails.root.join('tmp/cache')
-    JsRoutes.remove!(NAME)
-    JsRoutes.generate!(NAME)
+  before do
+    FileUtils.mkdir_p(Rails.root.join("tmp"))
+    FileUtils.rm_rf Rails.root.join("tmp/cache")
+    JsRoutes.remove!(ROUTES_JS_NAME)
+    JsRoutes.generate!(ROUTES_JS_NAME)
   end
 
   before(:all) do
@@ -48,72 +48,73 @@ describe "after Rails initialization", :slow do
     Rails.application.initialize!
   end
 
-  it "should generate routes file" do
-    expect(File.exist?(NAME)).to be_truthy
+  it "generates routes file" do
+    expect(File).to exist(ROUTES_JS_NAME)
   end
 
-  it "should not rewrite routes file if nothing changed" do
-    routes_file_mtime = File.mtime(NAME)
-    JsRoutes.generate!(NAME)
-    expect(File.mtime(NAME)).to eq(routes_file_mtime)
+  it "does not rewrite routes file if nothing changed" do
+    routes_file_mtime = File.mtime(ROUTES_JS_NAME)
+    JsRoutes.generate!(ROUTES_JS_NAME)
+    expect(File.mtime(ROUTES_JS_NAME)).to eq(routes_file_mtime)
   end
 
-  it "should rewrite routes file if file content changed" do
+  it "rewrites routes file if file content changed" do
     # Change content of existed routes file (add space to the end of file).
-    File.open(NAME, 'a') { |f| f << ' ' }
-    routes_file_mtime = File.mtime(NAME)
+    File.open(ROUTES_JS_NAME, "a") { |f| f << " " }
+    routes_file_mtime = File.mtime(ROUTES_JS_NAME)
     sleep(0.1)
-    JsRoutes.generate!(NAME)
-    expect(File.mtime(NAME)).not_to eq(routes_file_mtime)
+    JsRoutes.generate!(ROUTES_JS_NAME)
+    expect(File.mtime(ROUTES_JS_NAME)).not_to eq(routes_file_mtime)
   end
 
   describe JsRoutes::Middleware do
     def file_content
-      File.read(NAME)
+      File.read(ROUTES_JS_NAME)
     end
 
     it "works" do
       JsRoutes.remove!
 
       real_digest = JsRoutes.digest
-      stub_digest = '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
+      stub_digest = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
 
-      expect(File.exist?(NAME)).to be(false)
+      expect(File.exist?(ROUTES_JS_NAME)).to be(false)
       app = lambda do |env|
         [200, {}, ""]
       end
-      middleware = JsRoutes::Middleware.new(app)
+      middleware = described_class.new(app)
       middleware.call({})
 
-      expect(File.exist?(NAME)).to be(true)
+      expect(File.exist?(ROUTES_JS_NAME)).to be(true)
       expect(file_content).to include(real_digest)
       JsRoutes.remove!
       middleware.call({})
-      expect(File.exist?(NAME)).to be(false)
+      expect(File.exist?(ROUTES_JS_NAME)).to be(false)
 
       allow(JsRoutes).to receive(:digest).and_return(stub_digest)
       middleware.call({})
 
-      expect(File.exist?(NAME)).to be(true)
+      expect(File.exist?(ROUTES_JS_NAME)).to be(true)
       expect(file_content).to include(stub_digest)
     end
   end
 
   describe ".generate!" do
-    let(:dir) { Rails.root.join('tmp') }
+    let(:dir) { Rails.root.join("tmp") }
+
     it "works" do
-      file = dir.join('typed_routes.js')
+      file = dir.join("typed_routes.js")
       JsRoutes.remove!(file)
       expect(File.exist?(file)).to be(false)
-      expect(File.exist?(dir.join('typed_routes.d.ts'))).to be(false)
-      JsRoutes.generate!(file, module_type: 'ESM', typed: true)
+      expect(File.exist?(dir.join("typed_routes.d.ts"))).to be(false)
+      JsRoutes.generate!(file, module_type: "ESM", typed: true)
       expect(File.exist?(file)).to be(true)
-      expect(File.exist?(dir.join('typed_routes.d.ts'))).to be(true)
+      expect(File.exist?(dir.join("typed_routes.d.ts"))).to be(true)
     end
 
     it "skips definitions if module is not ESM" do
-      file = dir.join('typed_routes.js')
-      definitions = dir.join('typed_routes.d.ts')
+      file = dir.join("typed_routes.js")
+      definitions = dir.join("typed_routes.d.ts")
       JsRoutes.remove!(file)
       expect(File.exist?(file)).to be(false)
       expect(File.exist?(definitions)).to be(false)
@@ -123,64 +124,68 @@ describe "after Rails initialization", :slow do
     end
   end
 
-
   context "JsRoutes::Engine" do
-    TEST_ASSET_PATH = Rails.root.join('app','assets','javascripts','test.js')
+    def test_asset_path
+      Rails.root.join("app", "assets", "javascripts", "test.js")
+    end
 
     before(:all) do
-      File.open(TEST_ASSET_PATH,'w') do |f|
+      File.open(Rails.root.join("app", "assets", "javascripts", "test.js"), "w") do |f|
         f.puts "function() {}"
       end
     end
+
     after(:all) do
-      FileUtils.rm_f(TEST_ASSET_PATH)
+      FileUtils.rm_f(Rails.root.join("app", "assets", "javascripts", "test.js"))
     end
 
     context "the preprocessor" do
-      before(:each) do
+      before do
         if sprockets_v3? || sprockets_v4?
           expect_any_instance_of(Sprockets::Context).to receive(:depend_on)
         else
-          expect(ctx).to receive(:depend_on).with(CONFIG_ROUTES.to_s)
+          expect(ctx).to receive(:depend_on).with(CONFIG_ROUTES_PATH.to_s)
         end
       end
+
       let!(:ctx) do
         sprockets_context(Rails.application.assets,
-                         'js-routes.js',
-                         Pathname.new('js-routes.js'))
+          "js-routes.js",
+          Pathname.new("js-routes.js"))
       end
 
       context "when dealing with js-routes.js" do
         context "with Rails" do
           context "and initialize on precompile" do
-            before(:each) do
+            before do
               Rails.application.config.assets.initialize_on_precompile = true
             end
-            it "should render some javascript" do
-              expect(evaluate(ctx, 'js-routes.js')).to match(/Modules\.define_module/)
+
+            it "renders some javascript" do
+              expect(evaluate(ctx, "js-routes.js")).to match(/Modules\.define_module/)
             end
           end
+
           context "and not initialize on precompile" do
-            before(:each) do
+            before do
               Rails.application.config.assets.initialize_on_precompile = false
             end
-            it "should raise an exception if 3 version" do
-              expect(evaluate(ctx, 'js-routes.js')).to match(/Modules\.define_module/)
+
+            it "raises an exception if 3 version" do
+              expect(evaluate(ctx, "js-routes.js")).to match(/Modules\.define_module/)
             end
           end
-
         end
       end
-
-
     end
+
     context "when not dealing with js-routes.js" do
-      it "should not depend on routes.rb" do
+      it "does not depend on routes.rb" do
         ctx = sprockets_context(Rails.application.assets,
-                                'test.js',
-                                TEST_ASSET_PATH)
+          "test.js",
+          test_asset_path)
         expect(ctx).not_to receive(:depend_on)
-        evaluate(ctx, 'test.js')
+        evaluate(ctx, "test.js")
       end
     end
   end
@@ -188,17 +193,15 @@ end
 
 describe "JSRoutes thread safety", :slow do
   before do
-    begin
-      Rails.application.initialize!
-    rescue
-    end
+    Rails.application.initialize!
+  rescue
   end
 
   it "can produce the routes from multiple threads" do
-    threads = 2.times.map do
+    threads = Array.new(2) do
       Thread.start do
         10.times {
-          expect { JsRoutes.generate }.to_not raise_error
+          expect { JsRoutes.generate }.not_to raise_error
         }
       end
     end

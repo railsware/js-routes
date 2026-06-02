@@ -1,4 +1,5 @@
 # typed: strict
+
 require "js_routes/types"
 
 module JsRoutes

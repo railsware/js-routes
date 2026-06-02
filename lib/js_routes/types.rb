@@ -1,4 +1,5 @@
 # typed: strict
+
 require "action_dispatch/journey/route"
 require "pathname"
 require "sorbet-runtime"
@@ -7,15 +8,15 @@ module JsRoutes
   module Types
     extend T::Sig
 
-    UntypedArray = T.type_alias {T::Array[T.untyped]}
-    StringArray = T.type_alias {T::Array[String]}
-    SymbolArray = T.type_alias {T::Array[Symbol]}
+    UntypedArray = T.type_alias { T::Array[T.untyped] }
+    StringArray = T.type_alias { T::Array[String] }
+    SymbolArray = T.type_alias { T::Array[Symbol] }
     StringHash = T.type_alias { T::Hash[String, T.untyped] }
     Options = T.type_alias { T::Hash[Symbol, T.untyped] }
     SpecNode = T.type_alias { T.any(String, RouteSpec, NilClass) }
     Literal = T.type_alias { T.any(String, Symbol) }
-    JourneyRoute = T.type_alias{ActionDispatch::Journey::Route}
-    RouteSpec = T.type_alias {T.untyped}
+    JourneyRoute = T.type_alias { ActionDispatch::Journey::Route }
+    RouteSpec = T.type_alias { T.untyped }
     Application = T.type_alias do
       T.any(T::Class[Rails::Engine], Rails::Application)
     end
@@ -41,7 +42,8 @@ module JsRoutes
       interface!
 
       sig { abstract.params(input: StringHash).returns(UntypedArray) }
-      def call(input); end
+      def call(input)
+      end
     end
   end
 end

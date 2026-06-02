@@ -1,12 +1,13 @@
 # typed: strict
+
 if defined?(::Rails)
-  require 'js_routes/engine'
+  require "js_routes/engine"
 end
-require 'js_routes/version'
+require "js_routes/version"
 require "js_routes/configuration"
 require "js_routes/instance"
 require "js_routes/types"
-require 'active_support/core_ext/string/indent'
+require "active_support/core_ext/string/indent"
 require "digest/sha2"
 
 module JsRoutes
@@ -46,12 +47,12 @@ module JsRoutes
 
     sig { params(opts: T.untyped).returns(String) }
     def package(**opts)
-      Instance.new(module_type: 'PKG', **opts).package
+      Instance.new(module_type: "PKG", **opts).package
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }
     def package!(file_name = nil, **opts)
-      Instance.new(module_type: 'PKG', file: file_name, **opts).package!
+      Instance.new(module_type: "PKG", file: file_name, **opts).package!
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }
@@ -61,7 +62,7 @@ module JsRoutes
 
     sig { params(opts: T.untyped).returns(String) }
     def definitions(**opts)
-      generate(**opts, module_type: 'DTS')
+      generate(**opts, module_type: "DTS")
     end
 
     sig { params(file_name: FileName, opts: T.untyped).void }
@@ -69,7 +70,7 @@ module JsRoutes
       file_name ||= configuration.file
 
       file_name = file_name&.sub(%r{(\.d)?\.(j|t)s\Z}, ".d.ts")
-      generate!(file_name, **opts, module_type: 'DTS')
+      generate!(file_name, **opts, module_type: "DTS")
     end
 
     sig { params(value: T.untyped).returns(String) }

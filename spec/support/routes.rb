@@ -1,6 +1,6 @@
 def draw_routes
   Planner::Engine.routes.draw do
-    get "/manage" => 'foo#foo', as: :manage
+    get "/manage" => "foo#foo", :as => :manage
   end
 
   BlogEngine::Engine.routes.draw do
@@ -8,11 +8,10 @@ def draw_routes
     resources :posts, only: [:show, :index]
   end
   App.routes.draw do
-
     mount Planner::Engine, at: "/(locale/:locale)", as: :planner
 
-    mount BlogEngine::Engine => "/blog", as: :blog_app
-    get 'support(/page/:page)', to: BlogEngine::Engine, as: 'support'
+    mount BlogEngine::Engine => "/blog", :as => :blog_app
+    get "support(/page/:page)", to: BlogEngine::Engine, as: "support"
 
     resources :inboxes, only: [:index, :show] do
       resources :messages, only: [:index, :show] do
@@ -20,9 +19,9 @@ def draw_routes
       end
     end
 
-    get "(/:space)/campaigns" => "foo#foo", as: :campaigns, defaults: {space: nil}
+    get "(/:space)/campaigns" => "foo#foo", :as => :campaigns, :defaults => {space: nil}
 
-    root :to => "inboxes#index"
+    root to: "inboxes#index"
 
     namespace :admin do
       resources :users, only: [:index]
@@ -41,27 +40,27 @@ def draw_routes
       as: :thing_deep, controller: :things, action: :show
 
     get "/other_optional/(:optional_id)" => "foo#foo", :as => :foo
-    get '/other_optional(/*optional_id)' => 'foo#foo', :as => :foo_all
+    get "/other_optional(/*optional_id)" => "foo#foo", :as => :foo_all
 
-    get 'books/*section/:title' => 'books#show', :as => :book
-    get 'books/:title/*section' => 'books#show', :as => :book_title
+    get "books/*section/:title" => "books#show", :as => :book
+    get "books/:title/*section" => "books#show", :as => :book_title
 
-    get '/no_format' => "foo#foo", :format => false, :as => :no_format
+    get "/no_format" => "foo#foo", :format => false, :as => :no_format
 
-    get '/json_only' => "foo#foo", :format => true, :constraints => {:format => /json/}, :as => :json_only
+    get "/json_only" => "foo#foo", :format => true, :constraints => {format: /json/}, :as => :json_only
 
-    get '/привет' => "foo#foo", :as => :hello
-    get '(/o/:organization)/search/:q' => "foo#foo", as: :search
+    get "/привет" => "foo#foo", :as => :hello
+    get "(/o/:organization)/search/:q" => "foo#foo", :as => :search
 
-    resources :sessions, :only => [:new, :create], :protocol => 'https'
-    get '/' => 'sso#login', host: 'sso.example.com', as: :sso
-    get "/" => "a#b", subdomain: 'www', host: 'example.com', port: 88, as: :secret_root
+    resources :sessions, only: [:new, :create], protocol: "https"
+    get "/" => "sso#login", :host => "sso.example.com", :as => :sso
+    get "/" => "a#b", :subdomain => "www", :host => "example.com", :port => 88, :as => :secret_root
 
-    resources :portals, :port => 8080, only: [:index]
+    resources :portals, port: 8080, only: [:index]
 
-    get '/with_defaults' => 'foo#foo', defaults: { bar: 'tested', format: :json }, format: true
+    get "/with_defaults" => "foo#foo", :defaults => {bar: "tested", format: :json}, :format => true
 
-    namespace :api, format: true, defaults: {format: 'json'} do
+    namespace :api, format: true, defaults: {format: "json"} do
       get "/purchases" => "purchases#index"
     end
 
@@ -69,10 +68,8 @@ def draw_routes
       get "descendents"
     end
 
-    namespace :backend, path: '', constraints: {subdomain: 'backend'} do
-      root to: 'backend#index'
+    namespace :backend, path: "", constraints: {subdomain: "backend"} do
+      root to: "backend#index"
     end
-
   end
-
 end

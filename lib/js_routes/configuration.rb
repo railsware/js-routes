@@ -1,9 +1,8 @@
 # typed: strict
 
-require "pathname"
 require "js_routes/types"
-require 'js_routes/utils'
-require 'js_routes/version'
+require "js_routes/utils"
+require "js_routes/version"
 
 module JsRoutes
   class Configuration
@@ -22,7 +21,11 @@ module JsRoutes
     attr_reader :package
 
     def package=(value)
-      @package = value == true ? "./router.js" : (value == false ? nil : value)
+      @package = if value == true
+        "./router.js"
+      else
+        ((value == false) ? nil : value)
+      end
     end
     sig { returns(Prefix) }
     attr_reader :prefix
@@ -53,7 +56,7 @@ module JsRoutes
     sig { returns(T::Boolean) }
     attr_accessor :deprecated_nil_query_parameter_behavior
 
-    sig {params(attributes: T.nilable(Options)).void }
+    sig { params(attributes: T.nilable(Options)).void }
     def initialize(attributes = nil)
       @namespace = nil
       @exclude = T.let([], Clusivity)
@@ -67,13 +70,13 @@ module JsRoutes
       @serializer = T.let(nil, T.nilable(String))
       @special_options_key = T.let("_options", Literal)
       @application = T.let(T.unsafe(-> { Rails.application }), ApplicationCaller)
-      @module_type = T.let('ESM', T.nilable(String))
+      @module_type = T.let("ESM", T.nilable(String))
       @documentation = T.let(true, T::Boolean)
       @optional_definition_params = T.let(false, T::Boolean)
       @banner = T.let(default_banner, BannerCaller)
       @package = T.let(nil, T.nilable(String))
-      @deprecated_false_parameter_behavior = T.let(defined?(Rails) ? Rails.version < '7.0.0' : false, T::Boolean)
-      @deprecated_nil_query_parameter_behavior = T.let(defined?(Rails) ? Rails.version < '8.1.0' : false, T::Boolean)
+      @deprecated_false_parameter_behavior = T.let(defined?(Rails) ? Rails.version < "7.0.0" : false, T::Boolean)
+      @deprecated_nil_query_parameter_behavior = T.let(defined?(Rails) ? Rails.version < "8.1.0" : false, T::Boolean)
 
       return unless attributes
       assign(attributes)
@@ -81,14 +84,12 @@ module JsRoutes
 
     sig do
       params(
-        attributes: Options,
+        attributes: Options
       ).returns(JsRoutes::Configuration)
     end
     def assign(attributes)
-      if attributes
-        attributes.each do |attribute, value|
-          public_send(:"#{attribute}=", value)
-        end
+      attributes&.each do |attribute, value|
+        public_send(:"#{attribute}=", value)
       end
       normalize_and_verify
       self
@@ -114,22 +115,22 @@ module JsRoutes
       clone.assign(attributes)
     end
 
-    sig {returns(T::Boolean)}
+    sig { returns(T::Boolean) }
     def esm?
-      module_type === 'ESM'
+      module_type === "ESM"
     end
 
-    sig {returns(T::Boolean)}
+    sig { returns(T::Boolean) }
     def dts?
-      self.module_type === 'DTS'
+      module_type === "DTS"
     end
 
-    sig {returns(T::Boolean)}
+    sig { returns(T::Boolean) }
     def pkg?
-      module_type === 'PKG'
+      module_type === "PKG"
     end
 
-    sig {returns(T::Boolean)}
+    sig { returns(T::Boolean) }
     def modern?
       esm? || dts?
     end
@@ -155,6 +156,16 @@ module JsRoutes
       File.dirname(__FILE__) + "/../" + template
     end
 
+    sig { returns(String) }
+    def self.rails_javascript_path
+      js_dir = if defined?(Rails) && Rails.application&.config&.respond_to?(:javascript_path)
+        Rails.application.config.javascript_path
+      else
+        "javascript"
+      end
+      "app/#{js_dir}"
+    end
+
     sig { returns(Pathname) }
     def output_file
       output_file_path(file || default_file_name)
@@ -167,23 +178,11 @@ module JsRoutes
       shakapacker = JsRoutes::Utils.shakapacker
       shakapacker_dir = shakapacker ?
         shakapacker.config.source_path : pathname(self.class.rails_javascript_path)
-      sprockets_dir = pathname('app','assets','javascripts')
+      sprockets_dir = pathname("app", "assets", "javascripts")
       sprockets_file = sprockets_dir.join(file_name)
       webpacker_file = shakapacker_dir.join(file_name)
-      !Dir.exist?(shakapacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
+      (!Dir.exist?(shakapacker_dir) && defined?(::Sprockets)) ? sprockets_file : webpacker_file
     end
-
-    sig { returns(String) }
-    def self.rails_javascript_path
-      js_dir = if defined?(Rails) && Rails.application&.config&.respond_to?(:javascript_path)
-        Rails.application.config.javascript_path
-      else
-        "javascript"
-      end
-      "app/#{js_dir}"
-    end
-
-    protected
 
     sig { void }
     def normalize_and_verify
@@ -198,17 +197,21 @@ module JsRoutes
 
     sig { returns(String) }
     def default_file_name
-      dts? ? "routes.d.ts" : pkg? ? "router.js" : "routes.js"
+      if dts?
+        "routes.d.ts"
+      else
+        pkg? ? "router.js" : "routes.js"
+      end
     end
 
-    sig {void}
+    sig { void }
     def normalize
-      self.module_type = module_type&.upcase || 'NIL'
+      self.module_type = module_type&.upcase || "NIL"
     end
 
     sig { void }
     def verify
-      if module_type != 'NIL' && namespace
+      if module_type != "NIL" && namespace
         raise "JsRoutes namespace option can only be used if module_type is nil"
       end
       if package && !esm?
@@ -218,14 +221,13 @@ module JsRoutes
 
     sig { returns(T.proc.returns(String)) }
     def default_banner
-      -> () {
+      -> {
         app = application.is_a?(Proc) ? T.unsafe(application).call : application
         <<~TXT
           @file Generated by js-routes #{JsRoutes::VERSION}. Based on Rails #{Rails.version} routes of #{app.class}.
           @version #{JsRoutes.digest}
           @see https://github.com/railsware/js-routes
         TXT
-
       }
     end
   end

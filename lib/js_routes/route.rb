@@ -36,13 +36,13 @@ module JsRoutes
       DOT: 8
     }.freeze, T::Hash[Symbol, Integer])
 
-    sig {returns(JsRoutes::Configuration)}
+    sig { returns(JsRoutes::Configuration) }
     attr_reader :configuration
 
-    sig {returns(JourneyRoute)}
+    sig { returns(JourneyRoute) }
     attr_reader :route
 
-    sig {returns(T.nilable(JourneyRoute))}
+    sig { returns(T.nilable(JourneyRoute)) }
     attr_reader :parent_route
 
     sig { params(configuration: JsRoutes::Configuration, route: JourneyRoute, parent_route: T.nilable(JourneyRoute)).void }
@@ -55,11 +55,11 @@ module JsRoutes
     sig { returns(T::Array[StringArray]) }
     def helpers
       helper_types.map do |absolute|
-        [ documentation, helper_name(absolute), body(absolute) ]
+        [documentation, helper_name(absolute), body(absolute)]
       end
     end
 
-    sig {returns(T::Array[T::Boolean])}
+    sig { returns(T::Array[T::Boolean]) }
     def helper_types
       return [] unless match_configuration?
       @configuration.url_links ? [true, false] : [false]
@@ -73,17 +73,17 @@ module JsRoutes
         # For tree-shaking ESM, add a #__PURE__ comment informing js bundlers that the call has
         # no side-effects (e.g. modifying global variables) and is safe to remove when unused.
         # https://webpack.js.org/guides/tree-shaking/#clarifying-tree-shaking-and-sidyeeffects
-        pure_comment = @configuration.esm? ? '/*#__PURE__*/ ' : ''
-        call = '__route'
-        "#{pure_comment}#{call}(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
+        pure_comment = @configuration.esm? ? "/*#__PURE__*/ " : ""
+        call = "__route"
+        "#{pure_comment}#{call}(#{arguments(absolute).map { |a| json(a) }.join(", ")})"
       end
     end
 
     sig { returns(String) }
     def definition_body
       options_type = optional_parts_type ? "#{optional_parts_type} & RouteOptions" : "RouteOptions"
-      predicate = @configuration.optional_definition_params ? '?' : ''
-      args = required_parts.map{|p| "#{format_param(p)}#{predicate}: RequiredRouteParameter"}
+      predicate = @configuration.optional_definition_params ? "?" : ""
+      args = required_parts.map { |p| "#{format_param(p)}#{predicate}: RequiredRouteParameter" }
       args << "options?: #{options_type}"
       "((\n#{args.join(",\n").indent(2)}\n) => string) & RouteHelperExtras"
     end
@@ -92,13 +92,12 @@ module JsRoutes
     def optional_parts_type
       return nil if optional_parts.empty?
       @optional_parts_type ||= T.let(
-        "{" + optional_parts.map {|p| "#{format_param(p)}?: OptionalRouteParameter"}.join(', ') + "}",
+        "{" + optional_parts.map { |p| "#{format_param(p)}?: OptionalRouteParameter" }.join(", ") + "}",
         T.nilable(String)
       )
     end
 
     protected
-
 
     sig { params(absolute: T::Boolean).returns(UntypedArray) }
     def arguments(absolute)
@@ -113,7 +112,7 @@ module JsRoutes
     sig { returns(T.nilable(String)) }
     def base_name
       @base_name ||= T.let(parent_route ?
-        [parent_route&.name, route.name].join('_') : route.name, T.nilable(String))
+        [parent_route&.name, route.name].join("_") : route.name, T.nilable(String))
     end
 
     sig { returns(T.nilable(RouteSpec)) }
@@ -145,15 +144,15 @@ module JsRoutes
 
     sig { returns(String) }
     def documentation
-      return '' unless @configuration.documentation
-      <<-JS
-/**
- * Generates rails route to
- * #{parent_spec}#{spec}#{documentation_params}
- * @param {object | undefined} options
- * @returns {string} route path
- */
-JS
+      return "" unless @configuration.documentation
+      <<~JS
+        /**
+         * Generates rails route to
+         * #{parent_spec}#{spec}#{documentation_params}
+         * @param {object | undefined} options
+         * @returns {string} route path
+         */
+      JS
     end
 
     sig { returns(SymbolArray) }
@@ -183,7 +182,7 @@ JS
       end
       route.defaults.each do |part, value|
         if FILTERED_DEFAULT_PARTS.exclude?(part) &&
-          URL_OPTIONS.include?(part) || parts_table[part]
+            URL_OPTIONS.include?(part) || parts_table[part]
           parts_table[part] ||= {}
           # Using shortened keys to reduce js file size
           parts_table[part][:d] = value
@@ -206,7 +205,7 @@ JS
 
     sig { params(values: T.nilable(Literal)).returns(String) }
     def apply_case(*values)
-      value = values.compact.map(&:to_s).join('_')
+      value = values.compact.map(&:to_s).join("_")
       @configuration.camel_case ? value.camelize(:lower) : value
     end
 
@@ -225,12 +224,12 @@ JS
     # And preffer Array serialization because it is shorter.
     # Routes.js file will be smaller.
     sig { params(spec: SpecNode, parent_spec: T.nilable(RouteSpec)).returns(T.nilable(T.any(UntypedArray, String))) }
-    def serialize(spec, parent_spec=nil)
+    def serialize(spec, parent_spec = nil)
       return nil unless spec
       # Removing special character prefix from route variable name
       # * for globbing
       # : for common parameter
-      return spec.tr(':*', '') if spec.is_a?(String)
+      return spec.tr(":*", "") if spec.is_a?(String)
 
       result = serialize_spec(spec, parent_spec)
       if parent_spec && result[1].is_a?(String) && parent_spec.type != :SLASH
