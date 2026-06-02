@@ -1,0 +1,36 @@
+require:
+  - standard
+
+plugins:
+  - rubocop-rspec
+  - rubocop-performance
+
+inherit_gem:
+  standard: config/base.yml
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - bin/**/*
+    - vendor/**/*
+    - tmp/**/*
+
+RSpec:
+  Enabled: true
+
+Performance:
+  Enabled: true
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+RSpec/MultipleDescribes:
+  Enabled: false
