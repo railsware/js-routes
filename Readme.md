@@ -53,7 +53,14 @@ to automatically generate and maintain `routes.js` file and corresponding
 Run a command:
 
 ``` sh
+# Default location (app/javascript/routes.js)
 rails generate js_routes:middleware
+
+# Custom output directory — generates app/frontend/routes.js
+rails generate js_routes:middleware app/frontend
+
+# Custom full path
+rails generate js_routes:middleware app/frontend/my_routes.js
 ```
 
 #### Setup Manually
@@ -351,7 +358,9 @@ Options to configure JavaScript file generator. These options are only available
   * This option allows to only generate routes for a specific rails engine, that is mounted into routes instead of all Rails app routes
   * It is recommended to wrap the value with `lambda`. This will reduce the reliance on order during initialization your application.
   * Default: `-> { Rails.application }`
-* `file` - a file location where generated routes are stored
+* `file` - output location for the generated routes file, relative to Rails root
+  * Accepts a **directory** (`"app/frontend"`) or a **full path** (`"app/frontend/routes.js"`).
+    A directory automatically resolves to `<dir>/routes.js` (or `routes.d.ts` for TypeScript definitions).
   * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
 * `package` - specify where the shared package will be imported from. e.g. `'./router.js'`.
   * Generate the shared package with `package!`.
