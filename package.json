@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "tsc && yarn lint:fix",
-    "lint:fix": "yarn eslint --fix && yarn prettier --write lib/routes.ts"
+    "lint:fix": "yarn eslint --fix && yarn prettier --write lib/routes.ts lib/router.ts"
   },
   "husky": {
     "hooks": {

@@ -61,37 +61,3 @@ type KeywordUrlOptions = Optional<{
 }>;
 type RouteOptions = KeywordUrlOptions & RouteParameters;
 export {};
-export const configure: RouterExposedMethods['configure'];
-
-export const config: RouterExposedMethods['config'];
-
-export const serialize: RouterExposedMethods['serialize'];
-
-export const __route: RouterExposedMethods['__route'];
-
-/**
- * Generates rails route to
- * /inboxes/:inbox_id/messages/:message_id/attachments/:id
- * @param {any} inbox_id
- * @param {any} message_id
- * @param {any} id
- * @param {object | undefined} options
- * @returns {string} route path
- */
-export const inbox_message_attachment_path: ((
-  inbox_id: RequiredRouteParameter,
-  message_id: RequiredRouteParameter,
-  id: RequiredRouteParameter,
-  options?: RouteOptions
-) => string) & RouteHelperExtras;
-
-/**
- * Generates rails route to
- * /inboxes(.:format)
- * @param {object | undefined} options
- * @returns {string} route path
- */
-export const inboxes_path: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
-

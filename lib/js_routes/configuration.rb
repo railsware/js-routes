@@ -18,6 +18,12 @@ module JsRoutes
     attr_accessor :include
     sig { returns(FileName) }
     attr_accessor :file
+    sig { returns(T.nilable(String)) }
+    attr_reader :package
+
+    def package=(value)
+      @package = value == true ? "./router.js" : (value == false ? nil : value)
+    end
     sig { returns(Prefix) }
     attr_reader :prefix
     sig { returns(T::Boolean) }
@@ -44,6 +50,10 @@ module JsRoutes
     attr_accessor :optional_definition_params
     sig { returns(BannerCaller) }
     attr_accessor :banner
+    sig { returns(T::Boolean) }
+    attr_accessor :deprecated_false_parameter_behavior
+    sig { returns(T::Boolean) }
+    attr_accessor :deprecated_nil_query_parameter_behavior
 
     sig {params(attributes: T.nilable(Options)).void }
     def initialize(attributes = nil)
@@ -64,6 +74,15 @@ module JsRoutes
       @documentation = T.let(true, T::Boolean)
       @optional_definition_params = T.let(false, T::Boolean)
       @banner = T.let(default_banner, BannerCaller)
+      @package = T.let(nil, T.nilable(String))
+      @deprecated_false_parameter_behavior = T.let(
+        defined?(Rails) ? JsRoutes::Utils.rails_version < Gem::Version.new('7.0.0') : false,
+        T::Boolean
+      )
+      @deprecated_nil_query_parameter_behavior = T.let(
+        defined?(Rails) ? JsRoutes::Utils.rails_version < Gem::Version.new('8.1.0') : false,
+        T::Boolean
+      )
 
       return unless attributes
       assign(attributes)
@@ -115,8 +134,17 @@ module JsRoutes
     end
 
     sig {returns(T::Boolean)}
+    def pkg?
+      module_type === 'PKG'
+    end
+
+    sig {returns(T::Boolean)}
     def modern?
       esm? || dts?
+    end
+
+    def use_package?
+      esm? && package
     end
 
     sig { void }
@@ -126,16 +154,29 @@ module JsRoutes
 
     sig { returns(String) }
     def source_file
-      File.dirname(__FILE__) + "/../" + default_file_name
+      template = dts? ? "routes.d.ts" : "routes.js"
+      File.dirname(__FILE__) + "/../" + template
+    end
+
+    sig { returns(String) }
+    def router_source_file
+      template = dts? ? "router.d.ts" : "router.js"
+      File.dirname(__FILE__) + "/../" + template
     end
 
     sig { returns(Pathname) }
     def output_file
+      output_file_path(file || default_file_name)
+    end
+
+    protected
+
+    sig { params(file_name: FileName).returns(Pathname) }
+    def output_file_path(file_name)
       shakapacker = JsRoutes::Utils.shakapacker
       shakapacker_dir = shakapacker ?
         shakapacker.config.source_path : pathname(self.class.rails_javascript_path)
       sprockets_dir = pathname('app','assets','javascripts')
-      file_name = file || default_file_name
       sprockets_file = sprockets_dir.join(file_name)
       webpacker_file = shakapacker_dir.join(file_name)
       !Dir.exist?(shakapacker_dir) && defined?(::Sprockets) ? sprockets_file : webpacker_file
@@ -166,7 +207,7 @@ module JsRoutes
 
     sig { returns(String) }
     def default_file_name
-      dts? ? "routes.d.ts" : "routes.js"
+      dts? ? "routes.d.ts" : pkg? ? "router.js" : "routes.js"
     end
 
     sig {void}
@@ -178,6 +219,9 @@ module JsRoutes
     def verify
       if module_type != 'NIL' && namespace
         raise "JsRoutes namespace option can only be used if module_type is nil"
+      end
+      if package && !esm?
+        raise "JsRoutes package option can only be used with ESM module type"
       end
     end
 

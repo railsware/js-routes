@@ -30,6 +30,7 @@ def draw_routes
 
     scope "/returns/:return" do
       resources :objects, only: [:show]
+      root to: "objects#show", as: :return
     end
 
     scope "(/optional/:optional_id)" do

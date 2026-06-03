@@ -44,6 +44,16 @@ module JsRoutes
       end
     end
 
+    sig { params(opts: T.untyped).returns(String) }
+    def package(**opts)
+      Instance.new(module_type: 'PKG', **opts).package
+    end
+
+    sig { params(file_name: FileName, opts: T.untyped).void }
+    def package!(file_name = nil, **opts)
+      Instance.new(module_type: 'PKG', file: file_name, **opts).package!
+    end
+
     sig { params(file_name: FileName, opts: T.untyped).void }
     def remove!(file_name = configuration.file, **opts)
       Instance.new(file: file_name, **opts).remove!

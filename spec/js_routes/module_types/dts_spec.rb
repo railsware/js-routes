@@ -47,8 +47,8 @@ describe JsRoutes, "compatibility with DTS"  do
     it "has no compile errors", :slow do
       command = "yarn tsc --strict --noEmit -p spec/tsconfig.json"
       stdout, stderr, status = Open3.capture3(command)
-      expect(stderr).to eq("")
-      expect(stdout).to eq("")
+      fail(stderr) unless stderr.empty?
+      fail(stdout) unless stdout.empty?
       expect(status).to eq(0)
     end
   end
@@ -75,6 +75,34 @@ export const inboxMessageAttachmentPath: ((
   options?: RouteOptions
 ) => string) & RouteHelperExtras;
 DOC
+    end
+  end
+
+  context "when compact is enabled" do
+    let(:extra_options) { { compact: true } }
+
+    it "omits _path suffix from route names" do
+      expect(generated_js).to include("export const inboxes:")
+      expect(generated_js).to include("export const inbox_message_attachment:")
+      expect(generated_js).not_to include("export const inboxes_path:")
+      expect(generated_js).not_to include("export const inbox_message_attachment_path:")
+    end
+
+    it "falls back to _path suffix when compact name is a JS reserved word" do
+      js = JsRoutes.generate(module_type: 'DTS', compact: true, include: /\Areturn\z/)
+      expect(js).to include("export const return_path:")
+      expect(js).not_to include("export const return:")
+    end
+  end
+
+  context "when url_links is enabled" do
+    let(:extra_options) { { url_links: true } }
+
+    it "generates both _path and _url variants" do
+      expect(generated_js).to include("export const inboxes_path:")
+      expect(generated_js).to include("export const inboxes_url:")
+      expect(generated_js).to include("export const inbox_message_attachment_path:")
+      expect(generated_js).to include("export const inbox_message_attachment_url:")
     end
   end
 
@@ -124,6 +152,15 @@ export const inbox_message_attachment_path: ((
 DOC
   end
 
+  context "when route parameter matches JavaScript keyword" do
+    let(:extra_options) { {include: /\Aobject\z/} }
+
+    it "has _ suffix" do
+      expect(generated_js).to include("return_: RequiredRouteParameter")
+      expect(generated_js).not_to match(/\breturn: RequiredRouteParameter/)
+    end
+  end
+
   it "exports utility methods" do
     expect(generated_js).to include("export const serialize: RouterExposedMethods['serialize'];")
   end
@@ -135,7 +172,7 @@ DOC
   describe "compiled javascript asset" do
     subject { ERB.new(File.read("app/assets/javascripts/js-routes.js.erb")).result(binding) }
     it "should have js routes code" do
-      is_expected.to include("export const inbox_message_path = /*#__PURE__*/ __jsr.r(")
+      is_expected.to include("export const inbox_message_path = /*#__PURE__*/ __route(")
     end
   end
 

@@ -240,6 +240,31 @@ which will cause any `JsRoutes` instance to generate defintions instead of route
 
 <div id="sprockets"></div>
 
+<div id="package"></div>
+
+#### Using shared package
+
+Some setups may benefit from splitting routes into multiple files with the core js-routes utils shared between these files. This can be helpful for codebases that have a large number of routes and can improve tree shaking. This is only available when the `module_type` is set to `ESM`.
+
+```ruby
+class AdvancedJsRoutesMiddleware < JsRoutes::Middleware
+  def regenerate
+    JsRoutes.package!
+
+    JsRoutes.generate!(
+      "admin_routes.js",
+      include: /^admin_/,
+      package: './router.js'
+    )
+    JsRoutes.generate!(
+      "api_routes.js",
+      include: /^api_/,
+      package: './router.js'
+    )
+  end
+end
+```
+
 ### Sprockets (Deprecated)
 
 If you are using [Sprockets](https://github.com/rails/sprockets-rails) you may configure js-routes in the following way.
@@ -328,6 +353,10 @@ Options to configure JavaScript file generator. These options are only available
   * Default: `-> { Rails.application }`
 * `file` - a file location where generated routes are stored
   * Default: `app/javascript/routes.js` if setup with Webpacker, otherwise `app/assets/javascripts/routes.js` if setup with Sprockets.
+* `package` - specify where the shared package will be imported from. e.g. `'./router.js'`.
+  * Generate the shared package with `package!`.
+  * See [Using shared package](#package).
+  * Default: `nil`
 * `optional_definition_params` - make all route paramters in definition optional
   * See [related compatibility issue](#optional-definition-params)
   * Default: `false`

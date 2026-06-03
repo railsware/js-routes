@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2019",
     "lib": ["es2020", "dom"],
-    "module": "commonjs",
+    "module": "ES2020",
     "sourceMap": false,
     "declaration": true,
     "allowSyntheticDefaultImports": true,

@@ -27,6 +27,30 @@ describe JsRoutes, "options" do
   let(:_warnings) { true }
 
   describe "serializer" do
+    it "allows to extend serializer" do
+      evaljs(generated_js)
+      evaljs(<<~JS)
+        const s = Routes.config().serializer;
+        function filter(object) {
+          if (object instanceof Array) {
+            return object.map((v) => filter(v))
+          } else if (object !== null && typeof object === "object") {
+            const result = {}
+            for (const [key, value] of Object.entries(object)) {
+              if (value) {
+                result[key] = filter(value)
+              }
+            }
+            return result;
+          } else {
+            return object;
+          }
+        }
+        Routes.configure({serializer: function(object, prefix) { return s(filter(object), prefix)}});
+      JS
+      expectjs(%q(Routes.inboxes_path({a: [{b: 1}, {c: undefined}, {d: null}]}))).to eql("/inboxes?a%5B%5D%5Bb%5D=1&&")
+    end
+
     context "when specified" do
       # define custom serializer
       # this is a nonsense serializer, which always returns foo=bar
@@ -481,6 +505,15 @@ describe JsRoutes, "options" do
       expectjs("Routes.inbox_path").to be_nil
       expectjs("Routes.inboxes()").to eq(test_routes.inboxes_path())
       expectjs("Routes.inbox(2)").to eq(test_routes.inbox_path(2))
+    end
+
+    context "when compact name is a JS reserved word" do
+      let(:_options) { { compact: true, include: /\Areturn\z/ } }
+
+      it "falls back to _path suffix" do
+        expectjs("Routes.return_path").not_to be_nil
+        expectjs("Routes.return_path('test')").to eq("/returns/test")
+      end
     end
 
     context "with url_links option" do

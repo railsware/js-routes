@@ -10,6 +10,21 @@ module JsRoutes
 
     FILTERED_DEFAULT_PARTS = T.let([:controller, :action].freeze, SymbolArray)
     URL_OPTIONS = T.let([:protocol, :domain, :host, :port, :subdomain].freeze, SymbolArray)
+
+    # JavaScript reserved words that are invalid as function parameter names.
+    # @see https://www.w3schools.com/js/js_reserved.asp
+    JS_RESERVED_WORDS = T.let(%w[
+      abstract arguments async await boolean break byte case
+      catch char class const continue debugger default delete
+      do double else enum eval export extends false
+      final finally float for function goto if implements
+      import in instanceof int interface let long native
+      new null package private protected public return short
+      static super switch synchronized this throw throws transient
+      true try typeof using var void volatile while
+      with yield
+    ].freeze, T::Array[String])
+
     NODE_TYPES = T.let({
       GROUP: 1,
       CAT: 2,
@@ -55,11 +70,12 @@ module JsRoutes
       if @configuration.dts?
         definition_body
       else
-        # For tree-shaking ESM, add a #__PURE__ comment informing js bundlers that the call to `__jsr.r`
-        # has no side-effects (e.g. modifying global variables) and is safe to remove when unused.
+        # For tree-shaking ESM, add a #__PURE__ comment informing js bundlers that the call has
+        # no side-effects (e.g. modifying global variables) and is safe to remove when unused.
         # https://webpack.js.org/guides/tree-shaking/#clarifying-tree-shaking-and-sidyeeffects
         pure_comment = @configuration.esm? ? '/*#__PURE__*/ ' : ''
-        "#{pure_comment}__jsr.r(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
+        call = '__route'
+        "#{pure_comment}#{call}(#{arguments(absolute).map{|a| json(a)}.join(', ')})"
       end
     end
 
@@ -67,7 +83,7 @@ module JsRoutes
     def definition_body
       options_type = optional_parts_type ? "#{optional_parts_type} & RouteOptions" : "RouteOptions"
       predicate = @configuration.optional_definition_params ? '?' : ''
-      args = required_parts.map{|p| "#{apply_case(p)}#{predicate}: RequiredRouteParameter"}
+      args = required_parts.map{|p| "#{format_param(p)}#{predicate}: RequiredRouteParameter"}
       args << "options?: #{options_type}"
       "((\n#{args.join(",\n").indent(2)}\n) => string) & RouteHelperExtras"
     end
@@ -76,7 +92,7 @@ module JsRoutes
     def optional_parts_type
       return nil if optional_parts.empty?
       @optional_parts_type ||= T.let(
-        "{" + optional_parts.map {|p| "#{p}?: OptionalRouteParameter"}.join(', ') + "}",
+        "{" + optional_parts.map {|p| "#{format_param(p)}?: OptionalRouteParameter"}.join(', ') + "}",
         T.nilable(String)
       )
     end
@@ -117,8 +133,14 @@ module JsRoutes
 
     sig { params(absolute: T::Boolean).returns(String) }
     def helper_name(absolute)
-      suffix = absolute ? :url : @configuration.compact ? nil : :path
-      apply_case(base_name, suffix)
+      apply_case(base_name, helper_suffix(absolute))
+    end
+
+    sig { params(absolute: T::Boolean).returns(T.nilable(Symbol)) }
+    def helper_suffix(absolute)
+      return :url if absolute
+      return :path unless @configuration.compact
+      JS_RESERVED_WORDS.include?(apply_case(base_name)) ? :path : nil
     end
 
     sig { returns(String) }
@@ -173,7 +195,7 @@ JS
     sig { returns(String) }
     def documentation_params
       required_parts.map do |param|
-        "\n * @param {any} #{apply_case(param)}"
+        "\n * @param {any} #{format_param(param)}"
       end.join
     end
 
@@ -186,6 +208,16 @@ JS
     def apply_case(*values)
       value = values.compact.map(&:to_s).join('_')
       @configuration.camel_case ? value.camelize(:lower) : value
+    end
+
+    sig { params(part: T.nilable(Literal)).returns(String) }
+    def format_param(part)
+      sanitize_param(apply_case(part))
+    end
+
+    sig { params(name: String).returns(String) }
+    def sanitize_param(name)
+      JS_RESERVED_WORDS.include?(name) ? "#{name}_" : name
     end
 
     # This function serializes Journey route into JSON structure

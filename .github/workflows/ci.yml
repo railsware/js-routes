@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull_request:
+  pull_request_target:
 
 permissions:
   contents: read
@@ -31,6 +31,8 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - uses: ruby/setup-ruby@v1
         with:

@@ -3,6 +3,78 @@
 ## Pending
 
 * Support `config.javascript_path` Rails configuration. Fixes [#344](https://github.com/railsware/js-routes/issues/344).
+* Escape JavaScript reserved words in route helper names and TypeScript parameter names. Fixes broken `.d.ts` output when a route segment name collides with a JS keyword.
+
+  Given a route like:
+
+  ``` ruby
+  scope "/returns/:return" do
+    resources :objects, only: [:show]
+  end
+  ```
+
+  The generated `.d.ts` now uses `return_` instead of the invalid `return`:
+
+  ``` typescript
+  export const object_path: ((
+    return_: RequiredRouteParameter,
+    id: RequiredRouteParameter,
+    options?: RouteOptions
+  ) => string) & RouteHelperExtras;
+  ```
+
+  In `compact` mode, if the short helper name would itself be a reserved word, the `_path` suffix is kept as a fallback:
+
+  ``` ruby
+  # route named :return with compact: true
+  return_path(…)  # kept — `return` alone would be invalid
+  ```
+* Add `package` option and `JsRoutes.package` / `JsRoutes.package!` API for sharing a single Router runtime across multiple route files.
+
+  **Why:** When an app generates several ESM route files (e.g. one per domain or engine), each file previously embedded the full js-routes runtime (~10 KB minified). With `package`, the runtime is extracted into one `router.js` and every route file imports it — the runtime is downloaded and parsed only once.
+
+  **Usage:**
+
+  Generate the shared router package (no route definitions, just the runtime):
+
+  ``` ruby
+  # config/initializers/js_routes.rb
+  JsRoutes.package!                   # writes app/javascript/router.js
+  # or with a custom path:
+  JsRoutes.package!("shared/router.js")
+  ```
+
+  Generate consumer route files that import from it:
+
+  ``` ruby
+  JsRoutes.generate!(
+    module_type: "ESM",
+    package: "./router.js",   # or package: true for the default path
+    include: /\Aadmin_/,
+    file: "app/javascript/admin_routes.js"
+  )
+
+  JsRoutes.generate!(
+    module_type: "ESM",
+    package: "./router.js",
+    include: /\Aapi_/,
+    file: "app/javascript/api_routes.js"
+  )
+  ```
+
+  Or share one configuration block:
+
+  ``` ruby
+  JsRoutes.setup do |c|
+    c.module_type = "ESM"
+    c.package     = "./router.js"   # all generated files import the same runtime
+  end
+
+  JsRoutes.package!                 # router.js  — runtime only
+  JsRoutes.generate!                # routes.js  — route helpers only
+  ```
+
+  `package: true` is a shorthand for `package: "./router.js"`.
 * Add `include_undefined_query_parameters` configuration option
   Existing applications preserve legacy behavior to process `undefined` as `nil` until configured and will see a warning while the option is unset.
   * Set it to `false` to omit object properties whose value is `undefined`, matching typical JavaScript semantics.
