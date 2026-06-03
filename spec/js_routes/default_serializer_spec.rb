@@ -30,13 +30,13 @@ describe JsRoutes, "#serialize" do
     ).to eq({a:1, b:2}.to_query)
   end
 
-  it "serializes undefined object properties as Rails nil by default" do
-    expectjs("Routes.serialize({a: undefined})").to eq({a: nil}.to_query)
+  it "omits undefined object properties by default" do
+    expectjs("Routes.serialize({a: undefined})").to eq({}.to_query)
   end
 
   context "with Rails nil query serialization compatibility" do
-    it "serializes undefined and null as Rails nil by default" do
-      expectjs("Routes.serialize({a: null, b: undefined})").to eq({a: nil, b: nil}.to_query)
+    it "serializes null as Rails nil and omits undefined by default" do
+      expectjs("Routes.serialize({a: null, b: undefined})").to eq({a: nil}.to_query)
     end
   end
 
@@ -47,6 +47,40 @@ describe JsRoutes, "#serialize" do
 
     it "serializes undefined object properties as Rails nil" do
       expectjs("Routes.serialize({a: undefined})").to eq({a: nil}.to_query)
+    end
+
+    it "serializes undefined and null as Rails nil" do
+      expectjs("Routes.serialize({a: null, b: undefined})").to eq({a: nil, b: nil}.to_query)
+    end
+
+    it "serializes nested undefined object properties as Rails nil" do
+      expectjs("Routes.serialize({a: {b: 1, c: undefined}, d: undefined})").to eq(
+        {a: {b: 1, c: nil}, d: nil}.to_query
+      )
+    end
+
+    it "serializes array object undefined properties as Rails nil" do
+      expectjs("Routes.serialize({a: [{b: undefined}, {c: 1}]})").to eq(
+        {a: [{b: nil}, {c: 1}]}.to_query
+      )
+    end
+
+    it "serializes mixed array object undefined properties as Rails nil" do
+      expectjs("Routes.serialize({a: [1, {b: undefined}, 2]})").to eq(
+        {a: [1, {b: nil}, 2]}.to_query
+      )
+    end
+
+    it "serializes nested array object undefined properties as Rails nil" do
+      expectjs("Routes.serialize({a: [{b: {c: undefined}}, {d: 1}]})").to eq(
+        {a: [{b: {c: nil}}, {d: 1}]}.to_query
+      )
+    end
+
+    it "preserves explicit null and serializes undefined as Rails nil" do
+      expectjs("Routes.serialize({a: null, b: {c: null, d: undefined}})").to eq(
+        {a: nil, b: {c: nil, d: nil}}.to_query
+      )
     end
   end
 
