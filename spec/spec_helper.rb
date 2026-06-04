@@ -57,8 +57,8 @@ rescue MiniRacer::RuntimeError => e
   raise e
 end
 
-def evallib(include_undefined_query_parameters: false, **options)
-  options[:include_undefined_query_parameters] = include_undefined_query_parameters
+def evallib(**options)
+  options[:include_undefined_query_parameters] ||= false
   evaljs(JsRoutes.generate(**options), filename: 'lib/routes.js')
 end
 
