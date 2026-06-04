@@ -218,12 +218,6 @@ describe JsRoutes, "compatibility with Rails"  do
       expectjs("Routes.inboxes_path({uri: null, key: undefined})").to eq(test_routes.inboxes_path(:uri => nil))
     end
 
-    it "should support legacy null and undefined parameters when enabled" do
-      evallib(module_type: nil, namespace: 'Routes', include_undefined_query_parameters: true)
-
-      expectjs("Routes.inboxes_path({uri: null, key: undefined})").to eq(test_routes.inboxes_path(:uri => nil, :key => nil))
-    end
-
     it "should escape get parameters" do
       expectjs("Routes.inboxes_path({uri: 'http://example.com'})").to eq(test_routes.inboxes_path(:uri => 'http://example.com'))
     end

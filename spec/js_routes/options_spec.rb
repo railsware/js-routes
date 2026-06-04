@@ -92,6 +92,12 @@ describe JsRoutes, "options" do
     it "should expose the setting to the generated runtime" do
       expectjs("Routes.config().include_undefined_query_parameters").to eq(true)
     end
+
+    it "should support legacy null and undefined parameters when enabled" do
+      evallib(module_type: nil, namespace: 'Routes', include_undefined_query_parameters: true)
+
+      expectjs("Routes.inboxes_path({uri: null, key: undefined})").to eq(test_routes.inboxes_path(:uri => nil, :key => nil))
+    end
   end
 
   context "when exclude is specified" do
