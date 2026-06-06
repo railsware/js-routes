@@ -27,6 +27,11 @@ JsRoutes.setup do |c|
   #   host: 'example.com', protocol: 'https', format: 'json'
   # }
 
+  # Omit query parameters whose value is undefined.
+  # This option is transitional to introduce new behaviour to old apps.
+  # Recommended to stay false for new apps.
+  c.include_undefined_query_parameters = false
+
   # More options:
   # @see https://github.com/railsware/js-routes#available-options
 end

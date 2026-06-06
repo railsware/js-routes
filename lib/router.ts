@@ -52,6 +52,7 @@ type Configuration = {
   serializer: Serializer;
   deprecated_false_parameter_behavior: boolean;
   deprecated_nil_query_parameter_behavior: boolean;
+  include_undefined_query_parameters: boolean;
 };
 export interface RouterExposedMethods {
   config(): Configuration;
@@ -152,6 +153,7 @@ const Router: RouterConstructor = (() => {
       serializer: this.default_serializer.bind(this),
       deprecated_false_parameter_behavior: false,
       deprecated_nil_query_parameter_behavior: false,
+      include_undefined_query_parameters: true,
     };
 
     constructor(config: Partial<Configuration> = {}) {
@@ -227,6 +229,12 @@ const Router: RouterConstructor = (() => {
         for (let key in value) {
           if (!this.hasProp(value, key)) continue;
           let prop = value[key];
+          if (
+            !this.configuration.include_undefined_query_parameters &&
+            prop === undefined
+          ) {
+            continue;
+          }
           if (prefix) {
             key = prefix + "[" + key + "]";
           }
