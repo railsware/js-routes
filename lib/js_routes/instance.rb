@@ -36,12 +36,11 @@ module JsRoutes
         end
       end
 
-      content = jsr
       unless @configuration.module_type == "NIL"
-        banner + content + routes_export
+        banner + jsr + routes_export
       else
         # Strip the empty IMPORT_ROUTER statement (comment + semicolon) left after substitution
-        content.sub(/\A(\/\/[^\n]+\n)*;\n/, "")
+        jsr.sub(/\A(\/\/[^\n]+\n)*;\n/, "")
       end
 
     end
@@ -116,6 +115,7 @@ module JsRoutes
       File.read(path).sub(ESM_MODULE_MARKER, "")
     end
 
+    sig { returns(String) }
     def jsr
       return pkg_jsr if @configuration.pkg?
 
@@ -131,6 +131,7 @@ module JsRoutes
       end
     end
 
+    sig { returns(String) }
     def pkg_jsr
       read_js(@configuration.router_source_file) + "export default Router;\n"
     end

@@ -554,7 +554,6 @@ const Router: RouterConstructor = (() => {
           } else {
             return ":" + key;
           }
-          break;
         case NodeTypes.SLASH:
         case NodeTypes.DOT:
         case NodeTypes.LITERAL:
