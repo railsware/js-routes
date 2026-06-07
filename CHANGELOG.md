@@ -76,11 +76,14 @@
   ```
 
   `package: true` is a shorthand for `package: "./router.js"`.
-* Add `include_undefined_query_parameters` configuration option
-  Existing applications preserve legacy behavior to process `undefined` as `nil` until configured and will see a warning while the option is unset.
-  * Set it to `false` to omit object properties whose value is `undefined`, matching typical JavaScript semantics.
+* Add `include_undefined_query_parameters` configuration option. Fixes [#345](https://github.com/railsware/js-routes/issues/345).
+
+  JavaScript uses `undefined` to mean "not provided," but js-routes previously treated `undefined` query object values the same as `null`. With Rails 8.1's nil parameter handling, that causes `undefined` values to appear as bare keys like `?foo`.
+
+  * Set it to `false` to omit object properties whose value is `undefined`, matching typical JavaScript semantics. This is the recommended value for new and upgrading apps.
   * Set it to `true` only when the application depends on serializing `undefined` as Rails `nil` (legacy behavior).
-  * Explicit `null` values continue to serialize as Rails `nil`, as if it were `true`.
+  * Explicit `null` values continue to serialize as Rails `nil` in all cases.
+  * When unset, the legacy behavior is preserved and a deprecation warning is emitted so apps can opt in deliberately.
 
 ## [2.3.7]
 
