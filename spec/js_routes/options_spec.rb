@@ -202,6 +202,15 @@ describe JsRoutes, "options" do
         expectjs("Routes.inbox_url(1)").to eq("http://example.com/api#{test_routes.inbox_path(1)}")
       end
     end
+
+    context "when set to empty string" do
+      it "should not emit a deprecation warning" do
+        deprecator = double("deprecator").tap { |d| allow(d).to receive(:warn) }
+        allow(JsRoutes::Utils).to receive(:deprecator).and_return(deprecator)
+        JsRoutes.setup { |c| c.prefix = "" }
+        expect(deprecator).not_to have_received(:warn)
+      end
+    end
   end
 
   context "when default format is specified" do

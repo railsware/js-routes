@@ -114,7 +114,7 @@ module JsRoutes
     end
 
     def prefix=(value)
-      JsRoutes::Utils.deprecator.warn("JsRoutes configuration prefix is deprecated in favor of default_url_options.script_name.")
+      JsRoutes::Utils.deprecator.warn("JsRoutes configuration prefix is deprecated in favor of default_url_options.script_name.") unless value.blank?
       @prefix = value
     end
 
