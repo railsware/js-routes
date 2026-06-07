@@ -214,8 +214,8 @@ describe JsRoutes, "compatibility with Rails"  do
       )
     end
 
-    it "should support null and undefined parameters" do
-      expectjs("Routes.inboxes_path({uri: null, key: undefined})").to eq(test_routes.inboxes_path(:uri => nil, :key => nil))
+    it "should support null and omit undefined parameters" do
+      expectjs("Routes.inboxes_path({uri: null, key: undefined})").to eq(test_routes.inboxes_path(:uri => nil))
     end
 
     it "should escape get parameters" do

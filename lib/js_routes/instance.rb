@@ -28,7 +28,7 @@ module JsRoutes
       application = T.unsafe(self.application)
       if routes_from(application).empty?
         if application.is_a?(Rails::Application)
-          if Rails.version >= "8.0.0"
+          if JsRoutes::Utils.rails_version >= Gem::Version.new("8.0.0")
             T.unsafe(application).reload_routes_unless_loaded
           else
             T.unsafe(application).reload_routes!
@@ -137,12 +137,15 @@ module JsRoutes
 
     sig { returns(T::Hash[String, String]) }
     def js_variables
+      warn_on_implicit_undefined_query_parameter_behavior
+
       prefix = @configuration.prefix
       prefix = prefix.call if prefix.is_a?(Proc)
       {
         'ROUTES_OBJECT'       => routes_object,
         'DEPRECATED_FALSE_PARAMETER_BEHAVIOR' => @configuration.deprecated_false_parameter_behavior,
         'DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR' => @configuration.deprecated_nil_query_parameter_behavior,
+        'INCLUDE_UNDEFINED_QUERY_PARAMETERS' => json(@configuration.include_undefined_query_parameters != false),
         'DEFAULT_URL_OPTIONS' => json(@configuration.default_url_options),
         'PREFIX'              => json(prefix),
         'SPECIAL_OPTIONS_KEY' => json(@configuration.special_options_key),
@@ -152,6 +155,18 @@ module JsRoutes
         "IMPORT_ROUTER"       => import_router_variable,
         "EMBED_ROUTER"        => embed_router_variable,
       }
+    end
+
+    sig { void }
+    def warn_on_implicit_undefined_query_parameter_behavior
+      return unless @configuration.include_undefined_query_parameters.nil?
+
+      JsRoutes::Utils.deprecator.warn(
+        "JsRoutes include_undefined_query_parameters is not configured. " \
+        "Set JsRoutes.setup { |c| c.include_undefined_query_parameters = false } " \
+        "to omit undefined query parameters, or set it to true to keep legacy nil serialization. " \
+        "The default will change to false in a future release."
+      )
     end
 
     sig { returns(String) }

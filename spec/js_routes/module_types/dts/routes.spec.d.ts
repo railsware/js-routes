@@ -38,6 +38,7 @@ type Configuration = {
     serializer: Serializer;
     deprecated_false_parameter_behavior: boolean;
     deprecated_nil_query_parameter_behavior: boolean;
+    include_undefined_query_parameters: boolean;
 };
 export interface RouterExposedMethods {
     config(): Configuration;
