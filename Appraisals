@@ -11,7 +11,9 @@ end
   [:rails50, '5.0.5',  [3]],
   [:rails51, '5.1.3',  [3]],
   [:rails52, '5.2.3',  [3]],
-  [:rails70, '7.0.3.1', [4]]
+  [:rails70, '7.0.3.1', [4]],
+  [:rails80, '8.0.0', [4]],
+  [:rails81, '8.1.0', [4]]
 ].each do |name, version, sprockets|
   define_appraisal(name, version, sprockets)
 end

@@ -32,6 +32,11 @@ JsRoutes.setup do |c|
   #   full path  → c.file = "app/frontend/routes.js"
   # Default: app/javascript/routes.js
   # c.file = "app/javascript/routes.js"
+  
+  # Omit query parameters whose value is undefined.
+  # This option is transitional to introduce new behaviour to old apps.
+  # Recommended to stay false for new apps.
+  c.include_undefined_query_parameters = false
 
   # More options:
   # @see https://github.com/railsware/js-routes#available-options

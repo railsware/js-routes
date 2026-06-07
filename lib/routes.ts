@@ -17,6 +17,7 @@ declare const RubyVariables: {
   PREFIX: string;
   DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;
   DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR: boolean;
+  INCLUDE_UNDEFINED_QUERY_PARAMETERS: boolean;
   SPECIAL_OPTIONS_KEY: string;
   DEFAULT_URL_OPTIONS: RouteParameters;
   SERIALIZER: Serializer | null;
@@ -160,6 +161,8 @@ RubyVariables.WRAPPER((): RouterExposedMethods => {
       RubyVariables.DEPRECATED_FALSE_PARAMETER_BEHAVIOR,
     deprecated_nil_query_parameter_behavior:
       RubyVariables.DEPRECATED_NIL_QUERY_PARAMETER_BEHAVIOR,
+    include_undefined_query_parameters:
+      RubyVariables.INCLUDE_UNDEFINED_QUERY_PARAMETERS,
   });
 
   const __route = router.__route.bind(router);

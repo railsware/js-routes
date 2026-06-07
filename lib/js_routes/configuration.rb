@@ -35,6 +35,8 @@ module JsRoutes
     attr_accessor :camel_case
     sig { returns(Options) }
     attr_accessor :default_url_options
+    sig { returns(T.nilable(T::Boolean)) }
+    attr_accessor :include_undefined_query_parameters
     sig { returns(T::Boolean) }
     attr_accessor :compact
     sig { returns(T.nilable(String)) }
@@ -66,6 +68,7 @@ module JsRoutes
       @url_links = T.let(false, T::Boolean)
       @camel_case = T.let(false, T::Boolean)
       @default_url_options = T.let(T.unsafe({}), Options)
+      @include_undefined_query_parameters = T.let(nil, T.nilable(T::Boolean))
       @compact = T.let(false, T::Boolean)
       @serializer = T.let(nil, T.nilable(String))
       @special_options_key = T.let("_options", Literal)
@@ -75,8 +78,14 @@ module JsRoutes
       @optional_definition_params = T.let(false, T::Boolean)
       @banner = T.let(default_banner, BannerCaller)
       @package = T.let(nil, T.nilable(String))
-      @deprecated_false_parameter_behavior = T.let(defined?(Rails) ? Rails.version < "7.0.0" : false, T::Boolean)
-      @deprecated_nil_query_parameter_behavior = T.let(defined?(Rails) ? Rails.version < "8.1.0" : false, T::Boolean)
+      @deprecated_false_parameter_behavior = T.let(
+        defined?(Rails) ? JsRoutes::Utils.rails_version < Gem::Version.new('7.0.0') : false,
+        T::Boolean
+      )
+      @deprecated_nil_query_parameter_behavior = T.let(
+        defined?(Rails) ? JsRoutes::Utils.rails_version < Gem::Version.new('8.1.0') : false,
+        T::Boolean
+      )
 
       return unless attributes
       assign(attributes)
