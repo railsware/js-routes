@@ -27,6 +27,12 @@ JsRoutes.setup do |c|
   #   host: 'example.com', protocol: 'https', format: 'json'
   # }
 
+  # Output location relative to Rails root. Accepts a directory or a full file path:
+  #   directory  → c.file = "app/frontend"          # writes app/frontend/routes.js
+  #   full path  → c.file = "app/frontend/routes.js"
+  # Default: app/javascript/routes.js
+  # c.file = "app/javascript/routes.js"
+  
   # Omit query parameters whose value is undefined.
   # This option is transitional to introduce new behaviour to old apps.
   # Recommended to stay false for new apps.
