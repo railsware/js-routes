@@ -215,15 +215,35 @@ const Router: RouterConstructor = (() => {
       return result as any;
     }
 
-    private default_serializer(value: unknown, prefix?: string | null): string {
+    private default_serializer(
+      value: unknown,
+      prefix?: string | null,
+      array_element = false,
+    ): string {
       if (!prefix && !this.is_object(value)) {
         throw new Error("URL parameters should be a javascript hash");
       }
       prefix = prefix || "";
       const result: string[] = [];
       if (this.is_array(value)) {
+        // Rails serializes an empty array nested inside another array as a nil
+        // query value, while an empty object contributes no query parameter.
+        if (value.length === 0) {
+          return array_element
+            ? this.default_serializer(null, prefix + "[]")
+            : "";
+        }
         for (const element of value) {
-          result.push(this.default_serializer(element, prefix + "[]"));
+          const subvalue = this.default_serializer(
+            element,
+            prefix + "[]",
+            true,
+          );
+          // Skip empty object results so arrays do not produce leading,
+          // trailing, or doubled "&" separators.
+          if (subvalue.length) {
+            result.push(subvalue);
+          }
         }
       } else if (this.is_object(value)) {
         for (let key in value) {
