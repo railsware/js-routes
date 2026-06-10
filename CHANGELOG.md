@@ -2,6 +2,8 @@
 
 ## Pending
 
+## [2.4.0]
+
 * Do not emit a deprecation warning when `prefix` is set to an empty string. Fixes [#340](https://github.com/railsware/js-routes/issues/340).
 * Support `config.javascript_path` Rails configuration. Fixes [#344](https://github.com/railsware/js-routes/issues/344).
 * Escape JavaScript reserved words in route helper names and TypeScript parameter names. Fixes broken `.d.ts` output when a route segment name collides with a JS keyword.
