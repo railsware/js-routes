@@ -48,7 +48,7 @@ describe JsRoutes, "options" do
         }
         Routes.configure({serializer: function(object, prefix) { return s(filter(object), prefix)}});
       JS
-      expectjs(%q(Routes.inboxes_path({a: [{b: 1}, {c: undefined}, {d: null}]}))).to eql("/inboxes?a%5B%5D%5Bb%5D=1&&")
+      expectjs(%q(Routes.inboxes_path({a: [{b: 1}, {c: undefined}, {d: null}]}))).to eql("/inboxes?a%5B%5D%5Bb%5D=1")
     end
 
     context "when specified" do

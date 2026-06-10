@@ -13,6 +13,20 @@ describe JsRoutes, "#serialize" do
     evallib(**options)
   end
 
+  def rails_fixed_empty_hash_array_query?
+    ActiveSupport.gem_version >= Gem::Version.new("8.2.0.alpha")
+  end
+
+  def fixed_empty_hash_array_query(value)
+    result = value.to_query
+    return result if rails_fixed_empty_hash_array_query?
+
+    # Rails versions before this fix can emit leading, trailing, or doubled
+    # separators for empty hashes inside arrays. Keep deriving expectations from
+    # to_query, then normalize only that known separator bug.
+    result.gsub(/\A&+|&+\z|(&){2,}/) { $1 ? '&' : '' }
+  end
+
   it "serializes basic object, array, nested object, and empty string values like Rails" do
     expectjs("Routes.serialize({a: 1, b: [2,3], c: {d: 4, e: 5}, f: ''})").to eq(
       {a: 1, b: [2,3], c: {d: 4, e: 5}, f: ''}.to_query
@@ -28,6 +42,36 @@ describe JsRoutes, "#serialize" do
         "Routes.serialize(query);",
       ].join("\n")
     ).to eq({a:1, b:2}.to_query)
+  end
+
+  it "serializes nested empty arrays like Rails" do
+    expectjs("Routes.serialize({a: [[], 1], b: [[[]]]})").to eq(
+      {a: [[], 1], b: [[[]]]}.to_query
+    )
+  end
+
+  it "serializes arrays containing empty objects without empty separators" do
+    expectjs("Routes.serialize({a: [1, {}, 2]})").to eq(
+      fixed_empty_hash_array_query({a: [1, {}, 2]})
+    )
+  end
+
+  it "serializes arrays with leading empty objects without empty separators" do
+    expectjs("Routes.serialize({a: [{}, {c: 1}]})").to eq(
+      fixed_empty_hash_array_query({a: [{}, {c: 1}]})
+    )
+  end
+
+  it "serializes arrays with trailing empty objects without empty separators" do
+    expectjs("Routes.serialize({a: [{c: 1}, {}]})").to eq(
+      fixed_empty_hash_array_query({a: [{c: 1}, {}]})
+    )
+  end
+
+  it "serializes arrays with nested empty objects without empty separators" do
+    expectjs("Routes.serialize({a: [{b: {}}, {d: 1}]})").to eq(
+      fixed_empty_hash_array_query({a: [{b: {}}, {d: 1}]})
+    )
   end
 
   it "omits undefined object properties by default" do
@@ -100,18 +144,14 @@ describe JsRoutes, "#serialize" do
     end
 
     it "serializes array objects with omitted undefined properties without empty separators" do
-      pending("Rails main fixed empty hash array serialization in rails/rails#57500")
-
       expectjs("Routes.serialize({a: [{b: undefined}, {c: 1}]})").to eq(
-        "a%5B%5D%5Bc%5D=1"
+        fixed_empty_hash_array_query({a: [{}, {c: 1}]})
       )
     end
 
     it "serializes mixed arrays with omitted undefined properties without empty separators" do
-      pending("Rails main fixed empty hash array serialization in rails/rails#57500")
-
       expectjs("Routes.serialize({a: [1, {b: undefined}, 2]})").to eq(
-        "a%5B%5D=1&a%5B%5D=2"
+        fixed_empty_hash_array_query({a: [1, {}, 2]})
       )
     end
 
@@ -122,10 +162,8 @@ describe JsRoutes, "#serialize" do
     end
 
     it "serializes nested objects that become empty inside arrays without empty separators" do
-      pending("Rails main fixed empty hash array serialization in rails/rails#57500")
-
       expectjs("Routes.serialize({a: [{b: {c: undefined}}, {d: 1}]})").to eq(
-        "a%5B%5D%5Bd%5D=1"
+        fixed_empty_hash_array_query({a: [{b: {}}, {d: 1}]})
       )
     end
 
