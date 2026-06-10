@@ -45,7 +45,7 @@ configure({
   prefix: "",
   special_options_key: "_options",
   include_undefined_query_parameters: false,
-  serializer: (value) => JSON.stringify(value),
+  serializer: (value: Parameters<typeof serialize>[0]) => JSON.stringify(value),
 });
 
 // config tests
