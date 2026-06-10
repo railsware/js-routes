@@ -121,6 +121,23 @@ describe "after Rails initialization", :slow do
       expect(File.exist?(file)).to be(true)
       expect(File.exist?(definitions)).to be(false)
     end
+
+    it "generates .d.ts when typed: true is combined with package:" do
+      file = dir.join('pkg_routes.js')
+      definitions = dir.join('pkg_routes.d.ts')
+      JsRoutes.remove!(file)
+      JsRoutes.generate!(file, typed: true, package: "./router.js", include: /\Ainbox/)
+      expect(File.exist?(file)).to be(true)
+      expect(File.exist?(definitions)).to be(true)
+    end
+
+    it "does not embed the package import in the .d.ts when typed: true and package: are combined" do
+      file = dir.join('pkg_routes.js')
+      definitions = dir.join('pkg_routes.d.ts')
+      JsRoutes.remove!(file)
+      JsRoutes.generate!(file, typed: true, package: "./router.js", include: /\Ainbox/)
+      expect(File.read(definitions)).not_to include("import Router from")
+    end
   end
 
 

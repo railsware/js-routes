@@ -40,7 +40,7 @@ module JsRoutes
       instance = Instance.new(file: file_name, **opts)
       instance.generate!
       if typed && instance.configuration.modern?
-        definitions!(file_name, **opts)
+        definitions!(file_name, **opts.except(:package))
       end
     end
 
