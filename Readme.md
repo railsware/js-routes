@@ -4,7 +4,16 @@
 
 <img src="/logo.webp" alt="Logo" width="200" height="200">
 
-Generates javascript file that defines all Rails named routes as javascript helpers:
+Generates javascript file that defines all Rails named routes as javascript functions:
+
+``` ruby
+Rails.application.routes.draw do
+  root "home#index"
+  namespace :api do
+    resources :users
+  end
+end
+```
 
 ``` js
 import { root_path, api_user_path } from './routes';
@@ -14,6 +23,12 @@ api_user_path(25, include_profile: true, format: 'json') // => /api/users/25.jso
 ```
 
 [More Examples](#usage)
+
+## Philosophy
+
+1. Move fast, break nothing.
+2. Minimum invention, maximum compatiblity with Rails.
+3. Ready for your advanced architecture.
 
 ## Intallation
 
