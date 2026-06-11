@@ -24,7 +24,7 @@ fi
 
 echo "## Changes" > $OUTPUT
 echo "" >> $OUTPUT
-ruby  -e "puts File.read('$CHANGELOG').split('## [$VERSION]')[1]&.split('## ')&.first&.strip" >> $OUTPUT
+ruby  -e "puts File.read('$CHANGELOG').split('## [$VERSION]')[1]&.split(/\n## /)&.first&.strip" >> $OUTPUT
 echo "Release notes:"
 echo ----------------------------------------
 cat $OUTPUT
