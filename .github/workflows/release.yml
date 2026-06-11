@@ -26,7 +26,7 @@ jobs:
     steps:
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
@@ -58,7 +58,7 @@ jobs:
         gem push *.gem --otp ${{ github.event.inputs.otp_code }}
 
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         name: "v${{ env.gem_version }}"
         tag_name: "v${{ env.gem_version }}"
