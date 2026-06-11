@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [
     "LICENSE.txt"
   ]
-  s.required_ruby_version = '>= 2.4.0'
+  s.required_ruby_version = '>= 2.7'
   s.files = Dir[
     'app/**/*',
     'lib/**/*',
