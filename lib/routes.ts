@@ -23,13 +23,9 @@ declare const RubyVariables: {
   SERIALIZER: Serializer | null;
   ROUTES_OBJECT: RouteHelpers;
   MODULE_TYPE: ModuleType;
-  IMPORT_ROUTER: RouterConstructor;
   EMBED_ROUTER: RouterConstructor;
   WRAPPER: <T>(callback: T) => T;
 };
-
-// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-RubyVariables.IMPORT_ROUTER;
 
 declare const define:
   | undefined

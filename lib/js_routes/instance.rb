@@ -37,10 +37,9 @@ module JsRoutes
       end
 
       unless @configuration.module_type == "NIL"
-        banner + jsr + routes_export
+        banner + routes_js + routes_export
       else
-        # Strip the empty IMPORT_ROUTER statement (comment + semicolon) left after substitution
-        jsr.sub(/\A(\/\/[^\n]+\n)*;\n/, "")
+        routes_js
       end
 
     end
@@ -49,7 +48,7 @@ module JsRoutes
     def package
       raise "Package generation requires module_type: 'PKG'" unless @configuration.pkg?
 
-      jsr
+      routes_js
     end
 
     sig { returns(String) }
@@ -116,7 +115,7 @@ module JsRoutes
     end
 
     sig { returns(String) }
-    def jsr
+    def routes_js
       return pkg_jsr if @configuration.pkg?
 
       if @configuration.dts?
@@ -153,7 +152,6 @@ module JsRoutes
         'SERIALIZER'          => @configuration.serializer || json(nil),
         'MODULE_TYPE'         => json(@configuration.module_type),
         'WRAPPER'             => wrapper_variable,
-        "IMPORT_ROUTER"       => import_router_variable,
         "EMBED_ROUTER"        => embed_router_variable,
       }
     end
@@ -180,9 +178,9 @@ module JsRoutes
     end
 
     sig { returns(String) }
-    def import_router_variable
+    def router_js
       if @configuration.use_package?
-        "import Router from '#{@configuration.package}'"
+        "import Router from '#{@configuration.package}';"
       elsif @configuration.modern?
         read_js(@configuration.router_source_file)
       else
@@ -194,20 +192,21 @@ module JsRoutes
     def wrapper_variable
       case @configuration.module_type
       when 'ESM', 'PKG'
-        'const __jsr = '
+        "#{router_js}const __jsr = "
       when 'NIL'
         namespace = @configuration.namespace
         if namespace
-          if namespace.include?('.')
+          assignment = if namespace.include?('.')
             "#{namespace} = "
           else
             "(typeof window !== 'undefined' ? window : this).#{namespace} = "
           end
+          "#{router_js}#{assignment}"
         else
-          ''
+          router_js
         end
       else
-        ''
+        router_js
       end
     end
 
