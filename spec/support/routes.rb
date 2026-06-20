@@ -60,6 +60,8 @@ def draw_routes
     resources :portals, :port => 8080, only: [:index]
 
     get '/with_defaults' => 'foo#foo', defaults: { bar: 'tested', format: :json }, format: true
+    get 'items(/:per_page)', to: 'foo#foo', as: :items, defaults: { per_page: 10 }
+    get 'keywords(/:for)', to: 'foo#foo', as: :keywords
 
     namespace :api, format: true, defaults: {format: 'json'} do
       get "/purchases" => "purchases#index"

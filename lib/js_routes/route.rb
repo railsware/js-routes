@@ -92,7 +92,7 @@ module JsRoutes
     def optional_parts_type
       return nil if optional_parts.empty?
       @optional_parts_type ||= T.let(
-        "{" + optional_parts.map {|p| "#{format_param(p)}?: OptionalRouteParameter"}.join(', ') + "}",
+        "{" + optional_parts.map {|p| "#{p}?: OptionalRouteParameter"}.join(', ') + "}",
         T.nilable(String)
       )
     end

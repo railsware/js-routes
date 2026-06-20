@@ -2,6 +2,21 @@
 
 ## Pending
 
+### Fix camelCase TypeScript definitions for optional parameters
+
+Fix a bug introduced in 2.4.0 where `camel_case: true` caused TypeScript type definitions to advertise camelCase keys for optional route parameters while the JavaScript runtime still required snake_case. Fixes [#351](https://github.com/railsware/js-routes/issues/351).
+
+Optional parameter names in `.d.ts` output now match what the runtime actually accepts:
+
+```typescript
+// Before (broken): type advertised perPage but runtime required per_page
+itemsPath({ perPage: 20 })   // → "/items?perPage=20"  ✗ (silently wrong)
+itemsPath({ per_page: 20 })  // → "/items/20"          ✓ (worked but type was misleading)
+
+// After (fixed): type and runtime agree on snake_case
+itemsPath({ per_page: 20 })  // → "/items/20"          ✓
+```
+
 ## [2.4.0]
 
 ### Package mode

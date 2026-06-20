@@ -358,6 +358,31 @@ describe JsRoutes, "options" do
         expectjs("Routes.inboxPath(1)").to eq(test_routes.inbox_path(1))
         expectjs("Routes.inboxMessagesPath(10)").to eq(test_routes.inbox_messages_path(:inbox_id => 10))
       end
+
+      # NOTE: the following tests use snake_case for optional params because the JS runtime still
+      # expects them. When optional parameter camelization is implemented, all optional param keys
+      # below should switch to camelCase. See https://github.com/railsware/js-routes/issues/351
+      it "should accept optional parameters as snake_case" do
+        expectjs("Routes.thingsPath({optional_id: 'test'})").to eq(test_routes.things_path(optional_id: 'test'))
+      end
+
+      it "should not camelize literal path segments" do
+        expectjs("Routes.noFormatPath()").to eq(test_routes.no_format_path)
+      end
+
+      it "should accept required and optional params together" do
+        expectjs("Routes.thingDeepPath('a', 'b', {first_optional: 'x', forth_optional: 'y'})").to eq(
+          test_routes.thing_deep_path('a', 'b', first_optional: 'x', forth_optional: 'y')
+        )
+      end
+
+      it "should suppress optional segment when value equals the route default" do
+        expectjs("Routes.itemsPath({per_page: 10})").to eq(test_routes.items_path(per_page: 10))
+      end
+
+      it "should fill optional segment when value differs from the route default" do
+        expectjs("Routes.itemsPath({per_page: 20})").to eq(test_routes.items_path(per_page: 20))
+      end
     end
   end
 

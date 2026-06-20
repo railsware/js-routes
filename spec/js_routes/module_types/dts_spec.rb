@@ -54,7 +54,7 @@ describe JsRoutes, "compatibility with DTS"  do
   end
 
   context "when camel case is enabled" do
-    let(:extra_options) { {camel_case: true} }
+    let(:extra_options) { {camel_case: true, include: /inbox_message_attachment|thing_deep/} }
 
     it "camelizes route name and arguments" do
 
@@ -73,6 +73,19 @@ export const inboxMessageAttachmentPath: ((
   messageId: RequiredRouteParameter,
   id: RequiredRouteParameter,
   options?: RouteOptions
+) => string) & RouteHelperExtras;
+DOC
+    end
+
+    # NOTE: optional params are snake_case to match what the JS runtime accepts.
+    # When optional parameter camelization is implemented, this should expect camelCase keys.
+    # See https://github.com/railsware/js-routes/issues/351
+    it "keeps optional parameter names as snake_case in type definitions" do
+      expect(generated_js).to include(<<-DOC.rstrip)
+export const thingDeepPath: ((
+  secondRequired: RequiredRouteParameter,
+  thirdRequired: RequiredRouteParameter,
+  options?: {first_optional?: OptionalRouteParameter, forth_optional?: OptionalRouteParameter, format?: OptionalRouteParameter} & RouteOptions
 ) => string) & RouteHelperExtras;
 DOC
     end
@@ -155,9 +168,17 @@ DOC
   context "when route parameter matches JavaScript keyword" do
     let(:extra_options) { {include: /\Aobject\z/} }
 
-    it "has _ suffix" do
+    it "has _ suffix on required parameters" do
       expect(generated_js).to include("return_: RequiredRouteParameter")
       expect(generated_js).not_to match(/\breturn: RequiredRouteParameter/)
+    end
+  end
+
+  context "when optional route parameter matches JavaScript keyword" do
+    let(:extra_options) { {include: /\Akeywords\z/} }
+    it "does not add _ suffix on optional parameters" do
+      expect(generated_js).to include("for?: OptionalRouteParameter")
+      expect(generated_js).not_to include("for_?: OptionalRouteParameter")
     end
   end
 
