@@ -2,6 +2,8 @@
 
 ## Pending
 
+## [2.4.1]
+
 ### Fix camelCase TypeScript definitions for optional parameters
 
 Fix a bug introduced in 2.4.0 where `camel_case: true` caused TypeScript type definitions to advertise camelCase keys for optional route parameters while the JavaScript runtime still required snake_case. Fixes [#351](https://github.com/railsware/js-routes/issues/351).
